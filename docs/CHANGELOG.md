@@ -88,3 +88,9 @@
 ## 2026-10-25: Home search field opens the Recipe search sheet (as-is)
 - Tapping the search field on Recipes home now opens the "Recipe search" sheet, as in the app, with the search box focused. Apply filters (or Enter) goes to the results with the query and filters applied. Before: the field was a plain input that did nothing until you pressed Enter.
 - The same sheet (also opened by the Filters button) now matches `01_Recipes/09`: search icon in the box, selected options solid blue, Reset and Apply filters as square-cornered buttons. The query in the sheet is applied on Apply rather than as you type.
+
+## 2026-10-25: 96 mock recipes so filters behave realistically
+- The catalogue grows from 17 to 96 made-up recipes covering all 8 cuisines, 8 main ingredients (Vegetables and Eggs added to the Ingredients index), all 9 meal types, every category, diet and allergen. Titles, timings and tags are invented; nothing is copied from the live app.
+- Tags are tidied for every recipe: vegan recipes also count as vegetarian, vegetarian and fish dishes as pescatarian, and anything 30 minutes or under gets "Under 30mins".
+- Examples with the as-is "No gluten" default on: all recipes 70, "chicken" 11, "curry" 8, Indian 11, Legumes 14, Breakfast 10, High Protein 15.
+- Every recipe now has nutrition (hand-picked for the original 17, estimated from main ingredient, category and meal type for the rest), and Recipe detail's ingredient list starts with the main ingredient.

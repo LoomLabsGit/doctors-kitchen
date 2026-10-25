@@ -11,6 +11,13 @@ const POOL: Line[] = [
   { qty: 1, unit: 'tsp', name: 'smoked paprika' }, { qty: 150, unit: 'g', name: 'Greek yoghurt' }, { qty: 30, unit: 'g', name: 'toasted seeds' },
   { qty: 1, unit: 'tbsp', name: 'tahini' }, { qty: 2, unit: 'x', name: 'carrots' }, { qty: 400, unit: 'ml', name: 'coconut milk' },
 ]
+// The recipe's main ingredient always comes first, so the list matches the title.
+const MAIN: Record<string, Line> = {
+  Chicken: { qty: 500, unit: 'g', name: 'chicken thighs' }, Fish: { qty: 2, unit: 'x', name: 'fish fillets' },
+  'Tofu and Tempeh': { qty: 280, unit: 'g', name: 'firm tofu' }, Legumes: { qty: 400, unit: 'g', name: 'tinned beans or lentils' },
+  Nuts: { qty: 100, unit: 'g', name: 'cashews' }, Fruit: { qty: 150, unit: 'g', name: 'mixed fruit' },
+  Vegetables: { qty: 500, unit: 'g', name: 'seasonal vegetables' }, Eggs: { qty: 4, unit: 'x', name: 'eggs' },
+}
 const hash = (s: string) => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7)
 
 export type Detail = {
@@ -20,7 +27,7 @@ export type Detail = {
 
 export function detailFor(r: Recipe): Detail {
   const h = hash(r.slug)
-  const lines = Array.from({ length: r.ingredients }, (_, i) => POOL[(h + i * 7) % POOL.length])
+  const lines = [MAIN[r.mainIngredient] ?? POOL[0], ...Array.from({ length: r.ingredients - 1 }, (_, i) => POOL[(h + i * 7) % POOL.length])]
     .filter((l, i, a) => a.findIndex((x) => x.name === l.name) === i)
   const split = Math.max(2, Math.ceil(lines.length / 3))
   const prep = Math.max(5, Math.round((r.mins * 0.3) / 5) * 5)
@@ -32,7 +39,7 @@ export function detailFor(r: Recipe): Detail {
     groups: [{ title: 'For the marinade', lines: lines.slice(0, split) }, { title: `For the ${r.mealType === 'Drink' ? 'smoothie' : 'dish'}`, lines: lines.slice(split) }],
     steps: [
       'Gather and prepare your ingredients.',
-      'Placeholder step: mix the marinade ingredients together and coat the main ingredient.',
+      `Placeholder step: mix the marinade ingredients together and coat the ${(MAIN[r.mainIngredient] ?? POOL[0]).name}.`,
       'Placeholder step: cook the base of the dish until softened.',
       'Placeholder step: add the remaining ingredients and cook until done.',
       'Placeholder step: finish with fresh herbs and serve.',

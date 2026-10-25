@@ -1,5 +1,6 @@
 // Mock food log for Progress. DK recipes are referenced by slug from recipes.ts; the user's own meals are lists of ingredients.
 import { addDays, todayIso } from '../lib/dates'
+import { recipes, type Recipe } from './recipes'
 
 export const TARGETS = { fibre: 30, protein: 75 }
 export const PLANT_TARGET = 30
@@ -7,7 +8,7 @@ export const PLANT_TARGET = 30
 // Made-up nutrition per DK recipe: fibre g, protein g, plant points, inflammation (0 = low, 1 = high).
 type Stats = { fibre: number; protein: number; plants: number; inflam: number }
 const s = (fibre: number, protein: number, plants: number, inflam: number): Stats => ({ fibre, protein, plants, inflam })
-export const recipeStats: Record<string, Stats> = {
+const handPicked: Record<string, Stats> = {
   'coconut-chicken-lentil-daal': s(12, 38, 6, 0.15), 'miso-greens-tofu-rice-bowl': s(11, 24, 8, 0.1),
   'salmon-peach-ginger-traybake': s(9, 36, 6, 0.1), 'herby-butter-bean-eggs': s(10, 22, 5, 0.15),
   'sri-lankan-cashew-curry': s(9, 15, 7, 0.12), 'spicy-snapper-red-curry': s(7, 34, 5, 0.15),
@@ -18,6 +19,16 @@ export const recipeStats: Record<string, Stats> = {
   'chickpea-herb-salad': s(13, 14, 8, 0.05), 'lentil-roast-veg-soup': s(14, 16, 9, 0.05),
   'smoked-mackerel-rye-toast': s(7, 25, 3, 0.2),
 }
+// The rest are estimated from the main ingredient, category and meal type, so every recipe has numbers.
+const BASE: Record<string, [number, number]> = { Chicken: [6, 38], Fish: [5, 32], 'Tofu and Tempeh': [8, 24], Legumes: [14, 18], Nuts: [7, 12], Fruit: [7, 5], Vegetables: [10, 8], Eggs: [4, 20] }
+function estimate(r: Recipe): Stats {
+  const [fibre, protein] = BASE[r.mainIngredient] ?? [6, 15]
+  const scale = ['Snack', 'Side', 'Condiment', 'Drink', 'Dessert', 'Baking'].includes(r.mealType) ? 0.4 : 1
+  const boost = r.categories.includes('High Protein') ? 10 : 0
+  const plants = Math.max(1, Math.round(r.ingredients / 2) - (r.diet.includes('Vegetarian') ? 0 : 1))
+  return s(Math.round(fibre * scale), Math.round((protein + boost) * scale), plants, r.diet.includes('Vegan') ? 0.08 : r.diet.includes('Pescatarian') ? 0.15 : 0.25)
+}
+export const recipeStats: Record<string, Stats> = Object.fromEntries(recipes.map((r) => [r.slug, handPicked[r.slug] ?? estimate(r)]))
 
 // Ingredients for the Edit recipe sheet. fibre and protein are per one unit (per g, ml, whole or slice).
 export type Ingredient = { name: string; unit: string; fibre: number; protein: number; plant: boolean }

@@ -16,7 +16,7 @@ You are helping a Senior UX designer (joined The Doctors Kitchen, a UK nutrition
 - `src/data/saved.ts` and `src/lib/saved.tsx`: mock collections and a store saved to localStorage (`dk-saved`). Plan's Add meal FAVOURITES tab reads the Favourites collection from here.
 - `src/data/progress.ts` and `src/lib/progress.tsx`: food log, made-up nutrition per recipe, an ingredient table for Edit recipe, and a store saved to localStorage (`dk-progress`). Recipe search shows a "+ Add" tab when opened from Progress (`?log=<date>`).
 - `src/data/learn.ts`: mock Learn content (articles, podcasts, videos), categories and topics. Titles and body text are made up or placeholders: do not copy the live app's content.
-- `src/data/recipes.ts` is mock data. Photos are gradient placeholders on purpose: do not copy real recipe photos or content into the repo.
+- `src/data/recipes.ts` is mock data: 96 recipes (17 hand-written, the rest made-up compact rows) spread across every cuisine, main ingredient, meal type, diet, allergen and category so filters return realistic counts. Diet and "Under 30mins" tags are tidied automatically (vegan counts as vegetarian, etc.). Nutrition for recipes without hand-picked numbers is estimated in `src/data/progress.ts`. Photos are gradient placeholders on purpose: do not copy real recipe photos or content into the repo.
 - The current app's known problems are kept AS-IS in the first version, with comments like `UX issue U4` so you can compare before and after. Fix them deliberately, one at a time, and note what changed in `docs/CHANGELOG.md`.
 
 ## Working rules (from the audit)
