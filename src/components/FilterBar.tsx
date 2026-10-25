@@ -33,7 +33,7 @@ function FiltersSheet({ onClose, query, onQuery }: { onClose: () => void; query?
   return (
     <Sheet title="Recipe search" onClose={onClose} footer={
       <div className="flex gap-3">
-        <button className="flex-1 border border-line rounded-full py-2 text-muted" onClick={() => setD({ ...DEFAULT_FILTERS, avoid: [] })}>Reset</button>
+        <button className="flex-1 border border-line rounded-full py-2 text-muted" onClick={() => setD(DEFAULT_FILTERS)}>Reset</button>
         <button className="flex-1 bg-brand text-white rounded-full py-2 font-semibold" onClick={() => { set(d); onClose() }}>Apply filters</button>
       </div>}>
       <input value={query ?? ''} onChange={(e) => onQuery?.(e.target.value)} placeholder="Search by ingredient, recipe name…" className="w-full border border-line rounded-md px-3 py-2" />

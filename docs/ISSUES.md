@@ -6,7 +6,7 @@ Severity: High / Medium / Low. IDs match the Miro board tables.
 ## UX issues
 
 ### Recipes
-- !1 High, every list and search: "No gluten" is on by default and returns on each page load even after "Clear filters".
+- !1 High **(fixed in prototype)**, every list and search: "No gluten" is on by default and returns on each page load even after "Clear filters".
 - !2 Low, header: Profile is reachable only from a small pill on Recipes home; missing on Plan, Progress, Saved and Learn.
 - !3 Medium, cuisine list: the "Cuisines List" feels like a filter but is applied differently to other filters.
 - !4 Medium, filtered results: applied chips run off the right edge, so meal type and category filters are hidden until scrolled.

@@ -36,3 +36,8 @@
 - Known issues kept as-is and marked in code: Profile !1 (three Update buttons; each one saves the whole page), !2 (floating Update button), !3 (three overlapping news/offers options), !4 (two date formats, UTC).
 - Preferences are saved to localStorage (`dk-profile`) when Update is pressed. They do not yet feed Recipes filters or Plan.
 - Left out or inert: Account info (its screens were removed because they showed personal details), Log out, Buy a subscription. Chat summaries and notification descriptions are reworded, not copied.
+
+## 2026-10-25: Fix Recipes !1, no default "No gluten" filter
+- Lists and search start with no filters, and "Clear filters" and Reset go back to that. Before: "No gluten" was applied on every load and came back after clearing, hiding gluten recipes from everyone.
+- Profile allergens are not wired to the filters yet; if they were, the default should come from there and say so on the chip.
+- To compare with the live app, set `avoid` back to `['Gluten']` in `DEFAULT_FILTERS` (`src/lib/filters.tsx`).
