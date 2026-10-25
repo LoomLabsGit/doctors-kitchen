@@ -54,3 +54,7 @@
 ## 2026-10-25: Fix Learn !4, no more empty filtered lists
 - Category and topic pages now have All / Articles / Podcasts / Videos tabs with counts; kinds with nothing in that category are greyed out and can't be picked.
 - Arriving from a Read / Listen / Watch list with a kind the category doesn't have (e.g. Read → Cooking skills) shows everything, with a note saying there are no articles there yet. Before: an empty page saying "We're filtering this list", with a "click here" link as the only way out.
+
+## 2026-10-25: Fix U1 and U2, Cuisines and Ingredients as a browse grid
+- The Cuisines and Ingredients pages are now a two-column grid of tiles, with the full name under each image (no dark label bar, no truncation) and a recipe count.
+- The unrelated recipe feed and filter bar under the tiles are gone; filters stay on the list you open from a tile. Before: one sideways row (about 2.7 tiles visible) above a recipe list that had nothing to do with the tiles.

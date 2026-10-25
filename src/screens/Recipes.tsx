@@ -45,24 +45,24 @@ function Section({ title, items, showAll }: { title: string; items: typeof recip
   )
 }
 
+// FIXED (UX issues U1 and U2): a pure browse grid, two columns, full names under the image and a recipe count.
+// Before: one sideways row of tiles with truncated names, and an unrelated recipe feed underneath.
 export function Index({ kind }: { kind: 'cuisines' | 'ingredients' }) {
-  const { f } = useFilters()
   const names = kind === 'cuisines' ? cuisines : ingredientsIndex
   const base = kind === 'cuisines' ? '/cuisine/' : '/ingredient/'
+  const count = (n: string) => recipes.filter((r) => (kind === 'cuisines' ? r.cuisine : r.mainIngredient) === n).length
   return (
-    <div>
+    <div className="pb-6">
       <PageTitle>{kind === 'cuisines' ? 'Cuisines' : 'Ingredients'}</PageTitle>
-      {/* UX issues U1/U2: one sideways row + an unrelated recipe feed underneath (as-is) */}
-      <div className="flex gap-3 overflow-x-auto px-4 mt-3">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-5 px-4 mt-3">
         {names.map((n, i) => (
-          <Link key={n} to={base + n} className="relative shrink-0 w-[133px] h-[133px] rounded-lg overflow-hidden">
-            <Photo hue={i * 47} className="absolute inset-0" />
-            <span className="absolute bottom-0 inset-x-0 bg-black/55 text-white text-sm px-2 py-1 truncate">{n}</span>
+          <Link key={n} to={base + n} className="block min-w-0">
+            <Photo hue={i * 47} className="aspect-square rounded-lg" />
+            <div className="font-semibold text-[16px] leading-tight mt-2">{n}</div>
+            <div className="text-[13px] text-muted">{count(n)} recipe{count(n) === 1 ? '' : 's'}</div>
           </Link>
         ))}
       </div>
-      <FilterBar />
-      {applyFilters(f).map((r) => <RecipeRow key={r.slug} r={r} />)}
     </div>
   )
 }
