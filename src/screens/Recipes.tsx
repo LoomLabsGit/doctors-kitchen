@@ -89,6 +89,16 @@ export function List({ kind }: { kind: 'cuisine' | 'ingredient' | 'meal' | 'cate
   )
 }
 
+function SearchField({ value, onSearch }: { value: string; onSearch: (v: string) => void }) {
+  const [v, setV] = useState(value)
+  return (
+    <form className="relative px-4" onSubmit={(e) => { e.preventDefault(); onSearch(v.trim()) }}>
+      <input value={v} onChange={(e) => setV(e.target.value)} enterKeyHint="search" placeholder="Search by ingredient, recipe name…" className="w-full border border-line rounded-md pl-3 pr-10 py-2" />
+      {v && <button type="button" aria-label="Clear search" onClick={() => { setV(''); onSearch('') }} className="absolute right-4 top-0 bottom-0 w-10 text-muted text-xl">×</button>}
+    </form>
+  )
+}
+
 export function Search() {
   const [sp, setSp] = useSearchParams()
   const q = sp.get('q') ?? ''
@@ -102,8 +112,12 @@ export function Search() {
   return (
     <div className="pb-6">
       <PageTitle green={false}>Recipe search ({items.length})</PageTitle>
-      {/* UX issue U4: no search field on results, query lives in a chip */}
-      <FilterBar query={q} onQuery={(v) => setSp({ ...(v ? { q: v } : {}), ...(log ? { log } : {}) })} />
+      {/* FIXED (UX issue U4): the search field stays pinned above the results, and filters sit behind one button
+          with a count. Before: no search field on results; the query was a chip mixed in with the filters. */}
+      <div className="sticky top-0 z-10 bg-white pt-2">
+        <SearchField key={q} value={q} onSearch={(v) => setSp({ ...(v ? { q: v } : {}), ...(log ? { log } : {}) })} />
+        <FilterBar />
+      </div>
       {items.map((r) => <RecipeRow key={r.slug} r={r} corner={log ? <>
         <span className="absolute top-2 right-2 bg-white/90 rounded-full w-7 h-7 grid place-items-center text-sm">♡</span>
         <button onClick={(e) => { e.preventDefault(); logIt(r.slug) }} className="absolute top-1 right-1 bg-brand text-white text-[13px] rounded-full px-2 py-0.5">+ Add</button>

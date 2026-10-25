@@ -62,3 +62,7 @@
 ## 2026-10-25: Fix U3, "Browse by" on Recipes home
 - The Cuisines / Ingredients / Breakfast chip row is replaced by a "Browse by" section with three equal cards, all visible: Cuisines, Ingredients and Meal types.
 - New Meal types page (`/meals`) in the same grid style as Cuisines and Ingredients; Breakfast is now one of its tiles rather than a peer of the two indexes. Before: two indexes and a single meal type side by side, in a row clipped at the edge with no hint it scrolled.
+
+## 2026-10-25: Fix U4, pinned search field on search results
+- Recipe search results now have a real search field (with a clear button) that stays pinned at the top with the filter bar while the results scroll. The query is no longer a chip among the filters.
+- The Filters button shows how many filters are on, e.g. "Filters (2)", on every list. Before: the only way to change the search was to remove the query chip or open the Filters sheet.

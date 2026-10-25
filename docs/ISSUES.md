@@ -61,7 +61,7 @@ Severity: High / Medium / Low. IDs match the Miro board tables.
 | U1 | High (fixed) | IA | Cuisines and Ingredients index | Titled "Cuisines" but shows an unrelated recipe list below the tiles. | Pure browse grid, or tie the list to a selected tile. |
 | U2 | High (fixed) | Layout | Index pages | Tiles in one sideways row (~2.7 visible), no count, truncated names. | 2-column grid or A-Z list; two-line names. |
 | U3 | High (fixed) | IA | Home chips | Cuisines, Ingredients and Breakfast are different kinds of thing; row clipped, no hint. | A "Browse by" section with equal-weight entries. |
-| U4 | High | Interaction | Search results | No search box on results; query is a chip mixed with filters. | Pinned search field; separate filter button with count. |
+| U4 | High (fixed) | Interaction | Search results | No search box on results; query is a chip mixed with filters. | Pinned search field; separate filter button with count. |
 | U5 | High | Content | All recipe cards | No nutrition on cards, even High Protein; metadata varies (rating missing on some). | Show protein/calories/health tag by context; fixed metadata slots. |
 | U6 | Med | Interaction | Cuisine/ingredient/meal lists | Tile row gone, no visible back control; hard to compare siblings. | Back button plus sticky sibling selector. |
 | U7 | Med | Visual | Page titles | Green vs black titles with no meaning; count only on search; green looks tappable. | One title style, counts everywhere, green for interactive only. |
