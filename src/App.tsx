@@ -1,0 +1,29 @@
+import { Route, Routes } from 'react-router-dom'
+import Shell from './components/Shell'
+import { Home, Index, List, Search } from './screens/Recipes'
+import RecipeDetail from './screens/RecipeDetail'
+import Stub from './screens/Stub'
+
+export default function App() {
+  return (
+    <Routes>
+      <Route element={<Shell />}>
+        <Route index element={<Home />} />
+        <Route path="cuisines" element={<Index kind="cuisines" />} />
+        <Route path="ingredients" element={<Index kind="ingredients" />} />
+        <Route path="cuisine/:name" element={<List kind="cuisine" />} />
+        <Route path="ingredient/:name" element={<List kind="ingredient" />} />
+        <Route path="meal/:name" element={<List kind="meal" />} />
+        <Route path="category/:name" element={<List kind="category" />} />
+        <Route path="search" element={<Search />} />
+        <Route path="recipe/:slug" element={<RecipeDetail />} />
+        <Route path="plan" element={<Stub name="Plan" folder="03_Plan" />} />
+        <Route path="progress" element={<Stub name="Progress" folder="05_Progress" />} />
+        <Route path="saved" element={<Stub name="Saved" folder="04_Saved" />} />
+        <Route path="learn" element={<Stub name="Learn" folder="06_Learn" />} />
+        <Route path="about" element={<Stub name="About" folder="07_About" />} />
+        <Route path="profile" element={<Stub name="Profile" folder="08_Profile" />} />
+      </Route>
+    </Routes>
+  )
+}

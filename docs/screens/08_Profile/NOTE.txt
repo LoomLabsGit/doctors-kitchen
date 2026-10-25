@@ -1,0 +1,1 @@
+Your details screens (02, 03) are left out on purpose: they showed the account name and email.
