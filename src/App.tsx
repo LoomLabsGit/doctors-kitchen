@@ -4,6 +4,7 @@ import { Home, Index, List, Search } from './screens/Recipes'
 import RecipeDetail from './screens/RecipeDetail'
 import { PlanBuilding, PlanDetail, PlanHome } from './screens/Plan'
 import { ProgressHome } from './screens/Progress'
+import { LearnHome, LearnItem, LearnList, LearnSearch, LearnTopic, ProteinCalculator } from './screens/Learn'
 import { SavedCollection, SavedFixed, SavedHome } from './screens/Saved'
 import Stub from './screens/Stub'
 
@@ -28,7 +29,14 @@ export default function App() {
         <Route path="saved/rated" element={<SavedFixed kind="rated" />} />
         <Route path="saved/cooked" element={<SavedFixed kind="cooked" />} />
         <Route path="saved/:id" element={<SavedCollection />} />
-        <Route path="learn" element={<Stub name="Learn" folder="06_Learn" />} />
+        <Route path="learn" element={<LearnHome />} />
+        <Route path="learn/search" element={<LearnSearch />} />
+        <Route path="learn/read" element={<LearnList kind="read" />} />
+        <Route path="learn/listen" element={<LearnList kind="listen" />} />
+        <Route path="learn/watch" element={<LearnList kind="watch" />} />
+        <Route path="learn/topic/:slug" element={<LearnTopic />} />
+        <Route path="learn/item/:id" element={<LearnItem />} />
+        <Route path="learn/protein" element={<ProteinCalculator />} />
         <Route path="profile" element={<Stub name="Profile" folder="08_Profile" />} />
       </Route>
     </Routes>
