@@ -71,3 +71,11 @@
 - Every recipe row and home carousel card now has the same slots: time and ingredients, rating ("No ratings yet" when there is none), and protein and fibre.
 - In High Protein contexts (the home carousel and the High Protein list) protein is highlighted in green. Before: no nutrition on any card, and the rating line simply disappeared on unrated recipes, so cards had different shapes.
 - Nutrition numbers are the made-up figures Progress uses. Profile's "Show recipe nutrition information" toggle is not wired to this yet.
+
+## 2026-10-25: Recipe detail rebuilt from the screenshots (as-is)
+- Rebuilt Recipe detail from `docs/screens/02_Recipe-detail`: photo with back arrow, main ingredient and rating, Share / Print / Add to plan / Save icons (the heart fills when the recipe is in a collection), title, description with Read more, OVERVIEW / INGREDIENTS / METHOD pill tabs, and the green "Chat with Dr Rupy" card with suggestion chips.
+- Overview: prep time, cook time, freezer friendly, shelf life, then protein, fibre and tags (only the first four were captured; the rest is a best guess). Ingredients: Serves stepper that scales amounts, Metric / Imperial toggle, grouped ingredient lines. Method: Your notes (saved per recipe to localStorage, `dk-notes`) and numbered steps.
+- Sheets: Share this recipe (Whatsapp / Facebook / Email inert, Save just closes), Add recipe to a meal plan, Add to a favourites collection (unchanged), Ask Dr Rupy chat (chips prefill the question; replies are a placeholder).
+- Known issues kept as-is and marked in code: Recipe detail !1 (Save on the share sheet, no copy link) and !2 (no current plan reads as "no plans at all" even with previous plans; small "here" link; Save with nothing to save).
+- Add to plan with a current plan was not captured (`06` is missing from the screenshots); it lets you pick the day and meal and adds the recipe to that slot.
+- Description, timings, ingredient lines and method steps are generated from mock data in `src/data/recipeDetail.ts` and marked as placeholders; no real recipe text is copied. Print opens the browser's print dialog.
