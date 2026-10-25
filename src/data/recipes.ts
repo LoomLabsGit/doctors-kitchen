@@ -21,6 +21,12 @@ export const recipes: Recipe[] = [
   r({ slug: 'strawberry-chia-pudding', title: 'Strawberry Chia Pudding', mins: 25, ingredients: 5, rating: 4.8, mealType: 'Breakfast', mainIngredient: 'Fruit', diet: ['Vegan'], hue: 350 }),
   r({ slug: 'crispy-sumac-chicken', title: 'Crispy Sumac Chicken', mins: 65, ingredients: 14, rating: 4.7, hue: 30, categories: ['Batch Cook'] }),
   r({ slug: 'tuna-fennel-walnut-pasta', title: 'Tuna, Fennel and Walnut Pasta', mins: 25, ingredients: 11, rating: 5.0, mainIngredient: 'Fish', categories: ['Under 30mins'], allergens: ['Fish', 'Nuts', 'Gluten'], hue: 90 }),
+  // Added for Plan: lunches and extra breakfasts so every meal slot has something to pick from.
+  r({ slug: 'green-shakshuka', title: 'Green Shakshuka', mins: 20, ingredients: 9, rating: 4.6, mealType: 'Breakfast', mainIngredient: 'Legumes', allergens: ['Eggs'], diet: ['Vegetarian'], categories: ['Under 30mins'], hue: 110 }),
+  r({ slug: 'overnight-oats-berries', title: 'Overnight Oats with Berries', mins: 10, ingredients: 6, rating: 4.4, mealType: 'Breakfast', mainIngredient: 'Fruit', allergens: ['Gluten'], diet: ['Vegan'], categories: ['Batch Cook', 'Kid Friendly'], hue: 280 }),
+  r({ slug: 'chickpea-herb-salad', title: 'Chickpea and Herb Salad', mins: 15, ingredients: 8, rating: 4.5, mealType: 'Lunch', mainIngredient: 'Legumes', diet: ['Vegan'], categories: ['Under 30mins'], hue: 75 }),
+  r({ slug: 'lentil-roast-veg-soup', title: 'Lentil and Roast Veg Soup', mins: 45, ingredients: 12, rating: 4.7, mealType: 'Lunch', mainIngredient: 'Legumes', diet: ['Vegan'], categories: ['Batch Cook', 'One Pots'], hue: 25 }),
+  r({ slug: 'smoked-mackerel-rye-toast', title: 'Smoked Mackerel Rye Toast', mins: 10, ingredients: 7, rating: 4.3, mealType: 'Lunch', mainIngredient: 'Fish', allergens: ['Fish', 'Gluten'], categories: ['High Protein', 'Under 30mins'], hue: 200 }),
 ]
 export const cuisines = ['Sri Lankan', 'British', 'Vietnamese', 'Indian', 'Italian', 'Middle Eastern', 'Mexican', 'Japanese']
 export const ingredientsIndex = ['Chicken', 'Tofu and Tempeh', 'Legumes', 'Fish', 'Nuts', 'Fruit']
