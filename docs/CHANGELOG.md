@@ -45,3 +45,8 @@
 ## 2026-10-25: Fix Progress !5, Undo after deleting a logged meal
 - Deleting a meal (the red Delete tab, or "Delete recipe from this day" in Edit recipe) still happens at once, but the toast now has an Undo button (44 px tall) and stays for 7 s instead of 4 s. Undo puts the meal back on the same day.
 - Chosen over a confirmation dialog so logging stays quick; the Delete tab itself is unchanged and is a candidate for a later fix.
+
+## 2026-10-25: Fix Saved !3, protect Favourites and explain deleting a collection
+- Favourites is the default collection (Plan's Add meal FAVOURITES tab reads it), so its Edit menu no longer offers Delete and says why instead.
+- Deleting any other collection opens a sheet that names the collection and says its recipes stay in the app and in any other collections, with "Keep it" and a red "Delete collection" button. Before: a browser confirm() that said only "Are you sure?".
+- The Edit menu now closes when Delete is chosen; Rename still leaves it open (Saved !2, not fixed).

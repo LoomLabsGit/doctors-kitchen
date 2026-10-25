@@ -39,10 +39,11 @@ export function SavedCollection() {
   const c = collections.find((x) => x.id === id)
   const [menu, setMenu] = useState(false)
   const [renaming, setRenaming] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   if (!c) return <p className="p-4">Collection not found. <Link to="/saved" className="text-brand">Back to saved recipes</Link></p>
-  // UX issue Saved !3: any collection can be deleted, even the default Favourites, and the warning
-  // does not say what happens to its recipes.
-  const del = () => { if (confirm('Are you sure you want to delete this collection?')) { remove(c.id); nav('/saved') } }
+  // FIXED (UX issue Saved !3): Favourites, the default collection, cannot be deleted, and the warning for other
+  // collections says what happens to their recipes. Before: any collection could go, with a vague confirm().
+  const isDefault = c.id === 'favourites'
   return (
     <div className="pb-6">
       <div className="flex justify-between items-center px-4 relative">
@@ -52,7 +53,9 @@ export function SavedCollection() {
           <div className="absolute right-4 top-full mt-1 z-10 bg-white border border-line rounded-md shadow-md py-1 w-[160px] text-brand text-[17px]">
             {/* UX issue Saved !2: this menu stays open behind the Rename sheet */}
             <button onClick={() => setRenaming(true)} className="block w-full text-left px-4 py-2">✎ Rename</button>
-            <button onClick={del} className="block w-full text-left px-4 py-2">🗑 Delete</button>
+            {isDefault
+              ? <p className="px-4 py-2 text-[13px] text-muted">Favourites is your default collection, so it can't be deleted.</p>
+              : <button onClick={() => { setMenu(false); setDeleting(true) }} className="block w-full text-left px-4 py-2">🗑 Delete</button>}
           </div>
         )}
       </div>
@@ -66,6 +69,15 @@ export function SavedCollection() {
           } />
         ))}
       </div>
+      {deleting && (
+        <Sheet title={`Delete "${c.name}"?`} onClose={() => setDeleting(false)}>
+          <p className="text-[16px]">This removes the collection. {c.slugs.length ? `Its ${c.slugs.length} recipe${c.slugs.length === 1 ? '' : 's'} stay in the app and in any other collections they're in.` : "It's empty."}</p>
+          <div className="flex gap-3 mt-5">
+            <button onClick={() => setDeleting(false)} className="flex-1 border border-line rounded-lg py-2.5 text-[17px]">Keep it</button>
+            <button onClick={() => { remove(c.id); nav('/saved') }} className="flex-1 bg-[#d32f2f] text-white rounded-lg py-2.5 text-[17px]">Delete collection</button>
+          </div>
+        </Sheet>
+      )}
       {renaming && <RenameSheet name={c.name} onSave={(n) => { rename(c.id, n); setRenaming(false) }} onClose={() => setRenaming(false)} />}
     </div>
   )

@@ -37,7 +37,7 @@ Severity: High / Medium / Low. IDs match the Miro board tables.
 ### Saved
 - !1 Medium, home: collections can only be created from a recipe's Save sheet; no create/manage control here.
 - !2 Low, rename modal: the Edit menu stays open behind the modal.
-- !3 High, delete collection: even default Favourites can be deleted; the warning does not say what happens to its recipes.
+- !3 High **(fixed in prototype)**, delete collection: even default Favourites can be deleted; the warning does not say what happens to its recipes.
 
 ### Learn
 - !1 Medium, home: category chips scroll sideways in two rows; e.g. Nutrition basics sits off-screen.
