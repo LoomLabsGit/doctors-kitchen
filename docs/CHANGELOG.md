@@ -104,3 +104,6 @@
 - Every screen below the five bottom-bar sections now has a back arrow in the header, next to the logo: Cuisines, Ingredients and Meal types, the recipe lists, Recipe search, plan detail, collections and the two fixed Saved lists, Learn search, lists, content pages and the protein calculator, Profile and its pages. The app has these; the website leaves it to the browser's back button, which is why the screenshots don't show them.
 - Recipe detail (arrow over the photo) and Learn topic pages (arrow in the banner) keep their own and use the same behaviour. The bottom-bar screens and the plan building screen have none.
 - Back goes to the previous screen. When a screen was opened from a link with nothing to go back to, it goes to its parent instead (e.g. a cuisine list goes to Cuisines, then Recipes home).
+
+## 2026-10-25: Scrollbars hidden
+- Scrollbars are hidden everywhere (carousels, chip rows and vertical scrolling), as on a phone. Scrolling still works by touch, trackpad, mouse wheel and keyboard. One rule in `src/index.css`.

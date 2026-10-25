@@ -13,3 +13,8 @@
 }
 
 html, body, #root { height: 100%; margin: 0; background: #e9ecef; color: var(--color-ink); font-family: var(--font-sans); }
+
+/* Phone apps don't show scrollbars, so hide them everywhere (carousels and vertical scrolling).
+   Scrolling still works by touch, trackpad, mouse wheel and keyboard. */
+* { scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; }
