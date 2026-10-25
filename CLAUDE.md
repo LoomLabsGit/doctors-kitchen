@@ -11,7 +11,8 @@ You are helping a Senior UX designer (joined The Doctors Kitchen, a UK nutrition
 - React + Vite + Tailwind v4 + react-router (HashRouter). Run `npm install && npm run dev`.
 - Design tokens live in `src/index.css` (`@theme`). Change tokens before changing components.
 - `src/components/ui.tsx`: Chip, PageTitle, RecipeRow, Sheet, Photo. `FilterBar.tsx`: filter bar and Filters sheet. `Shell.tsx`: phone frame, header, bottom bar.
-- `src/screens/`: Recipes (home, index, list, search) and Recipe detail are built. Plan, Progress, Saved, Learn, About, Profile are `Stub` screens to be built from the screenshots.
+- `src/screens/`: Recipes (home, index, list, search), Recipe detail and Plan (home, create, building, plan detail with PLAN/LIST tabs, Add meal and Update sheets) are built. Progress, Saved, Learn, About, Profile are `Stub` screens to be built from the screenshots.
+- `src/data/plans.ts` and `src/lib/plans.tsx`: mock meal plans and a plan store saved to localStorage (`dk-plans`; clear it to get the mock plans back). Dates are local `YYYY-MM-DD` strings, see `src/lib/dates.ts`.
 - `src/data/recipes.ts` is mock data. Photos are gradient placeholders on purpose: do not copy real recipe photos or content into the repo.
 - The current app's known problems are kept AS-IS in the first version, with comments like `UX issue U4` so you can compare before and after. Fix them deliberately, one at a time, and note what changed in `docs/CHANGELOG.md`.
 
@@ -24,6 +25,6 @@ You are helping a Senior UX designer (joined The Doctors Kitchen, a UK nutrition
 - Screens of a user's details were deliberately removed from `docs/screens`; do not add real personal data.
 
 ## Suggested next steps
-1. Build the remaining sections from `docs/screens` (Plan, Saved, Progress first).
+1. Build the remaining sections from `docs/screens` (Saved, Progress next; Plan is done).
 2. Pick redesign targets from the High severity rows in `docs/ISSUES.md`.
 3. Continue the UI/UX audit for Recipe detail, Plan, Saved, Progress, Learn, About, Profile, and add findings under "UI / UX design audit".
