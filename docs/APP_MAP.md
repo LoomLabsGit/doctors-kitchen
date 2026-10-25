@@ -33,3 +33,6 @@ Your details, Food preferences, Notification preferences, Your subscription, Vir
 
 ## Not mapped yet
 Onboarding (steps 2+), login, sign-up, forgot password and logged-out views.
+
+## Logged out (`09_Logged-out`)
+See `docs/LOGGED_OUT.md`: five-tab bar, gated pages, four routes into an account, sign-up flow S1 to S8.

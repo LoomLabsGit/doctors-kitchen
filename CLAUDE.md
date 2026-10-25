@@ -5,6 +5,7 @@ You are helping a Senior UX designer (joined The Doctors Kitchen, a UK nutrition
 ## Read first
 - `docs/APP_MAP.md`: every section and screen, with the original URLs.
 - `docs/ISSUES.md`: all UX issues found by using the app, plus the UI/UX design audit (Recipes done; other frames in progress).
+- `docs/LOGGED_OUT.md`: the logged-out experience and the sign-up flow, screen by screen, with findings L1 to L23 and the plan. Screens in `docs/screens/09_Logged-out/`.
 - `docs/screens/<section>/`: 3x reference screenshots of the CURRENT app, numbered in flow order. Treat them as the ground truth for how things look today.
 
 ## How the code is organised
