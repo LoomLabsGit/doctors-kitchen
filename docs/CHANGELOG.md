@@ -58,3 +58,7 @@
 ## 2026-10-25: Fix U1 and U2, Cuisines and Ingredients as a browse grid
 - The Cuisines and Ingredients pages are now a two-column grid of tiles, with the full name under each image (no dark label bar, no truncation) and a recipe count.
 - The unrelated recipe feed and filter bar under the tiles are gone; filters stay on the list you open from a tile. Before: one sideways row (about 2.7 tiles visible) above a recipe list that had nothing to do with the tiles.
+
+## 2026-10-25: Fix U3, "Browse by" on Recipes home
+- The Cuisines / Ingredients / Breakfast chip row is replaced by a "Browse by" section with three equal cards, all visible: Cuisines, Ingredients and Meal types.
+- New Meal types page (`/meals`) in the same grid style as Cuisines and Ingredients; Breakfast is now one of its tiles rather than a peer of the two indexes. Before: two indexes and a single meal type side by side, in a row clipped at the edge with no hint it scrolled.

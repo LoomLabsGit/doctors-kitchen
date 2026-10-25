@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { cuisines, ingredientsIndex, recipes } from '../data/recipes'
+import { cuisines, ingredientsIndex, mealTypes, recipes } from '../data/recipes'
 import { FilterBar } from '../components/FilterBar'
 import { PageTitle, Photo, RecipeRow } from '../components/ui'
 import { useFilters } from '../lib/filters'
@@ -15,11 +15,13 @@ export function Home() {
       <form className="px-4" onSubmit={(e) => { e.preventDefault(); nav(`/search?q=${encodeURIComponent(q)}`) }}>
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by ingredient, recipe name…" className="w-full border border-line rounded-md px-3 py-2" />
       </form>
-      {/* UX issue U3: mixed levels (two indexes + a meal type) in a clipped row */}
-      <div className="flex gap-2 px-4 mt-3 overflow-x-auto">
-        <Link to="/cuisines" className="shrink-0 border border-line rounded-lg px-4 py-2">Cuisines</Link>
-        <Link to="/ingredients" className="shrink-0 border border-line rounded-lg px-4 py-2">Ingredients</Link>
-        <Link to="/meal/Breakfast" className="shrink-0 border border-line rounded-lg px-4 py-2">Breakfast</Link>
+      {/* FIXED (UX issue U3): a "Browse by" section with three entries of the same kind, all visible.
+          Before: a clipped chip row mixing two indexes with one meal type (Breakfast). */}
+      <h2 className="px-4 mt-5 text-[19px] font-semibold">Browse by</h2>
+      <div className="grid grid-cols-3 gap-3 px-4 mt-2">
+        {[['/cuisines', 'Cuisines', '🌍'], ['/ingredients', 'Ingredients', '🥕'], ['/meals', 'Meal types', '🍽']].map(([to, name, icon]) => (
+          <Link key={to} to={to} className="border border-line rounded-lg py-3 text-center text-[15px]"><div className="text-2xl">{icon}</div>{name}</Link>
+        ))}
       </div>
       <Section title="For you" items={recipes.slice(0, 4)} />
       <Section title="High Protein" items={recipes.filter((r) => r.categories.includes('High Protein'))} showAll="/category/High Protein" />
@@ -47,13 +49,17 @@ function Section({ title, items, showAll }: { title: string; items: typeof recip
 
 // FIXED (UX issues U1 and U2): a pure browse grid, two columns, full names under the image and a recipe count.
 // Before: one sideways row of tiles with truncated names, and an unrelated recipe feed underneath.
-export function Index({ kind }: { kind: 'cuisines' | 'ingredients' }) {
-  const names = kind === 'cuisines' ? cuisines : ingredientsIndex
-  const base = kind === 'cuisines' ? '/cuisine/' : '/ingredient/'
-  const count = (n: string) => recipes.filter((r) => (kind === 'cuisines' ? r.cuisine : r.mainIngredient) === n).length
+const INDEX = {
+  cuisines: { title: 'Cuisines', names: cuisines, base: '/cuisine/', of: (r: (typeof recipes)[number]) => r.cuisine },
+  ingredients: { title: 'Ingredients', names: ingredientsIndex, base: '/ingredient/', of: (r: (typeof recipes)[number]) => r.mainIngredient },
+  meals: { title: 'Meal types', names: mealTypes, base: '/meal/', of: (r: (typeof recipes)[number]) => r.mealType },
+}
+export function Index({ kind }: { kind: keyof typeof INDEX }) {
+  const { title, names, base, of } = INDEX[kind]
+  const count = (n: string) => recipes.filter((r) => of(r) === n).length
   return (
     <div className="pb-6">
-      <PageTitle>{kind === 'cuisines' ? 'Cuisines' : 'Ingredients'}</PageTitle>
+      <PageTitle>{title}</PageTitle>
       <div className="grid grid-cols-2 gap-x-4 gap-y-5 px-4 mt-3">
         {names.map((n, i) => (
           <Link key={n} to={base + n} className="block min-w-0">

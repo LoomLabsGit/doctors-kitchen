@@ -15,6 +15,7 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="cuisines" element={<Index kind="cuisines" />} />
         <Route path="ingredients" element={<Index kind="ingredients" />} />
+        <Route path="meals" element={<Index kind="meals" />} />
         <Route path="cuisine/:name" element={<List kind="cuisine" />} />
         <Route path="ingredient/:name" element={<List kind="ingredient" />} />
         <Route path="meal/:name" element={<List kind="meal" />} />
