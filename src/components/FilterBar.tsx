@@ -22,23 +22,35 @@ export function FilterBar({ query, onQuery }: { query?: string; onQuery?: (q: st
   )
 }
 
-function FiltersSheet({ onClose, query, onQuery }: { onClose: () => void; query?: string; onQuery?: (q: string) => void }) {
+// Selected options in the sheet are solid blue (09_filters-modal), unlike the light blue applied chips in the bar.
+const Option = ({ children, on, onClick }: { children: string; on: boolean; onClick: () => void }) => (
+  <button onClick={onClick} className={`rounded-full border px-3 py-0.5 text-[15px] ${on ? 'bg-[#6b8fdc] border-[#6b8fdc] text-white' : 'border-line text-ink bg-white'}`}>{children}</button>
+)
+
+// "Recipe search" sheet, opened by the Filters button and by the search field on Recipes home.
+// The query is applied with the filters when Apply filters (or Enter in the search box) is pressed.
+export function FiltersSheet({ onClose, query, onQuery, focus }: { onClose: () => void; query?: string; onQuery?: (q: string) => void; focus?: boolean }) {
   const { f, set } = useFilters()
   const [d, setD] = useState<Filters>(f)
+  const [q, setQ] = useState(query ?? '')
+  const apply = () => { set(d); onQuery?.(q.trim()); onClose() }
   const Group = ({ label, items, k }: { label: string; items: string[]; k: 'diet' | 'meal' | 'avoid' | 'cats' }) => (
-    <section className="mt-4"><h3 className="text-[15px] mb-2">{label}</h3>
-      <div className="flex flex-wrap gap-2">{items.map((i) => <Chip key={i} active={d[k].includes(i)} onClick={() => setD({ ...d, [k]: toggle(d[k], i) })}>{i}</Chip>)}</div>
+    <section className="mt-4"><h3 className="text-[17px] mb-1.5">{label}</h3>
+      <div className="flex flex-wrap gap-1.5">{items.map((i) => <Option key={i} on={d[k].includes(i)} onClick={() => setD({ ...d, [k]: toggle(d[k], i) })}>{i}</Option>)}</div>
     </section>
   )
   return (
     <Sheet title="Recipe search" onClose={onClose} footer={
-      <div className="flex gap-3">
-        <button className="flex-1 border border-line rounded-full py-2 text-muted" onClick={() => setD({ ...DEFAULT_FILTERS, avoid: [] })}>Reset</button>
-        <button className="flex-1 bg-brand text-white rounded-full py-2 font-semibold" onClick={() => { set(d); onClose() }}>Apply filters</button>
+      <div className="flex justify-around">
+        <button className="border border-muted/60 rounded-lg px-8 py-2 text-muted text-[17px]" onClick={() => setD({ ...DEFAULT_FILTERS, avoid: [] })}>Reset</button>
+        <button className="bg-brand text-white rounded-lg px-7 py-2 text-[17px]" onClick={apply}>Apply filters</button>
       </div>}>
-      <input value={query ?? ''} onChange={(e) => onQuery?.(e.target.value)} placeholder="Search by ingredient, recipe name…" className="w-full border border-line rounded-md px-3 py-2" />
-      <section className="mt-4"><h3 className="text-[15px] mb-2">Sort by</h3>
-        <div className="flex flex-wrap gap-2">{['Relevance', 'Latest', 'Fewest ingredients', 'Highest rated'].map((s) => <Chip key={s} active={d.sort === s} onClick={() => setD({ ...d, sort: s })}>{s}</Chip>)}</div>
+      <form onSubmit={(e) => { e.preventDefault(); apply() }} className="relative">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-xl leading-none">⌕</span>
+        <input autoFocus={focus} value={q} onChange={(e) => setQ(e.target.value)} enterKeyHint="search" placeholder="Search by ingredient, recipe name…" className="w-full border border-line rounded-md pl-9 pr-3 py-2 text-[17px]" />
+      </form>
+      <section className="mt-4"><h3 className="text-[17px] mb-1.5">Sort by</h3>
+        <div className="flex flex-wrap gap-1.5">{['Relevance', 'Latest', 'Fewest ingredients', 'Highest rated'].map((s) => <Option key={s} on={d.sort === s} onClick={() => setD({ ...d, sort: s })}>{s}</Option>)}</div>
       </section>
       <Group label="Dietary requirements" items={diets} k="diet" />
       <Group label="Meal types" items={mealTypes} k="meal" />

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { cuisines, ingredientsIndex, recipes } from '../data/recipes'
-import { FilterBar } from '../components/FilterBar'
+import { FilterBar, FiltersSheet } from '../components/FilterBar'
 import { PageTitle, Photo, RecipeRow } from '../components/ui'
 import { useFilters } from '../lib/filters'
 import { applyFilters } from '../lib/query'
@@ -9,12 +9,14 @@ import { useProgress } from '../lib/progress'
 
 export function Home() {
   const nav = useNavigate()
-  const [q, setQ] = useState('')
+  const [searching, setSearching] = useState(false)
   return (
     <div className="pb-6">
-      <form className="px-4" onSubmit={(e) => { e.preventDefault(); nav(`/search?q=${encodeURIComponent(q)}`) }}>
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by ingredient, recipe name…" className="w-full border border-line rounded-md px-3 py-2" />
-      </form>
+      {/* Tapping the field opens the Recipe search sheet, as in the app; Apply goes to the results */}
+      <div className="px-4">
+        <button onClick={() => setSearching(true)} className="w-full border border-line rounded-md px-3 py-2 text-left text-muted">Search by ingredient, recipe name…</button>
+      </div>
+      {searching && <FiltersSheet focus onClose={() => setSearching(false)} onQuery={(q) => nav(q ? `/search?q=${encodeURIComponent(q)}` : '/search')} />}
       {/* UX issue U3: mixed levels (two indexes + a meal type) in a clipped row */}
       <div className="flex gap-2 px-4 mt-3 overflow-x-auto">
         <Link to="/cuisines" className="shrink-0 border border-line rounded-lg px-4 py-2">Cuisines</Link>

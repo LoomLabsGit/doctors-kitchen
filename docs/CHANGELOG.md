@@ -84,3 +84,7 @@
 - Removed the redesign fixes so the prototype shows only what the live app does today: Recipes !1, Progress !5, Saved !3, Learn !4 and U1 to U5 are back to their as-is behaviour (default "No gluten" filter, no Undo, Favourites deletable, empty filtered Learn lists, sideways index rows with the recipe feed, the Cuisines / Ingredients / Breakfast chip row, no search field on results, no nutrition on cards). The Meal types page and the Browse by section are gone with them.
 - The fixes are kept on the `redesign-high-severity` branch for later; their entries above describe that branch, not this one.
 - Kept: every section built from the screenshots, including the rebuilt Recipe detail.
+
+## 2026-10-25: Home search field opens the Recipe search sheet (as-is)
+- Tapping the search field on Recipes home now opens the "Recipe search" sheet, as in the app, with the search box focused. Apply filters (or Enter) goes to the results with the query and filters applied. Before: the field was a plain input that did nothing until you pressed Enter.
+- The same sheet (also opened by the Filters button) now matches `01_Recipes/09`: search icon in the box, selected options solid blue, Reset and Apply filters as square-cornered buttons. The query in the sheet is applied on Apply rather than as you type.
