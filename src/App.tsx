@@ -6,7 +6,7 @@ import { PlanBuilding, PlanDetail, PlanHome } from './screens/Plan'
 import { ProgressHome } from './screens/Progress'
 import { LearnHome, LearnItem, LearnList, LearnSearch, LearnTopic, ProteinCalculator } from './screens/Learn'
 import { SavedCollection, SavedFixed, SavedHome } from './screens/Saved'
-import Stub from './screens/Stub'
+import { ChatHistory, FoodPreferences, NotificationPreferences, ProfileAccount, ProfileHome, Subscription } from './screens/Profile'
 
 export default function App() {
   return (
@@ -37,7 +37,12 @@ export default function App() {
         <Route path="learn/topic/:slug" element={<LearnTopic />} />
         <Route path="learn/item/:id" element={<LearnItem />} />
         <Route path="learn/protein" element={<ProteinCalculator />} />
-        <Route path="profile" element={<Stub name="Profile" folder="08_Profile" />} />
+        <Route path="profile" element={<ProfileHome />} />
+        <Route path="profile/account" element={<ProfileAccount />} />
+        <Route path="profile/food" element={<FoodPreferences />} />
+        <Route path="profile/notifications" element={<NotificationPreferences />} />
+        <Route path="profile/subscription" element={<Subscription />} />
+        <Route path="profile/chats" element={<ChatHistory />} />
       </Route>
     </Routes>
   )
