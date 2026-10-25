@@ -19,8 +19,8 @@ export function Home() {
           Before: a clipped chip row mixing two indexes with one meal type (Breakfast). */}
       <h2 className="px-4 mt-5 text-[19px] font-semibold">Browse by</h2>
       <div className="grid grid-cols-3 gap-3 px-4 mt-2">
-        {[['/cuisines', 'Cuisines', '🌍'], ['/ingredients', 'Ingredients', '🥕'], ['/meals', 'Meal types', '🍽']].map(([to, name, icon]) => (
-          <Link key={to} to={to} className="border border-line rounded-lg py-3 text-center text-[15px]"><div className="text-2xl">{icon}</div>{name}</Link>
+        {[['/cuisines', 'Cuisines'], ['/ingredients', 'Ingredients'], ['/meals', 'Meal types']].map(([to, name]) => (
+          <Link key={to} to={to} className="border border-line rounded-lg py-3 text-center text-[15px]">{name}</Link>
         ))}
       </div>
       <Section title="For you" items={recipes.slice(0, 4)} />
