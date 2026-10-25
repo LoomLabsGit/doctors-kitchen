@@ -4,6 +4,7 @@ import { recipes, type Recipe } from '../data/recipes'
 import { CHIPS, HEALTH_TOPICS, INGREDIENT_TOPICS, KIND, course, items, label, topic, type Item, type Kind } from '../data/learn'
 import { Heart, Icon, Photo } from '../components/ui'
 import { useImproved } from '../lib/version'
+import { useBack } from '../lib/back'
 import { ordinal, parseIso } from '../lib/dates'
 
 const longDate = (d: string) => { const x = parseIso(d); return `${ordinal(x.getDate())} ${x.toLocaleDateString('en-GB', { month: 'short' })} ${x.getFullYear()}` }
@@ -114,10 +115,10 @@ export function LearnSearch() {
 }
 
 function Banner({ title, hue }: { title: string; hue: number }) {
-  const nav = useNavigate()
+  const back = useBack()
   return (
     <div className="h-[150px] flex items-end justify-between px-4 pb-6" style={{ background: `linear-gradient(135deg, hsl(${hue} 35% 35%), hsl(${hue + 30} 45% 60%))` }}>
-      <button onClick={() => nav(-1)} className="text-white text-[28px] font-semibold text-left leading-tight flex items-center gap-2"><Icon name="arrow_back" size={30} />{title}</button>
+      <button onClick={back} className="text-white text-[28px] font-semibold text-left leading-tight flex items-center gap-2"><Icon name="arrow_back" size={30} />{title}</button>
       {/* Notification bell: not captured in the audit, left inert */}
       <span className="shrink-0 bg-[#f3efe9] border-2 border-brand rounded-lg w-[124px] h-9 grid place-items-center text-brand"><Icon name="notifications" size={20} fill /></span>
     </div>

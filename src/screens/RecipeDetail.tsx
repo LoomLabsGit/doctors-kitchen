@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { recipes, type Recipe } from '../data/recipes'
 import { amount, detailFor } from '../data/recipeDetail'
 import { recipeStats } from '../data/progress'
@@ -8,12 +8,13 @@ import { Icon, Photo, Sheet, Stars } from '../components/ui'
 import { useSaved } from '../lib/saved'
 import { usePlans } from '../lib/plans'
 import { addDays, todayIso, weekday } from '../lib/dates'
+import { useBack } from '../lib/back'
 
 type Modal = null | 'share' | 'plan' | 'save' | 'chat'
 type Tab = 'Overview' | 'Ingredients' | 'Method'
 
 export default function RecipeDetail() {
-  const { slug } = useParams(); const nav = useNavigate()
+  const { slug } = useParams(); const back = useBack()
   const r = recipes.find((x) => x.slug === slug)
   const [tab, setTab] = useState<Tab>('Overview')
   const [modal, setModal] = useState<Modal>(null)
@@ -27,7 +28,7 @@ export default function RecipeDetail() {
     <div className="pb-8">
       <div className="relative">
         <Photo hue={r.hue} className="h-[300px]" />
-        <button aria-label="Back" onClick={() => nav(-1)} className="absolute top-2 left-2 w-11 h-11 grid place-items-center text-white drop-shadow"><Icon name="arrow_back" size={30} /></button>
+        <button aria-label="Back" onClick={back} className="absolute top-2 left-2 w-11 h-11 grid place-items-center text-white drop-shadow"><Icon name="arrow_back" size={30} /></button>
       </div>
 
       <div className="px-4 mt-3 flex items-center justify-between">
