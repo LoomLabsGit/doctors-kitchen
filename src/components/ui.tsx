@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import type { Recipe } from '../data/recipes'
-import { recipeStats } from '../data/progress'
 
 export const Photo = ({ hue, className = '' }: { hue: number; className?: string }) => (
   <div className={className} style={{ background: `linear-gradient(135deg, hsl(${hue} 55% 78%), hsl(${hue + 30} 45% 55%))` }} />
@@ -20,18 +19,8 @@ export function PageTitle({ children, green = true }: { children: ReactNode; gre
   return <h1 className={`px-4 text-[26px] font-semibold ${green ? 'text-brand' : ''}`}>{children}</h1>
 }
 
-// FIXED (UX issue U5): every card has the same metadata slots, and nutrition is shown. `protein` highlights protein
-// where it matters (High Protein lists). Before: no nutrition anywhere, and rating missing on some cards.
-// Nutrition is the made-up per-recipe data that Progress uses (src/data/progress.ts).
-export function Nutrition({ r, protein }: { r: Recipe; protein?: boolean }) {
-  const s = recipeStats[r.slug]
-  if (!s) return null
-  return <div><span className={protein ? 'text-brand font-semibold' : ''}>Protein {s.protein}g</span> · Fibre {s.fibre}g</div>
-}
-export const Rating = ({ r }: { r: Recipe }) => r.rating ? <><span className="text-amber-500">★</span> {r.rating}</> : <span>No ratings yet</span>
-
 // `corner` replaces the heart on the photo (Saved lists show a Delete pill there, or nothing).
-export function RecipeRow({ r, corner, protein }: { r: Recipe; corner?: ReactNode; protein?: boolean }) {
+export function RecipeRow({ r, corner }: { r: Recipe; corner?: ReactNode }) {
   return (
     <Link to={`/recipe/${r.slug}`} className="flex gap-3 px-4 py-2 items-start">
       <div className="relative w-[150px] h-[150px] shrink-0 rounded-lg overflow-hidden">
@@ -42,9 +31,8 @@ export function RecipeRow({ r, corner, protein }: { r: Recipe; corner?: ReactNod
       <div className="flex-1 pt-1">
         <div className="font-semibold leading-tight text-[17px]">{r.title}</div>
         <div className="text-[13px] text-muted mt-2 space-y-1">
-          <div>◷ {r.mins} mins · ⌁ {r.ingredients} ingredients</div>
-          <div><Rating r={r} /></div>
-          <Nutrition r={r} protein={protein} />
+          <div>◷ {r.mins} mins</div><div>⌁ {r.ingredients} ingredients</div>
+          {r.rating && <div><span className="text-amber-500">★</span> {r.rating}</div>}
         </div>
       </div>
       <span className="text-line self-center text-xl">›</span>

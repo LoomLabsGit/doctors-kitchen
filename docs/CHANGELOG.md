@@ -79,3 +79,8 @@
 - Known issues kept as-is and marked in code: Recipe detail !1 (Save on the share sheet, no copy link) and !2 (no current plan reads as "no plans at all" even with previous plans; small "here" link; Save with nothing to save).
 - Add to plan with a current plan was not captured (`06` is missing from the screenshots); it lets you pick the day and meal and adds the recipe to that slot.
 - Description, timings, ingredient lines and method steps are generated from mock data in `src/data/recipeDetail.ts` and marked as placeholders; no real recipe text is copied. Print opens the browser's print dialog.
+
+## 2026-10-25: Back to as-is (redesign fixes removed)
+- Removed the redesign fixes so the prototype shows only what the live app does today: Recipes !1, Progress !5, Saved !3, Learn !4 and U1 to U5 are back to their as-is behaviour (default "No gluten" filter, no Undo, Favourites deletable, empty filtered Learn lists, sideways index rows with the recipe feed, the Cuisines / Ingredients / Breakfast chip row, no search field on results, no nutrition on cards). The Meal types page and the Browse by section are gone with them.
+- The fixes are kept on the `redesign-high-severity` branch for later; their entries above describe that branch, not this one.
+- Kept: every section built from the screenshots, including the rebuilt Recipe detail.

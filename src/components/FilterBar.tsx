@@ -8,12 +8,10 @@ const toggle = (a: string[], v: string) => (a.includes(v) ? a.filter((x) => x !=
 export function FilterBar({ query, onQuery }: { query?: string; onQuery?: (q: string) => void }) {
   const { f, set, clear } = useFilters()
   const [open, setOpen] = useState(false)
-  // Shown on the Filters button (U4); the sort order is not counted.
-  const n = f.avoid.length + f.diet.length + f.meal.length + f.cats.length
   return (
     <>
       <div className="flex gap-2 px-4 py-2 overflow-x-auto border-b-4 border-line/60 mx-0">
-        <button onClick={() => setOpen(true)} className="shrink-0 rounded-full bg-brand text-white text-[13px] px-3 py-1">☰ Filters{n ? ` (${n})` : ''}</button>
+        <button onClick={() => setOpen(true)} className="shrink-0 rounded-full bg-brand text-white text-[13px] px-3 py-1">☰ Filters</button>
         {query && <Chip onRemove={() => onQuery?.('')}>{query}</Chip>}
         {f.avoid.map((a) => <Chip key={a} active onRemove={() => set({ ...f, avoid: toggle(f.avoid, a) })}>No {a.toLowerCase()}</Chip>)}
         {[...f.diet, ...f.meal, ...f.cats].map((c) => <Chip key={c} active>{c}</Chip>)}
@@ -35,10 +33,10 @@ function FiltersSheet({ onClose, query, onQuery }: { onClose: () => void; query?
   return (
     <Sheet title="Recipe search" onClose={onClose} footer={
       <div className="flex gap-3">
-        <button className="flex-1 border border-line rounded-full py-2 text-muted" onClick={() => setD(DEFAULT_FILTERS)}>Reset</button>
+        <button className="flex-1 border border-line rounded-full py-2 text-muted" onClick={() => setD({ ...DEFAULT_FILTERS, avoid: [] })}>Reset</button>
         <button className="flex-1 bg-brand text-white rounded-full py-2 font-semibold" onClick={() => { set(d); onClose() }}>Apply filters</button>
       </div>}>
-      {onQuery && <input value={query ?? ''} onChange={(e) => onQuery(e.target.value)} placeholder="Search by ingredient, recipe name…" className="w-full border border-line rounded-md px-3 py-2" />}
+      <input value={query ?? ''} onChange={(e) => onQuery?.(e.target.value)} placeholder="Search by ingredient, recipe name…" className="w-full border border-line rounded-md px-3 py-2" />
       <section className="mt-4"><h3 className="text-[15px] mb-2">Sort by</h3>
         <div className="flex flex-wrap gap-2">{['Relevance', 'Latest', 'Fewest ingredients', 'Highest rated'].map((s) => <Chip key={s} active={d.sort === s} onClick={() => setD({ ...d, sort: s })}>{s}</Chip>)}</div>
       </section>

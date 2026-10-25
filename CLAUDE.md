@@ -29,5 +29,5 @@ You are helping a Senior UX designer (joined The Doctors Kitchen, a UK nutrition
 - Screens of a user's details were deliberately removed from `docs/screens`; do not add real personal data.
 
 ## Suggested next steps
-1. Pick redesign targets from the High severity rows in `docs/ISSUES.md`.
+1. Pick redesign targets from the High severity rows in `docs/ISSUES.md`. A first set of fixes (Recipes !1, Progress !5, Saved !3, Learn !4, U1 to U5) is on the `redesign-high-severity` branch but is NOT in this as-is version.
 2. Continue the UI/UX audit for Recipe detail, Plan, Saved, Progress, Learn, Profile, and add findings under "UI / UX design audit".

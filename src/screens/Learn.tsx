@@ -131,12 +131,7 @@ export function LearnTopic() {
   const t = topic(slug)
   if (!t) return <p className="p-4">Not found. <Link to="/learn" className="text-brand">Back to Learn</Link></p>
   const index = INDEXES[slug]
-  const all = items.filter((i) => i.topics.includes(slug))
-  const count = (k: Kind) => all.filter((i) => i.kind === k).length
-  // FIXED (UX issue Learn !4): a kind with nothing in this category falls back to the full list with a note, and the
-  // tabs show counts so empty kinds can't be picked. Before: an empty page with only a "click here" link.
-  const missing = type && !count(type) ? type : null
-  const list = type && !missing ? all.filter((i) => i.kind === type) : all
+  const list = items.filter((i) => i.topics.includes(slug) && (!type || i.kind === type))
   return (
     <div className="pb-6">
       <Banner title={t.name} hue={t.hue} />
@@ -148,24 +143,13 @@ export function LearnTopic() {
             </Link>
           ))}
         </div>
-      ) : all.length ? <>
-        <div className="flex gap-2 px-4 mt-4 overflow-x-auto">
-          <KindTab on={!type || !!missing} onClick={() => setSp({})}>All ({all.length})</KindTab>
-          {(['read', 'listen', 'watch'] as Kind[]).map((k) => (
-            <KindTab key={k} on={type === k && !missing} disabled={!count(k)} onClick={() => setSp({ type: k })}>{KIND[k].list} ({count(k)})</KindTab>
-          ))}
-        </div>
-        {missing && <Notice>There are no {KIND[missing].one} in {t.name} yet, so this shows everything.</Notice>}
-        <Grid list={list} badge />
-      </> : <Notice>There is nothing here yet.</Notice>}
+      ) : list.length ? <Grid list={list} badge />
+        // UX issue Learn !4: a filtered list can come back empty with only this notice, and "click here" is the only way out
+        : type ? <Notice>⌕ We're filtering this list for {KIND[type].one}. To remove this filter and see the full list, <button onClick={() => setSp({})} className="text-brand">click here</button>.</Notice>
+        : <Notice>There is nothing here yet.</Notice>}
     </div>
   )
 }
-
-const KindTab = ({ children, on, disabled, onClick }: { children: ReactNode; on: boolean; disabled?: boolean; onClick: () => void }) => (
-  <button disabled={disabled} onClick={onClick}
-    className={`shrink-0 rounded-full border px-3 min-h-[40px] text-[15px] ${on ? 'bg-brand text-white border-brand' : disabled ? 'border-line text-line' : 'border-line text-ink'}`}>{children}</button>
-)
 
 // Read / Listen / Watch from "Ways to learn". No badges on these lists (as-is).
 export function LearnList({ kind }: { kind: Kind }) {

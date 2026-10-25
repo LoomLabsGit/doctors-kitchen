@@ -242,7 +242,7 @@ function AddMealSheet({ title, meal, onAdd, onClose }: { title: string; meal: st
   const [q, setQ] = useState('')
   const [results, setResults] = useState<typeof recipes | null>(null)
   const [own, setOwn] = useState('')
-  // FAVOURITES tab lists the Favourites collection from Saved (it can no longer be deleted, see Saved !3).
+  // FAVOURITES tab lists the Favourites collection from Saved (empty if it was deleted, see Saved !3).
   const favourites = useSaved().collections.find((c) => c.id === 'favourites')?.slugs ?? []
   const ResultRow = ({ slug }: { slug: string }) => {
     const r = bySlug[slug]
