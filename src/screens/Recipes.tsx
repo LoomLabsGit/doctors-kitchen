@@ -5,6 +5,7 @@ import { FilterBar } from '../components/FilterBar'
 import { PageTitle, Photo, RecipeRow } from '../components/ui'
 import { useFilters } from '../lib/filters'
 import { applyFilters } from '../lib/query'
+import { useProgress } from '../lib/progress'
 
 export function Home() {
   const nav = useNavigate()
@@ -87,12 +88,20 @@ export function Search() {
   const q = sp.get('q') ?? ''
   const { f } = useFilters()
   const items = applyFilters(f, { q })
+  // Route A from Progress' Add meal sheet: `log` is the day the meal goes to. Each row gets a "+ Add" tab.
+  const log = sp.get('log')
+  const { add } = useProgress()
+  const nav = useNavigate()
+  const logIt = (slug: string) => { add({ date: log!, slug }); nav(`/progress?d=${log}`, { state: { toast: 'The recipe has been added' } }) }
   return (
     <div className="pb-6">
       <PageTitle green={false}>Recipe search ({items.length})</PageTitle>
       {/* UX issue U4: no search field on results, query lives in a chip */}
-      <FilterBar query={q} onQuery={(v) => setSp(v ? { q: v } : {})} />
-      {items.map((r) => <RecipeRow key={r.slug} r={r} />)}
+      <FilterBar query={q} onQuery={(v) => setSp({ ...(v ? { q: v } : {}), ...(log ? { log } : {}) })} />
+      {items.map((r) => <RecipeRow key={r.slug} r={r} corner={log ? <>
+        <span className="absolute top-2 right-2 bg-white/90 rounded-full w-7 h-7 grid place-items-center text-sm">♡</span>
+        <button onClick={(e) => { e.preventDefault(); logIt(r.slug) }} className="absolute top-1 right-1 bg-brand text-white text-[13px] rounded-full px-2 py-0.5">+ Add</button>
+      </> : undefined} />)}
     </div>
   )
 }

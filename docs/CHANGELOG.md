@@ -17,3 +17,10 @@
 ## 2026-10-25: About removed
 - About exists only on the website, not in the app, so it is out of scope: removed the About tab and route (bottom bar now has five tabs), its reference screenshots (`docs/screens/07_About`), its section in `docs/APP_MAP.md` and About !1 to !3 in `docs/ISSUES.md`.
 - U15 reworded to drop the About point; the rest of the finding still applies.
+
+## 2026-10-25: Progress section built (as-is)
+- Built Progress from `docs/screens/05_Progress`: day view (date arrows, week strip with mini rings, fibre and protein rings, inflammation score bar, plant points this week), info sheets, Add meal sheet with its four routes, logged meal rows, Edit recipe sheet, and the toasts.
+- Route A opens Recipe search with `?log=<date>`; each result gets a "+ Add" tab that logs the recipe and returns to that day. Route B adds one of five mock "your recipes". Route D guesses ingredients from keywords in the description (a stand-in for the live app's AI) and shows "Calculating nutritional info…" for 60 s. Route C (Upload photo) was not captured in the audit, so it behaves like route D with no ingredients guessed.
+- Known issues kept as-is and marked in code: Progress !1 to !10 (two Add meal buttons, Save on the info sheet, four controls in one sheet, route A gives no day, instant Delete with no undo, Edit vs Delete tabs, small delete link, "uploaded" toast, slow calculation and shortened title, butter added to guesses).
+- Nutrition per recipe, the ingredient table and the info sheet text are made up for the prototype. Inflammation is the average of the day's meals; plant points add up each meal's plants for the week (not unique plants).
+- The log is saved to localStorage (`dk-progress`); clear that key to reset. The two days before today start with a few meals; today starts empty.

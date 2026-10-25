@@ -3,6 +3,7 @@ import Shell from './components/Shell'
 import { Home, Index, List, Search } from './screens/Recipes'
 import RecipeDetail from './screens/RecipeDetail'
 import { PlanBuilding, PlanDetail, PlanHome } from './screens/Plan'
+import { ProgressHome } from './screens/Progress'
 import { SavedCollection, SavedFixed, SavedHome } from './screens/Saved'
 import Stub from './screens/Stub'
 
@@ -22,7 +23,7 @@ export default function App() {
         <Route path="plan" element={<PlanHome />} />
         <Route path="plan/building" element={<PlanBuilding />} />
         <Route path="plan/:id" element={<PlanDetail />} />
-        <Route path="progress" element={<Stub name="Progress" folder="05_Progress" />} />
+        <Route path="progress" element={<ProgressHome />} />
         <Route path="saved" element={<SavedHome />} />
         <Route path="saved/rated" element={<SavedFixed kind="rated" />} />
         <Route path="saved/cooked" element={<SavedFixed kind="cooked" />} />

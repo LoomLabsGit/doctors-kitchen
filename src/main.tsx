@@ -6,6 +6,7 @@ import App from './App'
 import { FiltersProvider } from './lib/filters'
 import { PlansProvider } from './lib/plans'
 import { SavedProvider } from './lib/saved'
+import { ProgressProvider } from './lib/progress'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -13,7 +14,9 @@ createRoot(document.getElementById('root')!).render(
       <FiltersProvider>
         <PlansProvider>
           <SavedProvider>
-            <App />
+            <ProgressProvider>
+              <App />
+            </ProgressProvider>
           </SavedProvider>
         </PlansProvider>
       </FiltersProvider>
