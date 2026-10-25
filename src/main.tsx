@@ -5,13 +5,16 @@ import './index.css'
 import App from './App'
 import { FiltersProvider } from './lib/filters'
 import { PlansProvider } from './lib/plans'
+import { SavedProvider } from './lib/saved'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <HashRouter>
       <FiltersProvider>
         <PlansProvider>
-          <App />
+          <SavedProvider>
+            <App />
+          </SavedProvider>
         </PlansProvider>
       </FiltersProvider>
     </HashRouter>

@@ -37,8 +37,6 @@ export const initialPlans: Plan[] = [
   { ...past('p1', '2026-08-19', 5, []), meals: ['Breakfast', 'Dinner'], slots: fillSlots(5, ['Breakfast', 'Dinner'], []) },
 ]
 
-// Mock favourites for the Add meal sheet until the Saved section is built.
-export const favourites = ['herby-butter-bean-eggs', 'salmon-peach-ginger-traybake', 'tuna-fennel-walnut-pasta', 'strawberry-chia-pudding']
 // Mock "your recipes" for the own-recipe dropdown.
 export const ownRecipes = ['My overnight oats', 'Leftover veg frittata', 'Sunday roast veg']
 

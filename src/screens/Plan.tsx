@@ -1,9 +1,10 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { recipes } from '../data/recipes'
-import { FOCUS, MEALS, favourites, fillSlots, ownRecipes, poolFor, shoppingList, slotKey, type Entry, type Plan } from '../data/plans'
+import { FOCUS, MEALS, fillSlots, ownRecipes, poolFor, shoppingList, slotKey, type Entry, type Plan } from '../data/plans'
 import { Chip, Photo, Sheet } from '../components/ui'
 import { usePlans } from '../lib/plans'
+import { useSaved } from '../lib/saved'
 import { addDays, dateRange, todayIso, weekday } from '../lib/dates'
 
 const bySlug = Object.fromEntries(recipes.map((r) => [r.slug, r]))
@@ -241,6 +242,8 @@ function AddMealSheet({ title, meal, onAdd, onClose }: { title: string; meal: st
   const [q, setQ] = useState('')
   const [results, setResults] = useState<typeof recipes | null>(null)
   const [own, setOwn] = useState('')
+  // FAVOURITES tab lists the Favourites collection from Saved (empty if it was deleted, see Saved !3).
+  const favourites = useSaved().collections.find((c) => c.id === 'favourites')?.slugs ?? []
   const ResultRow = ({ slug }: { slug: string }) => {
     const r = bySlug[slug]
     return (

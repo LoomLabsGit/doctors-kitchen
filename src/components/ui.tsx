@@ -19,12 +19,13 @@ export function PageTitle({ children, green = true }: { children: ReactNode; gre
   return <h1 className={`px-4 text-[26px] font-semibold ${green ? 'text-brand' : ''}`}>{children}</h1>
 }
 
-export function RecipeRow({ r }: { r: Recipe }) {
+// `corner` replaces the heart on the photo (Saved lists show a Delete pill there, or nothing).
+export function RecipeRow({ r, corner }: { r: Recipe; corner?: ReactNode }) {
   return (
     <Link to={`/recipe/${r.slug}`} className="flex gap-3 px-4 py-2 items-start">
       <div className="relative w-[150px] h-[150px] shrink-0 rounded-lg overflow-hidden">
         <Photo hue={r.hue} className="w-full h-full" />
-        <span className="absolute top-2 right-2 bg-white/90 rounded-full w-7 h-7 grid place-items-center text-sm">♡</span>
+        {corner === undefined ? <span className="absolute top-2 right-2 bg-white/90 rounded-full w-7 h-7 grid place-items-center text-sm">♡</span> : corner}
         {r.isNew && <span className="absolute bottom-2 left-0 bg-brand text-white text-[11px] font-bold px-2 py-0.5">NEW!</span>}
       </div>
       <div className="flex-1 pt-1">
