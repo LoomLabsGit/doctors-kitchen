@@ -50,3 +50,7 @@
 - Favourites is the default collection (Plan's Add meal FAVOURITES tab reads it), so its Edit menu no longer offers Delete and says why instead.
 - Deleting any other collection opens a sheet that names the collection and says its recipes stay in the app and in any other collections, with "Keep it" and a red "Delete collection" button. Before: a browser confirm() that said only "Are you sure?".
 - The Edit menu now closes when Delete is chosen; Rename still leaves it open (Saved !2, not fixed).
+
+## 2026-10-25: Fix Learn !4, no more empty filtered lists
+- Category and topic pages now have All / Articles / Podcasts / Videos tabs with counts; kinds with nothing in that category are greyed out and can't be picked.
+- Arriving from a Read / Listen / Watch list with a kind the category doesn't have (e.g. Read → Cooking skills) shows everything, with a note saying there are no articles there yet. Before: an empty page saying "We're filtering this list", with a "click here" link as the only way out.

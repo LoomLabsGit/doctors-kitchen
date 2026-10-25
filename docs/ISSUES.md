@@ -43,7 +43,7 @@ Severity: High / Medium / Low. IDs match the Miro board tables.
 - !1 Medium, home: category chips scroll sideways in two rows; e.g. Nutrition basics sits off-screen.
 - !2 Low, search results: no result count; no filter by article, podcast or video.
 - !3 Low, search no results: plain notice, no suggestions (recipe search offers popular categories).
-- !4 High, Read and Watch lists: picking a category from a filtered list can return an empty page showing only "We're filtering this list"; the only way out is a "click here" link.
+- !4 High **(fixed in prototype)**, Read and Watch lists: picking a category from a filtered list can return an empty page showing only "We're filtering this list"; the only way out is a "click here" link.
 - !5 Medium, protein calculator: Male is pre-selected, so skipping gender gives a male estimate.
 - !6 Low, protein calculator: 999 kg is rejected with "Please enter a valid weight", with no accepted range.
 
