@@ -27,7 +27,7 @@ Severity: High / Medium / Low. IDs match the Miro board tables.
 - !2 Low, info modal: main button is Save next to Close; nothing is saved.
 - !3 Medium, add meal modal: four ways to log in one sheet, each a different control.
 - !4 Medium, route A: leaves Progress for general recipe search, which does not say which day the meal goes to.
-- !5 High, logged entry: Delete is a small red tab on the photo and removes the entry at once, no confirmation or undo.
+- !5 High **(fixed in prototype)**, logged entry: Delete is a small red tab on the photo and removes the entry at once, no confirmation or undo.
 - !6 Low, entry from your recipes: generic icon; its tab says Edit where our recipes say Delete.
 - !7 Medium, edit recipe modal: the only way to remove the entry is a small grey "Delete recipe from this day" link under Save.
 - !8 Low, route D: toast says "uploaded" for typed text; no idea how long it takes.

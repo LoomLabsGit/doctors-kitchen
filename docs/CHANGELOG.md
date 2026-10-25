@@ -41,3 +41,7 @@
 - Lists and search start with no filters, and "Clear filters" and Reset go back to that. Before: "No gluten" was applied on every load and came back after clearing, hiding gluten recipes from everyone.
 - Profile allergens are not wired to the filters yet; if they were, the default should come from there and say so on the chip.
 - To compare with the live app, set `avoid` back to `['Gluten']` in `DEFAULT_FILTERS` (`src/lib/filters.tsx`).
+
+## 2026-10-25: Fix Progress !5, Undo after deleting a logged meal
+- Deleting a meal (the red Delete tab, or "Delete recipe from this day" in Edit recipe) still happens at once, but the toast now has an Undo button (44 px tall) and stays for 7 s instead of 4 s. Undo puts the meal back on the same day.
+- Chosen over a confirmation dialog so logging stays quick; the Delete tab itself is unchanged and is a candidate for a later fix.

@@ -10,6 +10,8 @@ const bySlug = Object.fromEntries(recipes.map((r) => [r.slug, r]))
 // AS-IS BEHAVIOUR (UX issue Progress !9): a described meal is still calculating after about a minute.
 const CALC_MS = 60000
 const TOAST_MS = 4000
+// Long enough to reach the Undo button.
+const UNDO_MS = 7000
 
 const dayTitle = (d: string) => { const x = parseIso(d); return `${x.toLocaleDateString('en-GB', { weekday: 'short' })} ${ordinal(x.getDate())} ${x.toLocaleDateString('en-GB', { month: 'short' })}` }
 const monday = (d: string) => addDays(d, -((parseIso(d).getDay() + 6) % 7))
@@ -29,7 +31,9 @@ export function ProgressHome() {
   const d = sp.get('d') ?? todayIso()
   const setDay = (x: string) => setSp({ d: x })
   const [toast, setToast] = useState<string | undefined>((loc.state as { toast?: string } | null)?.toast)
-  useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(undefined), TOAST_MS); return () => clearTimeout(t) }, [toast])
+  // A deleted meal, kept so the toast can put it back.
+  const [undo, setUndo] = useState<LogEntry | null>(null)
+  useEffect(() => { if (!toast) return; const t = setTimeout(() => { setToast(undefined); setUndo(null) }, undo ? UNDO_MS : TOAST_MS); return () => clearTimeout(t) }, [toast, undo])
   const [adding, setAdding] = useState(false)
   const [info, setInfo] = useState<null | 'inflam' | 'plants'>(null)
   const [editing, setEditing] = useState<string | null>(null)
@@ -39,12 +43,20 @@ export function ProgressHome() {
   const week = Array.from({ length: 7 }, (_, i) => addDays(monday(d), i))
   const plants = dayTotals(log.filter((e) => week.includes(e.date))).plants
   const empty = entries.length === 0
-  const say = (msg: string) => setToast(msg)
+  const say = (msg: string) => { setToast(msg); setUndo(null) }
+  // FIXED (UX issue Progress !5): deleting still happens at once, but the toast offers Undo for a few seconds.
+  const del = (e: LogEntry) => { remove(e.id); setToast('The recipe has been removed from that day'); setUndo(e) }
   const edited = log.find((e) => e.id === editing)
 
   return (
     <div className="pb-6">
-      {toast && <div className="mx-4 mb-2 bg-brand-soft text-[#1b6b4f] rounded-md px-4 py-2 text-[17px]">{toast}</div>}
+      {toast && (
+        <div className="mx-4 mb-2 bg-brand-soft text-[#1b6b4f] rounded-md px-4 py-2 text-[17px] flex items-center justify-between gap-3">
+          <span>{toast}</span>
+          {undo && <button onClick={() => { const { id: _, ...back } = undo; add(back); setToast('The recipe has been put back'); setUndo(null) }}
+            className="shrink-0 font-semibold underline min-h-[44px] px-2">Undo</button>}
+        </div>
+      )}
       <div className="flex items-center justify-between px-6">
         <button aria-label="Previous day" onClick={() => setDay(addDays(d, -1))} className="text-3xl leading-none">‹</button>
         <h1 className="text-[26px] font-semibold">{dayTitle(d)}</h1>
@@ -91,7 +103,7 @@ export function ProgressHome() {
 
       <div className="mt-10">
         {entries.map((e) => <EntryRow key={e.id} e={e}
-          onDelete={() => { remove(e.id); say('The recipe has been removed from that day') }}
+          onDelete={() => del(e)}
           onEdit={() => setEditing(e.id)} />)}
       </div>
       <div className="text-center mt-6">
@@ -102,7 +114,7 @@ export function ProgressHome() {
         onAdded={(e, msg) => { add(e); setAdding(false); say(msg) }} />}
       {info && <InfoSheet kind={info} onClose={() => setInfo(null)} />}
       {edited && <EditSheet e={edited} onClose={() => setEditing(null)}
-        onDelete={() => { remove(edited.id); setEditing(null); say('The recipe has been removed from that day') }} />}
+        onDelete={() => { del(edited); setEditing(null) }} />}
     </div>
   )
 }
@@ -152,7 +164,7 @@ function EntryRow({ e, onDelete, onEdit }: { e: LogEntry; onDelete: () => void; 
           // UX issue Progress !6: the user's own meals get a generic icon, and their tab says Edit where DK recipes say Delete
           : <div className="w-full h-full bg-[#fdf6ee] grid place-items-center text-5xl">🥕🍎</div>}
         {r
-          // UX issue Progress !5: a small red tab on the photo removes the entry at once, no confirmation or undo
+          // UX issue Progress !5 (fixed): still a small tab that deletes at once, but the toast now offers Undo
           ? <button onClick={onDelete} className="absolute top-2 right-2 bg-[#e57373]/90 text-white text-[13px] rounded-full px-2 py-0.5">× Delete</button>
           : <button onClick={onEdit} className="absolute top-2 right-2 bg-brand text-white text-[13px] rounded-full px-2 py-0.5">✎ Edit</button>}
       </div>
