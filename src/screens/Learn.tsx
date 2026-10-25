@@ -2,7 +2,8 @@ import { useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { recipes, type Recipe } from '../data/recipes'
 import { CHIPS, HEALTH_TOPICS, INGREDIENT_TOPICS, KIND, course, items, label, topic, type Item, type Kind } from '../data/learn'
-import { Photo } from '../components/ui'
+import { Heart, Icon, Photo } from '../components/ui'
+import { useImproved } from '../lib/version'
 import { ordinal, parseIso } from '../lib/dates'
 
 const longDate = (d: string) => { const x = parseIso(d); return `${ordinal(x.getDate())} ${x.toLocaleDateString('en-GB', { month: 'short' })} ${x.getFullYear()}` }
@@ -15,13 +16,13 @@ export function LearnHome() {
       <SearchBox />
       <Chips />
       <section className="mt-5">
-        <h2 className="px-4 text-[19px] font-semibold">Nutrition basics with Dr Rupy <span className="text-brand">✔</span> <span className="font-normal text-[16px]">0 of 8</span></h2>
+        <h2 className="px-4 text-[19px] font-semibold">Nutrition basics with Dr Rupy <Icon name="check_circle" size={20} fill className="text-brand" /> <span className="font-normal text-[16px]">0 of 8</span></h2>
         {/* Course progress and playback were not captured in the audit, so the lessons are inert */}
         <div className="flex gap-3 overflow-x-auto px-4 mt-1">
           {course.map(([t, len]) => (
             <div key={t} className="shrink-0 w-[300px]">
-              <div className="text-[14px] font-semibold">{t} <span className="font-normal text-muted">◷ {len}</span></div>
-              <div className="h-[170px] mt-1 rounded-lg bg-black grid place-items-center text-white text-4xl">▶</div>
+              <div className="text-[14px] font-semibold">{t} <span className="font-normal text-muted inline-flex items-center gap-0.5"><Icon name="schedule" size={15} />{len}</span></div>
+              <div className="h-[170px] mt-1 rounded-lg bg-black grid place-items-center text-white"><Icon name="play_circle" size={64} /></div>
             </div>
           ))}
         </div>
@@ -32,7 +33,7 @@ export function LearnHome() {
       <div className="grid grid-cols-3 gap-6 px-4 mt-2">
         {(['read', 'listen', 'watch'] as Kind[]).map((k) => (
           <Link key={k} to={`/learn/${k}`} className="bg-[#faf6f0] border border-line rounded-lg py-3 text-center text-[17px]">
-            <div className="text-brand text-xl">{KIND[k].badge.split(' ')[0]}</div>{k[0].toUpperCase() + k.slice(1)}
+            <Icon name={KIND[k].icon} size={28} fill className="text-brand block mx-auto" />{k[0].toUpperCase() + k.slice(1)}
           </Link>
         ))}
       </div>
@@ -47,7 +48,7 @@ function SearchBox({ initial = '' }: { initial?: string }) {
   return (
     <form className="flex px-4 mt-2" onSubmit={(e) => { e.preventDefault(); nav(`/learn/search?q=${encodeURIComponent(q)}`) }}>
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by health condition, ingredient…" className="flex-1 min-w-0 border border-line rounded-l-md px-3 py-2" />
-      <button aria-label="Search" className="shrink-0 bg-brand text-white px-8 rounded-r-md text-2xl leading-none">⌕</button>
+      <button aria-label="Search" className="shrink-0 bg-brand text-white px-8 rounded-r-md grid place-items-center"><Icon name="search" size={26} /></button>
     </form>
   )
 }
@@ -61,7 +62,7 @@ function Chips({ kind }: { kind?: Kind }) {
         <div key={r} className="flex gap-2 w-max">
           {row.map((c) => (
             <Link key={c.slug} to={`/learn/topic/${c.slug}${kind ? `?type=${kind}` : ''}`}
-              className="bg-[#faf6f0] border border-line rounded-lg px-3 py-2 text-[18px] whitespace-nowrap"><span className="mr-2">{c.icon}</span>{c.name}</Link>
+              className="bg-[#faf6f0] border border-line rounded-lg px-3 py-2 text-[18px] whitespace-nowrap inline-flex items-center gap-2"><Icon name={c.icon} size={24} fill className="text-brand" />{c.name}</Link>
           ))}
         </div>
       ))}
@@ -74,7 +75,7 @@ function Card({ i, badge = true, wide }: { i: Item; badge?: boolean; wide?: bool
     <Link to={`/learn/item/${i.id}`} className={`block min-w-0 ${wide ? 'shrink-0 w-[300px]' : ''}`}>
       <div className="relative">
         <Photo hue={i.hue} className={`${wide ? 'h-[175px]' : 'aspect-[5/3]'} rounded-lg`} />
-        {badge && <span className="absolute bottom-3 -left-2 bg-brand text-white text-[13px] font-bold px-2 py-0.5 rounded">{KIND[i.kind].badge}</span>}
+        {badge && <span className="absolute bottom-3 -left-2 inline-flex items-center gap-1 bg-brand text-white text-[13px] font-bold px-2 py-0.5 rounded"><Icon name={KIND[i.kind].icon} size={16} fill />{KIND[i.kind].badge}</span>}
       </div>
       <div className="text-brand text-[12px] font-bold mt-2">{label(i)}</div>
       <div className="text-[17px] leading-snug line-clamp-2">{i.title}</div>
@@ -116,9 +117,9 @@ function Banner({ title, hue }: { title: string; hue: number }) {
   const nav = useNavigate()
   return (
     <div className="h-[150px] flex items-end justify-between px-4 pb-6" style={{ background: `linear-gradient(135deg, hsl(${hue} 35% 35%), hsl(${hue + 30} 45% 60%))` }}>
-      <button onClick={() => nav(-1)} className="text-white text-[28px] font-semibold text-left leading-tight">← {title}</button>
+      <button onClick={() => nav(-1)} className="text-white text-[28px] font-semibold text-left leading-tight flex items-center gap-2"><Icon name="arrow_back" size={30} />{title}</button>
       {/* Notification bell: not captured in the audit, left inert */}
-      <span className="shrink-0 bg-[#f3efe9] border-2 border-brand rounded-lg w-[124px] h-9 grid place-items-center text-brand">🔔</span>
+      <span className="shrink-0 bg-[#f3efe9] border-2 border-brand rounded-lg w-[124px] h-9 grid place-items-center text-brand"><Icon name="notifications" size={20} fill /></span>
     </div>
   )
 }
@@ -129,9 +130,16 @@ export function LearnTopic() {
   const [sp, setSp] = useSearchParams()
   const type = sp.get('type') as Kind | null
   const t = topic(slug)
+  const improved = useImproved()
   if (!t) return <p className="p-4">Not found. <Link to="/learn" className="text-brand">Back to Learn</Link></p>
   const index = INDEXES[slug]
-  const list = items.filter((i) => i.topics.includes(slug) && (!type || i.kind === type))
+  const all = items.filter((i) => i.topics.includes(slug))
+  const count = (k: Kind) => all.filter((i) => i.kind === k).length
+  const list = all.filter((i) => !type || i.kind === type)
+  // IMPROVED (UX issue Learn !4): All / Articles / Podcasts / Videos tabs with counts (empty kinds disabled), and a kind
+  // with nothing in this category falls back to the full list with a note instead of an empty page.
+  const missing = improved && type && !count(type) ? type : null
+  const shown = missing ? all : list
   return (
     <div className="pb-6">
       <Banner title={t.name} hue={t.hue} />
@@ -139,17 +147,31 @@ export function LearnTopic() {
         <div className="grid grid-cols-2 gap-4 px-4 mt-6">
           {index.map((x) => (
             <Link key={x.slug} to={`/learn/topic/${x.slug}${type ? `?type=${type}` : ''}`} className="bg-[#faf6f0] border border-[#d9ece4] rounded-lg px-3 py-4 flex items-center gap-2 text-[19px] leading-tight min-h-[86px]">
-              <span className="text-2xl">{x.icon}</span>{x.name}
+              <Icon name={x.icon} size={28} className="text-ink" />{x.name}
             </Link>
           ))}
         </div>
-      ) : list.length ? <Grid list={list} badge />
-        // UX issue Learn !4: a filtered list can come back empty with only this notice, and "click here" is the only way out
-        : type ? <Notice>⌕ We're filtering this list for {KIND[type].one}. To remove this filter and see the full list, <button onClick={() => setSp({})} className="text-brand">click here</button>.</Notice>
-        : <Notice>There is nothing here yet.</Notice>}
+      ) : <>
+        {improved && all.length > 0 && <div className="flex gap-2 px-4 mt-4 overflow-x-auto">
+          <KindTab on={!type || !!missing} onClick={() => setSp({})}>All ({all.length})</KindTab>
+          {(['read', 'listen', 'watch'] as Kind[]).map((k) => (
+            <KindTab key={k} on={type === k && !missing} disabled={!count(k)} onClick={() => setSp({ type: k })}>{KIND[k].list} ({count(k)})</KindTab>
+          ))}
+        </div>}
+        {missing && <Notice>There are no {KIND[missing].one} in {t.name} yet, so this shows everything.</Notice>}
+        {shown.length ? <Grid list={shown} badge />
+          // AS-IS (UX issue Learn !4): a filtered list can come back empty with only this notice, and "click here" is the only way out
+          : type ? <Notice><Icon name="search" size={20} /> We're filtering this list for {KIND[type].one}. To remove this filter and see the full list, <button onClick={() => setSp({})} className="text-brand">click here</button>.</Notice>
+          : <Notice>There is nothing here yet.</Notice>}
+      </>}
     </div>
   )
 }
+
+const KindTab = ({ children, on, disabled, onClick }: { children: ReactNode; on: boolean; disabled?: boolean; onClick: () => void }) => (
+  <button disabled={disabled} onClick={onClick}
+    className={`shrink-0 rounded-full border px-3 min-h-[40px] text-[15px] ${on ? 'bg-brand text-white border-brand' : disabled ? 'border-line text-line' : 'border-line text-ink'}`}>{children}</button>
+)
 
 // Read / Listen / Watch from "Ways to learn". No badges on these lists (as-is).
 export function LearnList({ kind }: { kind: Kind }) {
@@ -179,13 +201,13 @@ export function LearnItem() {
   const points = ['What is it?', 'Why it matters', 'How to start']
   return (
     <div className="pb-8">
-      <div className="px-4 flex justify-between items-center"><span className="text-brand text-[14px] font-bold">{label(i)}</span><span className="text-brand text-xl">↪</span></div>
+      <div className="px-4 flex justify-between items-center"><span className="text-brand text-[14px] font-bold">{label(i)}</span><Icon name="forward" size={24} fill className="text-brand" /></div>
       <h1 className="px-4 text-[26px] font-semibold leading-tight mt-1">{i.title}</h1>
       <p className="px-4 text-muted text-[18px] mt-1">{longDate(i.date)}</p>
       <p className="px-4 text-[19px] leading-snug mt-3">Placeholder introduction. The live app's text is not copied into the prototype; this stands in for a short opening paragraph.</p>
       <div className="px-4 mt-4">
         {i.kind === 'watch'
-          ? <div className="h-[200px] rounded-lg bg-black grid place-items-center"><span className="bg-[#ff0000] text-white rounded-xl px-5 py-2 text-xl">▶</span></div>
+          ? <div className="h-[200px] rounded-lg bg-black grid place-items-center"><span className="bg-[#ff0000] text-white rounded-xl px-4 py-1.5 grid place-items-center"><Icon name="play_arrow" size={32} fill /></span></div>
           : <Photo hue={i.hue} className="h-[190px] rounded-lg" />}
       </div>
       {i.kind === 'listen' && (
@@ -204,7 +226,7 @@ export function LearnItem() {
           <p className="text-[17px] leading-relaxed mt-2">Placeholder body text for this section of the article.</p>
         </section>)}
       </>}
-      <button onClick={() => setRefs(!refs)} className="px-4 mt-5 font-semibold text-[15px]">{refs ? '⌄' : '›'} References/sources</button>
+      <button onClick={() => setRefs(!refs)} className="px-4 mt-5 font-semibold text-[15px] flex items-center gap-1"><Icon name={refs ? 'keyboard_arrow_down' : 'chevron_right'} size={20} />References/sources</button>
       {refs && <p className="px-4 text-[14px] text-muted mt-1">Placeholder list of references.</p>}
       <section className="mt-6">
         <h2 className="px-4 text-[19px] font-semibold">Relevant recipes</h2>
@@ -222,7 +244,7 @@ function RecipeCarousel({ list }: { list: Recipe[] }) {
         <Link key={r.slug} to={`/recipe/${r.slug}`} className="shrink-0 w-[190px]">
           <div className="relative">
             <Photo hue={r.hue} className="h-[180px] rounded-lg" />
-            <span className="absolute top-2 right-2 bg-white/90 rounded-full w-7 h-7 grid place-items-center text-sm">♡</span>
+            <Heart />
             {r.isNew && <span className="absolute bottom-3 -left-1 bg-brand text-white text-[12px] font-bold px-2 py-0.5 rounded">NEW!</span>}
           </div>
           <div className="font-semibold text-[17px] leading-tight mt-2 line-clamp-2">{r.title}</div>

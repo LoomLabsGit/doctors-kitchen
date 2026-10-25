@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { allergens, recipes } from '../data/recipes'
-import { Photo } from '../components/ui'
+import { Heart, Icon, Photo } from '../components/ui'
 
 // Food and notification preferences are kept in this browser's localStorage when Update is pressed ("dk-profile").
 const KEY = 'dk-profile'
@@ -21,16 +21,16 @@ const UpdateBtn = ({ onClick, floating }: { onClick: () => void; floating?: bool
 
 export function ProfileHome() {
   const rows: [string, string, string][] = [
-    ['👤', 'Account info', '/profile/account'], ['📋', 'Food preferences', '/profile/food'], ['🔔', 'Notification preferences', '/profile/notifications'],
-    ['💳', 'Premium subscription', '/profile/subscription'], ['✨', 'Virtual Dr Rupy chats', '/profile/chats'],
+    ['person', 'Account info', '/profile/account'], ['checklist', 'Food preferences', '/profile/food'], ['notifications', 'Notification preferences', '/profile/notifications'],
+    ['credit_card', 'Premium subscription', '/profile/subscription'], ['stars', 'Virtual Dr Rupy chats', '/profile/chats'],
   ]
   return (
     <div className="pb-6">
       <h1 className="px-4 text-[26px] font-semibold">Profile</h1>
       <div className="mx-4 mt-2 divide-y divide-line/60">
-        {rows.map(([icon, name, to]) => <Link key={to} to={to} className="block px-4 py-3 text-brand text-[19px]"><span className="mr-3">{icon}</span>{name} ›</Link>)}
+        {rows.map(([icon, name, to]) => <Link key={to} to={to} className="flex items-center px-4 py-3 text-brand text-[19px]"><Icon name={icon} size={24} fill className="mr-3" />{name}<Icon name="chevron_right" size={24} /></Link>)}
         {/* Log out was deliberately not exercised in the audit: left inert */}
-        <span className="block px-4 py-3 text-brand text-[19px]"><span className="mr-3">↪</span>Log out ›</span>
+        <span className="flex items-center px-4 py-3 text-brand text-[19px]"><Icon name="logout" size={24} className="mr-3" />Log out<Icon name="chevron_right" size={24} /></span>
       </div>
     </div>
   )
@@ -94,7 +94,7 @@ function Tags({ title, value, onChange, options, placeholder = '' }: { title: st
     <div className="mt-6">
       <h2 className="font-semibold text-[19px]">{title}</h2>
       <div className="mt-2 border border-line rounded-md p-2 flex flex-wrap gap-2 min-h-[46px]">
-        {value.map((v) => <button key={v} onClick={() => onChange(value.filter((x) => x !== v))} className="border border-line rounded px-2 py-1 text-[17px]">× {v}</button>)}
+        {value.map((v) => <button key={v} onClick={() => onChange(value.filter((x) => x !== v))} className="inline-flex items-center gap-1 border border-line rounded px-2 py-1 text-[17px]"><Icon name="close" size={18} />{v}</button>)}
         {options
           ? <select value="" onChange={(e) => add(e.target.value)} className="flex-1 min-w-[120px] text-muted bg-white">
               <option value="" disabled>{value.length ? 'Add…' : 'Select…'}</option>
@@ -142,13 +142,13 @@ export function NotificationPreferences() {
 
 // Mock complimentary subscription. UX issue Profile !4: dates in two formats (07/09/2027 and 7th Sep 2027), shown in UTC.
 export function Subscription() {
-  const rows = [['⚙', 'Payment platform', 'Complimentary'], ['💵', 'Current period', 'Active'], ['📅', 'Subscribed since', '07/09/2026']]
+  const rows = [['settings', 'Payment platform', 'Complimentary'], ['payments', 'Current period', 'Active'], ['event', 'Subscribed since', '07/09/2026']]
   return (
     <div className="px-4 pb-6">
       <h1 className="text-[26px] font-semibold">Your subscription</h1>
       <div className="mt-3 space-y-3 text-[18px]">
-        {rows.map(([i, k, v]) => <div key={k} className="flex justify-between"><span><span className="text-brand mr-2">{i}</span>{k}</span><span className="text-muted">{v}</span></div>)}
-        <div className="flex justify-between"><span><span className="text-brand mr-2">⟳</span>Ends at</span><span className="text-muted text-right">15:42<br />07/09/2027 <span className="text-[13px]">UTC</span></span></div>
+        {rows.map(([i, k, v]) => <div key={k} className="flex justify-between"><span className="flex items-center"><Icon name={i} size={22} fill className="text-brand mr-2" />{k}</span><span className="text-muted">{v}</span></div>)}
+        <div className="flex justify-between"><span className="flex items-center"><Icon name="sync" size={22} className="text-brand mr-2" />Ends at</span><span className="text-muted text-right">15:42<br />07/09/2027 <span className="text-[13px]">UTC</span></span></div>
       </div>
       <div className="mt-8 bg-[#d5ecf1] text-[#1d5f77] rounded px-4 py-4 text-center text-[17px]">
         Your complimentary subscription is due to end on 7th Sep 2027 - to avoid losing access to the app, purchase a subscription now!
@@ -180,13 +180,13 @@ export function ChatHistory() {
           <Link key={n} to={`/recipe/${slug}`} className="flex gap-3 px-4 py-2 items-start">
             <div className="relative w-[112px] h-[112px] shrink-0 rounded-lg overflow-hidden">
               <Photo hue={r.hue} className="w-full h-full" />
-              <span className="absolute top-2 right-2 bg-white/90 rounded-full w-7 h-7 grid place-items-center text-sm">♡</span>
+              <Heart />
             </div>
             <div className="flex-1 min-w-0">
               <div className="font-semibold text-[17px] truncate">{r.title}</div>
               <div className="text-[14px] leading-snug line-clamp-4">{text}</div>
             </div>
-            <span className="text-line self-center text-xl">›</span>
+            <Icon name="chevron_right" size={26} className="text-line self-center" />
           </Link>
         )
       })}

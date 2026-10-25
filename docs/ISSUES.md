@@ -6,7 +6,7 @@ Severity: High / Medium / Low. IDs match the Miro board tables.
 ## UX issues
 
 ### Recipes
-- !1 High, every list and search: "No gluten" is on by default and returns on each page load even after "Clear filters".
+- !1 High **(improved version)**, every list and search: "No gluten" is on by default and returns on each page load even after "Clear filters".
 - !2 Low, header: Profile is reachable only from a small pill on Recipes home; missing on Plan, Progress, Saved and Learn.
 - !3 Medium, cuisine list: the "Cuisines List" feels like a filter but is applied differently to other filters.
 - !4 Medium, filtered results: applied chips run off the right edge, so meal type and category filters are hidden until scrolled.
@@ -27,7 +27,7 @@ Severity: High / Medium / Low. IDs match the Miro board tables.
 - !2 Low, info modal: main button is Save next to Close; nothing is saved.
 - !3 Medium, add meal modal: four ways to log in one sheet, each a different control.
 - !4 Medium, route A: leaves Progress for general recipe search, which does not say which day the meal goes to.
-- !5 High, logged entry: Delete is a small red tab on the photo and removes the entry at once, no confirmation or undo.
+- !5 High **(improved version)**, logged entry: Delete is a small red tab on the photo and removes the entry at once, no confirmation or undo.
 - !6 Low, entry from your recipes: generic icon; its tab says Edit where our recipes say Delete.
 - !7 Medium, edit recipe modal: the only way to remove the entry is a small grey "Delete recipe from this day" link under Save.
 - !8 Low, route D: toast says "uploaded" for typed text; no idea how long it takes.
@@ -37,13 +37,13 @@ Severity: High / Medium / Low. IDs match the Miro board tables.
 ### Saved
 - !1 Medium, home: collections can only be created from a recipe's Save sheet; no create/manage control here.
 - !2 Low, rename modal: the Edit menu stays open behind the modal.
-- !3 High, delete collection: even default Favourites can be deleted; the warning does not say what happens to its recipes.
+- !3 High **(improved version)**, delete collection: even default Favourites can be deleted; the warning does not say what happens to its recipes.
 
 ### Learn
 - !1 Medium, home: category chips scroll sideways in two rows; e.g. Nutrition basics sits off-screen.
 - !2 Low, search results: no result count; no filter by article, podcast or video.
 - !3 Low, search no results: plain notice, no suggestions (recipe search offers popular categories).
-- !4 High, Read and Watch lists: picking a category from a filtered list can return an empty page showing only "We're filtering this list"; the only way out is a "click here" link.
+- !4 High **(improved version)**, Read and Watch lists: picking a category from a filtered list can return an empty page showing only "We're filtering this list"; the only way out is a "click here" link.
 - !5 Medium, protein calculator: Male is pre-selected, so skipping gender gives a male estimate.
 - !6 Low, protein calculator: 999 kg is rejected with "Please enter a valid weight", with no accepted range.
 
@@ -58,11 +58,11 @@ Severity: High / Medium / Low. IDs match the Miro board tables.
 ### Recipes (U1 to U18)
 | ID | Sev | Type | Where | Finding | Direction |
 |---|---|---|---|---|---|
-| U1 | High | IA | Cuisines and Ingredients index | Titled "Cuisines" but shows an unrelated recipe list below the tiles. | Pure browse grid, or tie the list to a selected tile. |
-| U2 | High | Layout | Index pages | Tiles in one sideways row (~2.7 visible), no count, truncated names. | 2-column grid or A-Z list; two-line names. |
-| U3 | High | IA | Home chips | Cuisines, Ingredients and Breakfast are different kinds of thing; row clipped, no hint. | A "Browse by" section with equal-weight entries. |
-| U4 | High | Interaction | Search results | No search box on results; query is a chip mixed with filters. | Pinned search field; separate filter button with count. |
-| U5 | High | Content | All recipe cards | No nutrition on cards, even High Protein; metadata varies (rating missing on some). | Show protein/calories/health tag by context; fixed metadata slots. |
+| U1 | High (improved version) | IA | Cuisines and Ingredients index | Titled "Cuisines" but shows an unrelated recipe list below the tiles. | Pure browse grid, or tie the list to a selected tile. |
+| U2 | High (improved version) | Layout | Index pages | Tiles in one sideways row (~2.7 visible), no count, truncated names. | 2-column grid or A-Z list; two-line names. |
+| U3 | High (improved version) | IA | Home chips | Cuisines, Ingredients and Breakfast are different kinds of thing; row clipped, no hint. | A "Browse by" section with equal-weight entries. |
+| U4 | High (improved version) | Interaction | Search results | No search box on results; query is a chip mixed with filters. | Pinned search field; separate filter button with count. |
+| U5 | High (improved version) | Content | All recipe cards | No nutrition on cards, even High Protein; metadata varies (rating missing on some). | Show protein/calories/health tag by context; fixed metadata slots. |
 | U6 | Med | Interaction | Cuisine/ingredient/meal lists | Tile row gone, no visible back control; hard to compare siblings. | Back button plus sticky sibling selector. |
 | U7 | Med | Visual | Page titles | Green vs black titles with no meaning; count only on search; green looks tappable. | One title style, counts everywhere, green for interactive only. |
 | U8 | Med | Visual | Filter bar | Three control styles in a row; solid green Filters reads as primary; rule looks like a scrollbar; default chip looks chosen. | One filter button with count badge, one chip style, mark defaults. |

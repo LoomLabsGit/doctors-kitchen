@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { recipes } from '../data/recipes'
 import { FOCUS, MEALS, fillSlots, ownRecipes, poolFor, shoppingList, slotKey, type Entry, type Plan } from '../data/plans'
-import { Chip, Photo, Sheet } from '../components/ui'
+import { Chip, Heart, Icon, Photo, Sheet } from '../components/ui'
 import { usePlans } from '../lib/plans'
 import { useSaved } from '../lib/saved'
 import { addDays, dateRange, todayIso, weekday } from '../lib/dates'
@@ -48,7 +48,7 @@ function PlanTile({ p }: { p: Plan }) {
 }
 
 const Thumb = ({ e, className }: { e: Entry; className: string }) =>
-  'slug' in e ? <Photo hue={bySlug[e.slug]?.hue ?? 0} className={className} /> : <div className={`${className} bg-line grid place-items-center text-2xl`}>🍽</div>
+  'slug' in e ? <Photo hue={bySlug[e.slug]?.hue ?? 0} className={className} /> : <div className={`${className} bg-line grid place-items-center text-muted`}><Icon name="restaurant" size={32} /></div>
 
 // Create and Update share this sheet. UX issue Plan !4: the Update version drops "AI plan?" and "Specific focus?",
 // and Delete / Remove all are small text links.
@@ -69,19 +69,19 @@ function PlanForm({ plan, onClose }: { plan?: Plan; onClose: () => void }) {
   }
   return (
     <Sheet title={plan ? 'Update meal plan' : 'Create a new meal plan'} onClose={onClose}>
-      <Row icon="▦" label="Start date"><input type="date" value={start} onChange={(e) => setStart(e.target.value)} className="w-full border border-line rounded-md px-3 py-2" /></Row>
-      <Row icon="▦" label="Length"><Stepper value={days} set={setDays} min={1} max={7} unit="days" /></Row>
-      <Row icon="👤" label="Servings"><Stepper value={servings} set={setServings} min={1} max={8} unit="people" /></Row>
+      <Row icon="calendar_month" label="Start date"><input type="date" value={start} onChange={(e) => setStart(e.target.value)} className="w-full border border-line rounded-md px-3 py-2" /></Row>
+      <Row icon="date_range" label="Length"><Stepper value={days} set={setDays} min={1} max={7} unit="days" /></Row>
+      <Row icon="person" label="Servings"><Stepper value={servings} set={setServings} min={1} max={8} unit="people" /></Row>
       {!plan && <>
-        <Row icon="🤖" label="AI plan?">
+        <Row icon="smart_toy" label="AI plan?">
           <input type="checkbox" checked={ai} onChange={(e) => setAi(e.target.checked)} className="w-4 h-4" />
           <p className="text-[13px] text-muted mt-2">This creates a personalised plan with recipes using your preferences</p>
         </Row>
-        <Row icon="⚙" label="Specific focus?">
+        <Row icon="tune" label="Specific focus?">
           <div className="flex flex-wrap gap-1.5">{FOCUS.map((f) => <Chip key={f} active={focus.includes(f)} onClick={() => setFocus(toggle(focus, f))}>{f}</Chip>)}</div>
         </Row>
       </>}
-      <Row icon="🍽" label="Meals">
+      <Row icon="restaurant" label="Meals">
         {MEALS.map((m) => <label key={m} className="flex items-center gap-2 py-0.5"><input type="checkbox" checked={meals.includes(m)} onChange={() => setMeals(toggle(meals, m))} className="w-4 h-4" />{m}</label>)}
       </Row>
       <div className="text-center mt-5">
@@ -97,16 +97,16 @@ function PlanForm({ plan, onClose }: { plan?: Plan; onClose: () => void }) {
 
 const Row = ({ icon, label, children }: { icon: string; label: string; children: ReactNode }) => (
   <div className="flex gap-3 py-3 text-[17px]">
-    <div className="w-[128px] shrink-0 flex gap-2"><span className="text-muted">{icon}</span>{label}</div>
+    <div className="w-[128px] shrink-0 flex gap-2"><Icon name={icon} size={22} className="text-muted" />{label}</div>
     <div className="flex-1">{children}</div>
   </div>
 )
 
 const Stepper = ({ value, set, min, max, unit }: { value: number; set: (n: number) => void; min: number; max: number; unit: string }) => (
   <div className="flex items-center gap-3">
-    <button aria-label={`Fewer ${unit}`} onClick={() => set(Math.max(min, value - 1))} className="w-5 h-5 rounded-full border-2 border-brand text-brand grid place-items-center leading-none text-sm">−</button>
+    <button aria-label={`Fewer ${unit}`} onClick={() => set(Math.max(min, value - 1))} className="text-brand grid place-items-center"><Icon name="do_not_disturb_on" size={24} /></button>
     <span>{value} {unit}</span>
-    <button aria-label={`More ${unit}`} onClick={() => set(Math.min(max, value + 1))} className="w-5 h-5 rounded-full border-2 border-brand text-brand grid place-items-center leading-none text-sm">+</button>
+    <button aria-label={`More ${unit}`} onClick={() => set(Math.min(max, value + 1))} className="text-brand grid place-items-center"><Icon name="add_circle" size={24} /></button>
   </div>
 )
 
@@ -136,7 +136,7 @@ export function PlanBuilding() {
           <circle cx="50" cy="50" r="46" fill="none" stroke="#f39c12" strokeWidth="3" pathLength="100" strokeDasharray="100"
             style={{ strokeDashoffset: 100, animation: `dk-fill ${BUILD_MS}ms linear forwards` }} />
         </svg>
-        <span className="absolute inset-0 grid place-items-center text-6xl">🥗</span>
+        <span className="absolute inset-0 grid place-items-center text-brand"><Icon name="rice_bowl" size={72} /></span>
       </div>
       <style>{'@keyframes dk-fill { to { stroke-dashoffset: 0 } }'}</style>
     </div>
@@ -157,13 +157,13 @@ export function PlanDetail() {
       {created && <div className="mx-4 mb-2 rounded-md bg-brand-soft border border-brand/20 text-[#0e7a57] px-4 py-3">Your meal plan was successfully created</div>}
       <div className="flex justify-between items-center px-4">
         <h1 className="text-[26px] font-semibold leading-tight">{dateRange(plan.start, plan.days)}</h1>
-        <button onClick={() => setEditing(true)} className="shrink-0 rounded-lg bg-brand-soft text-brand px-4 py-1.5">✎ Edit</button>
+        <button onClick={() => setEditing(true)} className="shrink-0 inline-flex items-center gap-1 rounded-lg bg-brand-soft text-brand px-4 py-1.5"><Icon name="edit" size={18} />Edit</button>
       </div>
       <div className="flex justify-center gap-1 mt-3 mx-4 border-b border-chip">
         {(['PLAN', 'LIST'] as const).map((t) => (
           <button key={t} onClick={() => { setTab(t); setCreated(false) }}
             className={`rounded-t-lg border border-b-0 px-5 py-2 text-[17px] ${tab === t ? 'bg-brand border-brand text-white' : 'border-line text-brand'}`}>
-            {t === 'PLAN' ? '▦' : '🛒'} {t}
+            <Icon name={t === 'PLAN' ? 'calendar_month' : 'shopping_cart'} size={20} /> {t}
           </button>))}
       </div>
       {tab === 'PLAN' ? <PlanTab plan={plan} /> : <ListTab />}
@@ -195,18 +195,18 @@ function PlanTab({ plan }: { plan: Plan }) {
                 <span className={`inline-block mr-2 text-sm transition-transform ${open ? '' : '-rotate-90'}`}>▼</span>{weekday(addDays(plan.start, day))}
               </button>
               {/* Day pencil: what it opens was not captured in the audit */}
-              <span className="text-brand">✎</span>
+              <Icon name="edit" size={20} className="text-brand" />
             </div>
             {/* UX issue Plan !2: each day scrolls sideways, so Dinner and Snack sit off-screen */}
             {open && <div className="flex gap-6 overflow-x-auto px-4 pb-2 mt-1">
               {plan.meals.map((meal) => (
                 <div key={meal} className="shrink-0">
-                  <div className="font-semibold text-[17px] mb-1">{meal} <span className="font-normal text-[15px]">👤 {plan.servings}</span></div>
+                  <div className="font-semibold text-[17px] mb-1">{meal} <span className="font-normal text-[15px] inline-flex items-center"><Icon name="person" size={18} />{plan.servings}</span></div>
                   <div className="flex gap-3 items-center">
                     {(plan.slots[slotKey(day, meal)] ?? []).map((e, i) => (
                       <MealCard key={i} e={e} onDelete={() => setSlot(day, meal, (es) => es.filter((_, j) => j !== i))} onSwap={() => swap(day, meal, i)} />
                     ))}
-                    <button onClick={() => setAdding({ day, meal })} className="shrink-0 border border-line rounded-lg px-3 py-1.5 text-brand">+ Add</button>
+                    <button onClick={() => setAdding({ day, meal })} className="shrink-0 inline-flex items-center border border-line rounded-lg pl-2 pr-3 py-1.5 text-brand"><Icon name="add" size={20} />Add</button>
                   </div>
                 </div>
               ))}
@@ -228,8 +228,8 @@ function MealCard({ e, onDelete, onSwap }: { e: Entry; onDelete: () => void; onS
       <div className="relative">
         {'slug' in e ? <Link to={`/recipe/${e.slug}`}>{img}</Link> : img}
         {/* Delete removes the meal at once (as-is) */}
-        <button onClick={onDelete} className="absolute top-2 right-2 bg-[#e57373]/90 text-white text-[13px] rounded-full px-2 py-0.5">× Delete</button>
-        {'slug' in e && <button onClick={onSwap} className="absolute bottom-2 right-2 bg-black/60 text-white text-[13px] rounded-full px-2 py-0.5">⇄ Swap</button>}
+        <button onClick={onDelete} className="absolute top-2 right-2 inline-flex items-center bg-[#e57373]/90 text-white text-[13px] rounded-full pl-1 pr-2 py-0.5"><Icon name="close" size={16} />Delete</button>
+        {'slug' in e && <button onClick={onSwap} className="absolute bottom-2 right-2 inline-flex items-center gap-0.5 bg-black/60 text-white text-[13px] rounded-full pl-1.5 pr-2 py-0.5"><Icon name="swap_horiz" size={16} />Swap</button>}
       </div>
       <div className="text-[15px] leading-snug mt-1 line-clamp-2">{title}</div>
     </div>
@@ -250,7 +250,7 @@ function AddMealSheet({ title, meal, onAdd, onClose }: { title: string; meal: st
       <div className="flex items-center gap-3 py-2">
         <Photo hue={r.hue} className="w-14 h-14 rounded-lg shrink-0" />
         <span className="flex-1 text-[15px]">{r.title}</span>
-        <button onClick={() => onAdd({ slug })} className="bg-brand text-white text-[13px] rounded-full px-2.5 py-0.5">+ Add</button>
+        <button onClick={() => onAdd({ slug })} className="bg-brand text-white text-[13px] rounded-full pl-1.5 pr-2.5 py-0.5 inline-flex items-center"><Icon name="add" size={16} />Add</button>
       </div>
     )
   }
@@ -267,8 +267,8 @@ function AddMealSheet({ title, meal, onAdd, onClose }: { title: string; meal: st
             <div key={r.slug} className="w-[188px] shrink-0">
               <div className="relative">
                 <Photo hue={r.hue} className="h-[180px] rounded-lg" />
-                <button onClick={() => onAdd({ slug: r.slug })} className="absolute top-1.5 right-1.5 bg-brand text-white text-[13px] rounded-full px-2.5 py-0.5">+ Add</button>
-                <span className="absolute top-8 right-2 bg-white/90 rounded-full w-7 h-7 grid place-items-center text-sm">♡</span>
+                <button onClick={() => onAdd({ slug: r.slug })} className="absolute top-1.5 right-1.5 bg-brand text-white text-[13px] rounded-full pl-1.5 pr-2.5 py-0.5 inline-flex items-center"><Icon name="add" size={16} />Add</button>
+                <Heart className="top-8 right-2" />
               </div>
               <div className="text-[15px] mt-1 leading-snug">{r.title}</div>
             </div>
@@ -276,7 +276,7 @@ function AddMealSheet({ title, meal, onAdd, onClose }: { title: string; meal: st
         </div>
         <form className="mt-5" onSubmit={(e) => { e.preventDefault(); setResults(recipes.filter((r) => r.title.toLowerCase().includes(q.toLowerCase()))) }}>
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by ingredient, recipe name…" className="w-full border border-line rounded-md px-3 py-2" />
-          <div className="text-center mt-3"><button className="bg-brand text-white rounded-lg px-6 py-2">⌕ Search</button></div>
+          <div className="text-center mt-3"><button className="inline-flex items-center gap-1 bg-brand text-white rounded-lg px-6 py-2"><Icon name="search" size={20} />Search</button></div>
         </form>
         {results && <div className="mt-2">{results.length ? results.map((r) => <ResultRow key={r.slug} slug={r.slug} />) : <p className="text-muted text-sm">No recipes found.</p>}</div>}
         <p className="mt-5 text-[15px] font-semibold">Cooking your own recipe?</p>
@@ -297,7 +297,7 @@ function ListTab() {
   return (
     <div className="px-4">
       {/* Share: the share sheet for the list was not captured in the audit */}
-      <div className="text-center mt-3"><button className="text-brand text-[17px]">↪ Share</button></div>
+      <div className="text-center mt-3"><button className="inline-flex items-center gap-1 text-brand text-[17px]"><Icon name="share" size={20} />Share</button></div>
       {shoppingList.map(({ aisle, icon, items }) => (
         <section key={aisle} className="mt-3">
           <button onClick={() => setClosed(toggle(closed, aisle))} className="text-[19px] font-semibold">

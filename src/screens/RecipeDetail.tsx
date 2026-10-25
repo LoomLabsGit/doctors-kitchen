@@ -4,7 +4,7 @@ import { recipes, type Recipe } from '../data/recipes'
 import { amount, detailFor } from '../data/recipeDetail'
 import { recipeStats } from '../data/progress'
 import { MEALS, slotKey, type Plan } from '../data/plans'
-import { Photo, Sheet } from '../components/ui'
+import { Icon, Photo, Sheet, Stars } from '../components/ui'
 import { useSaved } from '../lib/saved'
 import { usePlans } from '../lib/plans'
 import { addDays, todayIso, weekday } from '../lib/dates'
@@ -27,22 +27,22 @@ export default function RecipeDetail() {
     <div className="pb-8">
       <div className="relative">
         <Photo hue={r.hue} className="h-[300px]" />
-        <button aria-label="Back" onClick={() => nav(-1)} className="absolute top-2 left-2 w-11 h-11 text-white text-[28px] drop-shadow">←</button>
+        <button aria-label="Back" onClick={() => nav(-1)} className="absolute top-2 left-2 w-11 h-11 grid place-items-center text-white drop-shadow"><Icon name="arrow_back" size={30} /></button>
       </div>
 
       <div className="px-4 mt-3 flex items-center justify-between">
-        <span className="text-brand font-bold text-[15px] uppercase">{r.mainIngredient}{r.rating && <span className="text-muted font-normal normal-case ml-2"><span className="text-amber-500">★</span> {r.rating}</span>}</span>
-        <div className="flex items-center text-brand text-[20px]">
-          <button aria-label="Share" onClick={() => setModal('share')} className="w-10 h-10">↪</button>
+        <span className="text-brand font-bold text-[15px] uppercase">{r.mainIngredient}{r.rating && <span className="text-muted font-normal normal-case ml-2"><Stars value={r.rating} /></span>}</span>
+        <div className="flex items-center text-brand">
+          <button aria-label="Share" onClick={() => setModal('share')} className="w-10 h-10 grid place-items-center"><Icon name="forward" size={26} fill /></button>
           {/* Print: not captured in the audit; opens the browser's print dialog */}
-          <button aria-label="Print" onClick={() => window.print()} className="w-10 h-10">⎙</button>
-          <button aria-label="Add to meal plan" onClick={() => setModal('plan')} className="w-10 h-10">▦</button>
-          <button aria-label={saved ? 'Saved' : 'Save'} onClick={() => setModal('save')} className="w-10 h-10 text-[#e57373]">{saved ? '♥' : '♡'}</button>
+          <button aria-label="Print" onClick={() => window.print()} className="w-10 h-10 grid place-items-center"><Icon name="print" size={26} fill /></button>
+          <button aria-label="Add to meal plan" onClick={() => setModal('plan')} className="w-10 h-10 grid place-items-center"><Icon name="calendar_month" size={26} fill /></button>
+          <button aria-label={saved ? 'Saved' : 'Save'} onClick={() => setModal('save')} className="w-10 h-10 grid place-items-center text-[#e57373]"><Icon name="favorite" size={26} fill={saved} /></button>
         </div>
       </div>
       <h1 className="px-4 text-[26px] font-semibold leading-tight mt-1">{r.title}</h1>
       <p className={`px-4 mt-2 text-[17px] leading-relaxed text-muted ${more ? '' : 'line-clamp-3'}`}>{d.description}</p>
-      <button onClick={() => setMore(!more)} className="px-4 text-[17px] text-muted">{more ? 'Read less ⌃' : 'Read more ⌄'}</button>
+      <button onClick={() => setMore(!more)} className="px-4 text-[17px] text-muted inline-flex items-center">{more ? 'Read less' : 'Read more'}<Icon name={more ? 'keyboard_arrow_up' : 'keyboard_arrow_down'} size={24} /></button>
 
       <div className="mt-3 bg-[#faf6f0] flex justify-center py-1.5">
         {(['Overview', 'Ingredients', 'Method'] as Tab[]).map((t) => (
@@ -70,7 +70,7 @@ function ChatCard({ onAsk }: { onAsk: (q?: string) => void }) {
   return (
     <div className="mx-4 mt-4 rounded-lg p-2.5 pb-3" style={{ background: 'linear-gradient(115deg, #8cc63f 0 32%, #12a676 32%)' }}>
       <div className="flex items-center gap-2">
-        <span className="shrink-0 w-[52px] h-[52px] rounded-full bg-white border-2 border-white grid place-items-center text-3xl">🧑🏽‍🍳</span>
+        <span className="shrink-0 w-[52px] h-[52px] rounded-full bg-white grid place-items-center text-brand"><Icon name="skillet" size={30} fill /></span>
         <button onClick={() => onAsk()} className="flex-1 min-w-0 flex bg-white rounded-lg overflow-hidden text-left">
           <span className="flex-1 min-w-0 truncate px-3 py-2.5 text-muted text-[16px]">Chat with Dr Rupy about this recipe</span>
           <span className="shrink-0 bg-black text-white font-bold px-3 grid place-items-center">Chat</span>
@@ -109,14 +109,14 @@ function Overview({ r, d }: { r: Recipe; d: ReturnType<typeof detailFor> }) {
 function Ingredients({ d }: { d: ReturnType<typeof detailFor> }) {
   const [serves, setServes] = useState(2)
   const [imperial, setImperial] = useState(false)
-  const round = 'w-6 h-6 rounded-full border-2 border-brand text-brand grid place-items-center leading-none text-sm'
+  const round = 'text-brand grid place-items-center'
   return (
     <div className="px-4 mt-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-[18px]">
-          <button aria-label="Fewer servings" onClick={() => setServes(Math.max(1, serves - 1))} className={round}>−</button>
+          <button aria-label="Fewer servings" onClick={() => setServes(Math.max(1, serves - 1))} className={round}><Icon name="do_not_disturb_on" size={26} /></button>
           <span>Serves {serves}</span>
-          <button aria-label="More servings" onClick={() => setServes(Math.min(12, serves + 1))} className={round}>+</button>
+          <button aria-label="More servings" onClick={() => setServes(Math.min(12, serves + 1))} className={round}><Icon name="add_circle" size={26} /></button>
         </div>
         <div className="flex border border-brand/40 rounded-full text-[17px] overflow-hidden">
           {['Metric', 'Imperial'].map((u) => (
@@ -153,7 +153,7 @@ function Method({ slug, d }: { slug: string; d: ReturnType<typeof detailFor> }) 
   return (
     <div className="px-4 mt-5">
       <div className="px-2 pb-4 border-b border-line">
-        <button onClick={() => setEditing(true)} className="text-muted text-[14px] uppercase tracking-wide">Your notes ✎</button>
+        <button onClick={() => setEditing(true)} className="text-muted text-[14px] uppercase tracking-wide inline-flex items-center gap-1">Your notes<Icon name="edit" size={18} /></button>
         {editing
           ? <div className="mt-2">
               <textarea autoFocus value={note} onChange={(e) => setNote(e.target.value)} rows={3} className="w-full border border-line rounded-md px-3 py-2 text-[16px]" />
@@ -174,8 +174,9 @@ function ShareSheet({ onClose }: { onClose: () => void }) {
   return (
     <Sheet title="Share this recipe 😌" onClose={onClose}>
       <div className="grid grid-cols-3 gap-1">
-        {[['🟢', 'Whatsapp'], ['🔵', 'Facebook'], ['✉️', 'Email']].map(([i, n]) => (
-          <span key={n} className="border border-brand rounded-lg py-2 text-center text-brand text-[17px]"><div className="text-[13px]">{i}</div>{n}</span>
+        {/* Material Symbols has no brand logos, so WhatsApp and Facebook use generic chat and share icons */}
+        {[['chat', 'Whatsapp'], ['share', 'Facebook'], ['mail', 'Email']].map(([i, n]) => (
+          <span key={n} className="border border-brand rounded-lg py-2 text-center text-brand text-[17px]"><Icon name={i} size={20} fill className="block mx-auto" />{n}</span>
         ))}
       </div>
       <div className="text-center mt-6"><button onClick={onClose} className="bg-brand text-white rounded-lg px-14 py-2 text-[17px]">Save</button></div>
@@ -232,7 +233,7 @@ function ChatSheet({ title, initial, onClose }: { title: string; initial: string
       ))}
       <form className="flex" onSubmit={(e) => { e.preventDefault(); send() }}>
         <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} className="flex-1 min-w-0 border border-line rounded-l-md px-3 py-2.5 text-[17px]" />
-        <button aria-label="Send" className="shrink-0 bg-brand text-white px-4 rounded-r-md text-xl">➤</button>
+        <button aria-label="Send" className="shrink-0 bg-brand text-white px-4 rounded-r-md grid place-items-center"><Icon name="send" size={22} fill /></button>
       </form>
       <p className="text-center text-[12px] text-muted mt-2">By using this service, you understand that it's an experimental feature and should not be construed as medical advice or diagnosis.</p>
     </Sheet>
@@ -262,7 +263,7 @@ function SaveSheet({ slug, onClose }: { slug: string; onClose: () => void }) {
           </label>
         ))}
       </div>
-      <button onClick={() => setCreating(true)} className="mt-4 text-brand text-[17px]">⊕ Create new collection</button>
+      <button onClick={() => setCreating(true)} className="mt-4 inline-flex items-center gap-1.5 text-brand text-[17px]"><Icon name="add_circle" size={22} fill />Create new collection</button>
       {creating && <input autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter a name for your collection" className="mt-2 w-full border border-line rounded-md px-3 py-2" />}
       <div className="text-center mt-4"><button onClick={save} className="bg-brand text-white rounded-lg px-8 py-2 text-[17px]">Save</button></div>
     </Sheet>

@@ -10,6 +10,8 @@ You are helping a Senior UX designer (joined The Doctors Kitchen, a UK nutrition
 ## How the code is organised
 - React + Vite + Tailwind v4 + react-router (HashRouter). Run `npm install && npm run dev`.
 - Design tokens live in `src/index.css` (`@theme`). Change tokens before changing components.
+- Icons: Google Material Symbols (Rounded), self-hosted from the `material-symbols` npm package. Use `<Icon name="schedule" />` from `src/components/ui.tsx` (`fill` for the filled style, `size` for pixels); never text glyphs or emoji for UI icons. Emoji that are part of the app's own content (diet choices, health goals, shopping list aisles) stay as emoji.
+- Two versions in one build: **As-is** (default, the app today) and **Improved** (redesign fixes). `useImproved()` from `src/lib/version.tsx` says which is showing; the toggle sits outside the phone frame (floating above the bottom bar on a phone). `?v=improved` or `?v=as-is` in the address opens that version. Add every new fix behind `useImproved()`, keep the as-is behaviour next to it with an `AS-IS (UX issue …)` / `IMPROVED` comment pair, and mark the issue "(improved version)" in `docs/ISSUES.md`.
 - `src/components/ui.tsx`: Chip, PageTitle, RecipeRow, Sheet, Photo. `FilterBar.tsx`: filter bar and Filters sheet. `Shell.tsx`: phone frame, header, bottom bar.
 - `src/screens/`: Recipes (home, index, list, search), Recipe detail (overview / ingredients / method, Dr Rupy chat card, Share, Add to plan, Save and AI chat sheets; made-up detail from `src/data/recipeDetail.ts`) and Plan (home, create, building, plan detail with PLAN/LIST tabs, Add meal and Update sheets) and Saved (home, collection with Edit menu / Rename / Delete, the two fixed lists, plus the Recipe detail Save sheet) and Progress (day view with rings, week strip, inflammation score, plant points, info sheets, Add meal sheet with routes A to D, Edit recipe sheet) and Learn (home, search, category and topic pages, Read / Listen / Watch lists, article / podcast / video pages, protein calculator) and Profile (home, food and notification preferences, subscription, chat history; Account info is a placeholder) are built. Every section is now built.
 - `src/data/plans.ts` and `src/lib/plans.tsx`: mock meal plans and a plan store saved to localStorage (`dk-plans`; clear it to get the mock plans back). Dates are local `YYYY-MM-DD` strings, see `src/lib/dates.ts`.
@@ -29,5 +31,5 @@ You are helping a Senior UX designer (joined The Doctors Kitchen, a UK nutrition
 - Screens of a user's details were deliberately removed from `docs/screens`; do not add real personal data.
 
 ## Suggested next steps
-1. Pick redesign targets from the High severity rows in `docs/ISSUES.md`. A first set of fixes (Recipes !1, Progress !5, Saved !3, Learn !4, U1 to U5) is on the `redesign-high-severity` branch but is NOT in this as-is version.
+1. Pick redesign targets from the High severity rows in `docs/ISSUES.md`. Recipes !1, Progress !5, Saved !3, Learn !4 and U1 to U5 are done in the Improved version.
 2. Continue the UI/UX audit for Recipe detail, Plan, Saved, Progress, Learn, Profile, and add findings under "UI / UX design audit".

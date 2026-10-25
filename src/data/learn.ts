@@ -3,24 +3,24 @@ export type Kind = 'read' | 'listen' | 'watch'
 export type Item = { id: string; kind: Kind; topics: string[]; title: string; date: string; hue: number; forYou?: boolean; recent?: boolean }
 export type Topic = { slug: string; name: string; icon: string; hue: number }
 
-// The category chips on Learn home, in two rows (even indexes on top) and the Read / Listen / Watch lists. "What to eat for" and "Ingredients" open a grid of topics.
+// Icons are Material Symbols names. The category chips on Learn home, in two rows (even indexes on top) and the Read / Listen / Watch lists. "What to eat for" and "Ingredients" open a grid of topics.
 export const CHIPS: Topic[] = [
-  { slug: 'what-to-eat-for', name: 'What to eat for', icon: '💚', hue: 90 },
-  { slug: 'cooking-skills', name: 'Cooking skills', icon: '🍳', hue: 30 },
-  { slug: 'ingredients', name: 'Ingredients', icon: '🍓', hue: 0 },
-  { slug: 'mindset', name: 'Mindset', icon: '🧠', hue: 25 },
-  { slug: 'hot-topics', name: 'Hot topics', icon: '🔥', hue: 15 },
-  { slug: 'nutrition-basics', name: 'Nutrition basics', icon: '🥦', hue: 200 },
+  { slug: 'what-to-eat-for', name: 'What to eat for', icon: 'volunteer_activism', hue: 90 },
+  { slug: 'cooking-skills', name: 'Cooking skills', icon: 'skillet', hue: 30 },
+  { slug: 'ingredients', name: 'Ingredients', icon: 'nutrition', hue: 0 },
+  { slug: 'mindset', name: 'Mindset', icon: 'psychology', hue: 25 },
+  { slug: 'hot-topics', name: 'Hot topics', icon: 'local_fire_department', hue: 15 },
+  { slug: 'nutrition-basics', name: 'Nutrition basics', icon: 'eco', hue: 200 },
 ]
 export const HEALTH_TOPICS: Topic[] = [
-  ['gut-health', 'Gut health', '🦠'], ['immunity', 'Immunity & inflammation', '🔥'], ['heart', 'Heart health & cholesterol', '❤️'],
-  ['mind', 'Mind & mood', '🙂'], ['menopause', 'Menopause', '🌸'], ['hormones', 'Hormones & period health', '🌙'],
-  ['diabetes', 'Type 2 diabetes', '🩸'], ['weight', 'Healthy weight', '⚖️'], ['sleep', 'Sleep & energy', '😴'],
-  ['fitness', 'Fitness', '🏋️'], ['ageing', 'Healthy ageing', '🌳'], ['allergies', 'Seasonal allergies', '🤧'],
-  ['brain', 'Brain health', '🧩'], ['cancer', 'Cancer', '🎗️'],
+  ['gut-health', 'Gut health', 'gastroenterology'], ['immunity', 'Immunity & inflammation', 'local_fire_department'], ['heart', 'Heart health & cholesterol', 'cardiology'],
+  ['mind', 'Mind & mood', 'psychology'], ['menopause', 'Menopause', 'female'], ['hormones', 'Hormones & period health', 'menstrual_health'],
+  ['diabetes', 'Type 2 diabetes', 'glucose'], ['weight', 'Healthy weight', 'monitor_weight'], ['sleep', 'Sleep & energy', 'bedtime'],
+  ['fitness', 'Fitness', 'fitness_center'], ['ageing', 'Healthy ageing', 'elderly'], ['allergies', 'Seasonal allergies', 'allergy'],
+  ['brain', 'Brain health', 'neurology'], ['cancer', 'Cancer', 'oncology'],
 ].map(([slug, name, icon], i) => ({ slug, name, icon, hue: 200 + i * 9 }))
 export const INGREDIENT_TOPICS: Topic[] = [
-  ['nuts-seeds', 'Nuts & seeds', '🌰'], ['potato', 'Potato', '🥔'], ['apple', 'Apple', '🍎'],
+  ['nuts-seeds', 'Nuts & seeds', 'grain'], ['potato', 'Potato', 'nutrition'], ['apple', 'Apple', 'nutrition'],
 ].map(([slug, name, icon], i) => ({ slug, name, icon, hue: 20 + i * 30 }))
 export const ALL_TOPICS = [...CHIPS, ...HEALTH_TOPICS, ...INGREDIENT_TOPICS]
 export const topic = (slug: string) => ALL_TOPICS.find((t) => t.slug === slug)
@@ -60,7 +60,11 @@ export const items: Item[] = [
   it('r11', 'read', ['sleep'], 'Foods for better sleep', '2025-05-12', 250),
 ]
 export const label = (i: Item) => topic(i.topics[0])?.name.toUpperCase() ?? ''
-export const KIND = { read: { badge: '📖 READ', list: 'Articles', one: 'articles' }, listen: { badge: '🎙 LISTEN', list: 'Podcasts', one: 'podcasts' }, watch: { badge: '🎬 WATCH', list: 'Videos', one: 'videos' } }
+export const KIND = {
+  read: { icon: 'menu_book', badge: 'READ', list: 'Articles', one: 'articles' },
+  listen: { icon: 'mic', badge: 'LISTEN', list: 'Podcasts', one: 'podcasts' },
+  watch: { icon: 'movie', badge: 'WATCH', list: 'Videos', one: 'videos' },
+}
 
 // "Nutrition basics with Dr Rupy" course carousel on Learn home.
 export const course = [
