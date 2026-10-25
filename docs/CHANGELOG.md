@@ -66,3 +66,8 @@
 ## 2026-10-25: Fix U4, pinned search field on search results
 - Recipe search results now have a real search field (with a clear button) that stays pinned at the top with the filter bar while the results scroll. The query is no longer a chip among the filters.
 - The Filters button shows how many filters are on, e.g. "Filters (2)", on every list. Before: the only way to change the search was to remove the query chip or open the Filters sheet.
+
+## 2026-10-25: Fix U5, nutrition and fixed metadata on recipe cards
+- Every recipe row and home carousel card now has the same slots: time and ingredients, rating ("No ratings yet" when there is none), and protein and fibre.
+- In High Protein contexts (the home carousel and the High Protein list) protein is highlighted in green. Before: no nutrition on any card, and the rating line simply disappeared on unrated recipes, so cards had different shapes.
+- Nutrition numbers are the made-up figures Progress uses. Profile's "Show recipe nutrition information" toggle is not wired to this yet.
