@@ -2,7 +2,7 @@ import { NavLink, Outlet, useLocation, Link } from 'react-router-dom'
 
 const tabs = [
   ['/', 'Recipes', '☰'], ['/plan', 'Plan', '▦'], ['/progress', 'Progress', '▮'],
-  ['/saved', 'Saved', '♡'], ['/learn', 'Learn', '▤'], ['/about', 'About', '◁'],
+  ['/saved', 'Saved', '♡'], ['/learn', 'Learn', '▤'],
 ] as const
 
 // Phone frame: 390 x 844 centred on desktop, full screen on a real phone.
@@ -16,7 +16,7 @@ export default function Shell() {
           {pathname === '/' && <Link to="/profile" className="text-sm text-brand border border-brand/40 rounded-full px-3 py-1">Profile</Link>}
         </header>
         <main className="flex-1 overflow-y-auto"><Outlet /></main>
-        <nav className="shrink-0 border-t border-line grid grid-cols-6 pb-2 pt-1 bg-white">
+        <nav className="shrink-0 border-t border-line grid grid-cols-5 pb-2 pt-1 bg-white">
           {tabs.map(([to, label, icon]) => (
             <NavLink key={to} to={to} end={to === '/'}
               className={({ isActive }) => `flex flex-col items-center text-[11px] py-1 ${isActive ? 'text-brand font-semibold' : 'text-muted'}`}>

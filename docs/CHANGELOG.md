@@ -13,3 +13,7 @@
 - Known issues kept as-is and marked in code: Saved !1 (no create/manage control on Saved home), !2 (Edit menu stays open behind Rename), !3 (any collection, Favourites included, can be deleted; the warning does not say what happens to its recipes).
 - Plan's Add meal FAVOURITES tab now reads the Favourites collection instead of its own mock list.
 - Collections are saved to localStorage (`dk-saved`); clear that key to reset. Ratings and cooked recipes are fixed mock data.
+
+## 2026-10-25: About removed
+- About exists only on the website, not in the app, so it is out of scope: removed the About tab and route (bottom bar now has five tabs), its reference screenshots (`docs/screens/07_About`), its section in `docs/APP_MAP.md` and About !1 to !3 in `docs/ISSUES.md`.
+- U15 reworded to drop the About point; the rest of the finding still applies.

@@ -7,7 +7,7 @@ Severity: High / Medium / Low. IDs match the Miro board tables.
 
 ### Recipes
 - !1 High, every list and search: "No gluten" is on by default and returns on each page load even after "Clear filters".
-- !2 Low, header: Profile is reachable only from a small pill on Recipes home; missing on Plan, Progress, Saved, Learn and About.
+- !2 Low, header: Profile is reachable only from a small pill on Recipes home; missing on Plan, Progress, Saved and Learn.
 - !3 Medium, cuisine list: the "Cuisines List" feels like a filter but is applied differently to other filters.
 - !4 Medium, filtered results: applied chips run off the right edge, so meal type and category filters are hidden until scrolled.
 - !5 Low, recipe image: padding issues on the label, as it does not overlap the outside (added by the user).
@@ -47,11 +47,6 @@ Severity: High / Medium / Low. IDs match the Miro board tables.
 - !5 Medium, protein calculator: Male is pre-selected, so skipping gender gives a male estimate.
 - !6 Low, protein calculator: 999 kg is rejected with "Please enter a valid weight", with no accepted range.
 
-### About
-- !1 Low, for work: both contact buttons leave the app for an external Typeform.
-- !2 Medium, FAQ answers: assume the iOS app (Family Sharing, Restore Purchase); Android and web users get no equivalent.
-- !3 Low, contact us: FAQ links to "contact us here" land with every panel closed, so the form needs an extra tap.
-
 ### Profile
 - !1 Medium, food preferences: three Update buttons on one page; unclear which section each saves.
 - !2 Medium, notification preferences: the floating Update button sits over content as you scroll.
@@ -77,10 +72,10 @@ Severity: High / Medium / Low. IDs match the Miro board tables.
 | U12 | Med | IA | Filters sheet groups | Gluten under allergens but chip says "No gluten"; "Under 30mins" in categories; no cuisine/ingredient/time filter. | Diet, Allergens, Meal type, Time, Goals. |
 | U13 | Med | Interaction | Filters footer | No result count on Apply; Reset looks disabled; weak selected state; no drag handle. | "Show 44 recipes" live; clear Reset; stronger selected state. |
 | U14 | Med | A11y | Chips | ~28 px tall, 13 px text, packed tightly. | 40 to 44 px, more spacing, 14 to 16 px text. |
-| U15 | Med | Layout | Bottom nav | Six tabs with 11 px labels; About holds a primary slot while Profile is hidden; ambiguous icons; active state colour only. | Five tabs; Profile persistent; clearer icons and active state. |
+| U15 | Med | Layout | Bottom nav | 11 px labels; Profile is hidden while every other section has a tab; ambiguous icons; active state colour only. | Profile persistent; clearer icons and active state. |
 | U16 | Low | Visual | NEW! ribbon | On most recipes so it signals nothing; dated style. | Limit to recent recipes; small pill. |
 | U17 | Low | Visual | Index tile labels | Dark grey bar hides image; low contrast. | Label below image or gradient scrim. |
 | U18 | Low | Visual | "Not found what you're looking for?" | Italic style used nowhere else; outcome of "Let us know" unclear. | Standard text/card; state the outcome. |
 
 ### Remaining frames (to do, one at a time)
-Recipe detail, Plan, Saved, Progress, Learn, About, Profile.
+Recipe detail, Plan, Saved, Progress, Learn, Profile.

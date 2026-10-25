@@ -1,6 +1,6 @@
 # App map (as audited, mobile web, The Doctors Kitchen)
 
-The website mirrors the app. Bottom bar: Recipes, Plan, Progress, Saved, Learn, About. Profile is reachable only from the Recipes home header.
+The website mirrors the app. Bottom bar: Recipes, Plan, Progress, Saved, Learn. (The website also has an About tab; it is not in the app, so it is left out of the prototype.) Profile is reachable only from the Recipes home header.
 Screenshots for every screen are in `docs/screens/<section>/`. The Miro board holds the full experience map.
 
 ## Recipes (`01_Recipes`)
@@ -24,9 +24,6 @@ Progress home (inflammation score, plant points, day view), info modal, Add meal
 
 ## Learn (`06_Learn`)
 Learn home with category chips, Read / Watch / Listen lists, search results and no-results, protein calculator. (25 screens, see folder.)
-
-## About (`07_About`)
-TV and Press, Books, History, For work, Sources, FAQs, Contact us (4 panels), Terms, Privacy.
 
 ## Profile (`08_Profile`)
 Your details, Food preferences, Notification preferences, Your subscription, Virtual Dr Rupy chat history. (Delete account, subscription purchase and log out were deliberately not exercised.)

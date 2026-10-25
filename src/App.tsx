@@ -28,7 +28,6 @@ export default function App() {
         <Route path="saved/cooked" element={<SavedFixed kind="cooked" />} />
         <Route path="saved/:id" element={<SavedCollection />} />
         <Route path="learn" element={<Stub name="Learn" folder="06_Learn" />} />
-        <Route path="about" element={<Stub name="About" folder="07_About" />} />
         <Route path="profile" element={<Stub name="Profile" folder="08_Profile" />} />
       </Route>
     </Routes>
