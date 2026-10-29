@@ -84,6 +84,7 @@ export default function Cook() {
         </div>
         <button aria-label="Ingredients" onClick={() => setIngredients(true)} className="w-11 h-11 grid place-items-center text-brand"><Icon name="format_list_bulleted" size={26} /></button>
       </header>
+      <h1 className="shrink-0 px-4 mt-3 text-[26px] font-semibold leading-tight">Step {n} <span className="text-muted font-normal">of {total}</span></h1>
       <div className="shrink-0 flex gap-1 px-4 mt-2" aria-hidden>
         {plan.steps.map((_, i) => <span key={i} className={`h-1.5 flex-1 rounded-full ${i < n ? 'bg-brand' : 'bg-line'}`} />)}
       </div>
@@ -95,8 +96,7 @@ export default function Cook() {
 
       <main key={n} className="flex-1 overflow-y-auto px-4 pb-6">
         <StepImage step={step} hue={r.hue} />
-        <h1 className="mt-5 text-[26px] font-semibold leading-tight">Step {n} <span className="text-muted font-normal">of {total}</span></h1>
-        <p className="mt-3 text-[18px] leading-relaxed">{step.text}</p>
+        <p className="mt-4 text-[18px] leading-relaxed">{step.text}</p>
         <StepIngredients lines={lines.filter((l) => step.uses?.includes(l.name))} />
         <AudioPlayer src={step.audio} />
         {step.timers && <>

@@ -131,3 +131,6 @@
 ## 2026-10-29: Protein and fibre only on the recipe itself
 - Removed protein and fibre from every recipe card and list in the Improved version (home carousels, recipe lists, search results, Saved), along with the green protein highlight on High Protein lists. They now appear only in Recipe detail's Overview.
 - The rest of the U5 improvement stays: every card has the same slots (time and ingredients, then the rating or "No ratings yet"). `docs/ISSUES.md` marks U5 as partly done.
+
+## 2026-10-29: Cook now, step title at the top
+- "Step N of 11" now sits at the top of cook mode, under the header and above the progress bar and the step photo, so it stays in view while the step scrolls. Before: below the photo.
