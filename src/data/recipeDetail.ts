@@ -1,8 +1,9 @@
-// Made-up detail for every recipe (description, timings, ingredient lines, method), generated from recipes.ts.
-// The live app's recipe text is not copied: lines are picked from a generic pool so each recipe looks plausible.
+// Detail for every recipe (description, timings, ingredient lines, method). Most are made up from recipes.ts, picked
+// from a generic pool so each recipe looks plausible. Recipes in REAL use the ingredients and method supplied by DK.
 import type { Recipe } from './recipes'
+import { cookalong } from './cookalong'
 
-type Line = { qty: number; unit: 'g' | 'ml' | 'tbsp' | 'tsp' | 'x'; name: string }
+export type Line = { qty: number; unit: 'g' | 'ml' | 'tbsp' | 'tsp' | 'x' | 'can'; name: string; note?: string }
 const POOL: Line[] = [
   { qty: 2, unit: 'tbsp', name: 'olive oil' }, { qty: 1, unit: 'x', name: 'red onion' }, { qty: 3, unit: 'x', name: 'garlic cloves' },
   { qty: 1, unit: 'tsp', name: 'ground cumin' }, { qty: 400, unit: 'g', name: 'tinned chickpeas' }, { qty: 2, unit: 'x', name: 'celery sticks' },
@@ -25,7 +26,28 @@ export type Detail = {
   groups: { title: string; lines: Line[] }[]; steps: string[]
 }
 
+const l = (qty: number, unit: Line['unit'], name: string, note?: string): Line => ({ qty, unit, name, note })
+// Ingredients supplied by DK (pasted in by the design team), keyed by recipe slug. The method comes from the cook-along.
+const REAL: Record<string, Detail['groups']> = {
+  'one-pan-harissa-chicken-pasta': [
+    { title: 'Ingredients', lines: [
+      l(1, 'tbsp', 'olive oil'), l(500, 'g', 'chicken thigh', '(boneless and skinless)'), l(150, 'g', 'white onion', 'diced'),
+      l(3, 'x', 'garlic cloves', 'grated'), l(3, 'tbsp', 'harissa paste', "(adjust depending on how spicy you like it)"),
+      l(1, 'tbsp', 'tomato puree'), l(1, 'tsp', 'cumin (ground)'), l(200, 'g', 'courgette', 'diced'),
+      l(1, 'can', 'chickpeas (can)', 'drained and rinsed'), l(200, 'g', 'baby tomatoes', 'halved'), l(200, 'g', 'lentil pasta'),
+      l(580, 'ml', 'chicken stock'), l(150, 'g', 'baby spinach'), l(0.5, 'x', 'lemon', 'juiced'),
+    ] },
+    { title: 'To serve (optional)', lines: [l(150, 'g', 'greek yoghurt'), l(15, 'g', 'parsley', 'roughly chopped')] },
+  ],
+}
+
 export function detailFor(r: Recipe): Detail {
+  const real = REAL[r.slug]
+  const generated = generate(r)
+  return real ? { ...generated, groups: real, steps: cookalong[r.slug]?.steps.map((x) => x.text) ?? generated.steps } : generated
+}
+
+function generate(r: Recipe): Detail {
   const h = hash(r.slug)
   const lines = [MAIN[r.mainIngredient] ?? POOL[0], ...Array.from({ length: r.ingredients - 1 }, (_, i) => POOL[(h + i * 7) % POOL.length])]
     .filter((l, i, a) => a.findIndex((x) => x.name === l.name) === i)
@@ -52,6 +74,7 @@ export function amount(l: Line, serves: number, imperial: boolean) {
   const q = (l.qty * serves) / 2
   const nice = (n: number) => (Number.isInteger(n) ? `${n}` : n.toFixed(1).replace(/\.0$/, ''))
   if (l.unit === 'x') return nice(q)
+  if (l.unit === 'can') return `${nice(q)} ${q > 1 ? 'cans' : 'can'}`
   if (imperial && l.unit === 'g') return `${nice(Math.round((q / 28.35) * 2) / 2)} oz`
   if (imperial && l.unit === 'ml') return `${nice(Math.round((q / 29.57) * 2) / 2)} fl oz`
   return `${nice(q)} ${l.unit}`

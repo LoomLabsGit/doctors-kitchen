@@ -179,7 +179,7 @@ export function ChatHistory() {
         return (
           <Link key={n} to={`/recipe/${slug}`} className="flex gap-3 px-4 py-2 items-start">
             <div className="relative w-[112px] h-[112px] shrink-0 rounded-lg overflow-hidden">
-              <Photo hue={r.hue} className="w-full h-full" />
+              <Photo hue={r.hue} src={r.image} className="w-full h-full" />
               <Heart />
             </div>
             <div className="flex-1 min-w-0">

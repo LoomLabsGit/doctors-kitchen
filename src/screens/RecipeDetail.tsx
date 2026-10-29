@@ -9,6 +9,8 @@ import { useSaved } from '../lib/saved'
 import { usePlans } from '../lib/plans'
 import { addDays, todayIso, weekday } from '../lib/dates'
 import { useBack } from '../lib/back'
+import { useImproved } from '../lib/version'
+import { cookalong } from '../data/cookalong'
 
 type Modal = null | 'share' | 'plan' | 'save' | 'chat'
 type Tab = 'Overview' | 'Ingredients' | 'Method'
@@ -21,13 +23,14 @@ export default function RecipeDetail() {
   const [more, setMore] = useState(false)
   const [ask, setAsk] = useState('')
   const saved = useSaved().collections.some((c) => c.slugs.includes(slug ?? ''))
+  const improved = useImproved()
   if (!r) return <p className="p-4">Recipe not found.</p>
   const d = detailFor(r)
   const chat = (q = '') => { setAsk(q); setModal('chat') }
   return (
     <div className="pb-8">
       <div className="relative">
-        <Photo hue={r.hue} className="h-[300px]" />
+        <Photo hue={r.hue} src={r.image} className="h-[300px]" />
         <button aria-label="Back" onClick={back} className="absolute top-2 left-2 w-11 h-11 grid place-items-center text-white drop-shadow"><Icon name="arrow_back" size={30} /></button>
       </div>
 
@@ -44,6 +47,8 @@ export default function RecipeDetail() {
       <h1 className="px-4 text-[26px] font-semibold leading-tight mt-1">{r.title}</h1>
       <p className={`px-4 mt-2 text-[17px] leading-relaxed text-muted ${more ? '' : 'line-clamp-3'}`}>{d.description}</p>
       <button onClick={() => setMore(!more)} className="px-4 text-[17px] text-muted inline-flex items-center">{more ? 'Read less' : 'Read more'}<Icon name={more ? 'keyboard_arrow_up' : 'keyboard_arrow_down'} size={24} /></button>
+
+      {improved && cookalong[r.slug] && <CookNow slug={r.slug} steps={cookalong[r.slug].steps.length} />}
 
       <div className="mt-3 bg-[#faf6f0] flex justify-center py-1.5">
         {(['Overview', 'Ingredients', 'Method'] as Tab[]).map((t) => (
@@ -63,6 +68,23 @@ export default function RecipeDetail() {
       {modal === 'save' && <SaveSheet slug={r.slug} onClose={() => setModal(null)} />}
       {modal === 'chat' && <ChatSheet title={r.title} initial={ask} onClose={() => setModal(null)} />}
     </div>
+  )
+}
+
+// IMPROVED (new feature): "Cook now" opens the audio-guided cook-along. Only on recipes that have one (src/data/cookalong.ts).
+function CookNow({ slug, steps }: { slug: string; steps: number }) {
+  return (
+    <Link to={`/recipe/${slug}/cook`} className="mx-4 mt-4 flex items-center gap-3 rounded-2xl bg-brand text-white p-3 pr-2 shadow-[0_6px_18px_rgba(18,166,118,0.35)]">
+      <span className="relative shrink-0 w-14 h-14">
+        <span className="absolute inset-0 rounded-full bg-white/40 animate-ping" />
+        <span className="relative w-14 h-14 rounded-full bg-white text-brand grid place-items-center"><Icon name="play_arrow" size={38} fill /></span>
+      </span>
+      <span className="flex-1 min-w-0">
+        <span className="block text-[19px] font-semibold leading-tight">Cook now with Dr Rupy</span>
+        <span className="flex items-center gap-1 text-[14px] text-white/85 mt-0.5"><Icon name="headphones" size={16} />{steps} steps · audio · timers</span>
+      </span>
+      <Icon name="chevron_right" size={28} />
+    </Link>
   )
 }
 
@@ -133,7 +155,7 @@ function Ingredients({ d }: { d: ReturnType<typeof detailFor> }) {
             {g.lines.map((l) => (
               <li key={l.name} className="flex gap-3 py-2 text-[17px]">
                 <span className="w-[80px] shrink-0 text-right text-muted">{amount(l, serves, imperial)}</span>
-                <span className="text-brand">{l.name}</span>
+                <span><span className="text-brand">{l.name}</span>{l.note && <span className="text-muted"> {l.note}</span>}</span>
               </li>
             ))}
           </ul>
@@ -241,7 +263,7 @@ function ChatSheet({ title, initial, onClose }: { title: string; initial: string
   )
 }
 
-const hueOf = Object.fromEntries(recipes.map((x) => [x.slug, x.hue]))
+const bySlug = Object.fromEntries(recipes.map((x) => [x.slug, x]))
 
 // Save (heart): tick collections, or name a new one, then Save (02_Recipe-detail/07 and 08).
 function SaveSheet({ slug, onClose }: { slug: string; onClose: () => void }) {
@@ -256,7 +278,7 @@ function SaveSheet({ slug, onClose }: { slug: string; onClose: () => void }) {
         {collections.map((c) => (
           <label key={c.id} className="block">
             <div className="grid grid-cols-2 aspect-square rounded-lg overflow-hidden border border-line">
-              {c.slugs.slice(0, 4).map((s) => <Photo key={s} hue={hueOf[s] ?? 0} className="w-full h-full" />)}
+              {c.slugs.slice(0, 4).map((s) => <Photo key={s} hue={bySlug[s]?.hue ?? 0} src={bySlug[s]?.image} className="w-full h-full" />)}
             </div>
             <span className="flex items-center gap-2 mt-1 text-[17px]">
               <input type="checkbox" checked={ids.includes(c.id)} onChange={() => setIds(ids.includes(c.id) ? ids.filter((i) => i !== c.id) : [...ids, c.id])} />{c.name}

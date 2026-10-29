@@ -244,7 +244,7 @@ function RecipeCarousel({ list }: { list: Recipe[] }) {
       {list.map((r) => (
         <Link key={r.slug} to={`/recipe/${r.slug}`} className="shrink-0 w-[190px]">
           <div className="relative">
-            <Photo hue={r.hue} className="h-[180px] rounded-lg" />
+            <Photo hue={r.hue} src={r.image} className="h-[180px] rounded-lg" />
             <Heart />
             {r.isNew && <span className="absolute bottom-3 -left-1 bg-brand text-white text-[12px] font-bold px-2 py-0.5 rounded">NEW!</span>}
           </div>

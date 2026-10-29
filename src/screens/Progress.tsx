@@ -163,7 +163,7 @@ function EntryRow({ e, onDelete, onEdit }: { e: LogEntry; onDelete: () => void; 
   return (
     <div className="flex gap-3 px-4 py-2 items-start">
       <div className="relative w-[150px] h-[150px] shrink-0 rounded-lg overflow-hidden">
-        {r ? <Photo hue={r.hue} className="w-full h-full" />
+        {r ? <Photo hue={r.hue} src={r.image} className="w-full h-full" />
           // UX issue Progress !6: the user's own meals get a generic icon, and their tab says Edit where DK recipes say Delete
           : <div className="w-full h-full bg-[#fdf6ee] grid place-items-center text-brand"><Icon name="nutrition" size={72} fill /></div>}
         {r

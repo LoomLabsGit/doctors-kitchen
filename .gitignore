@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# DK's own photos and audio for the prototype: kept on this machine only, never pushed (see public/local/README.md)
+public/local/*
+!public/local/README.md

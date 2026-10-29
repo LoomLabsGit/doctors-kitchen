@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import Shell from './components/Shell'
 import { Home, Index, List, Search } from './screens/Recipes'
 import RecipeDetail from './screens/RecipeDetail'
+import Cook from './screens/Cook'
 import { PlanBuilding, PlanDetail, PlanHome } from './screens/Plan'
 import { ProgressHome } from './screens/Progress'
 import { LearnHome, LearnItem, LearnList, LearnSearch, LearnTopic, ProteinCalculator } from './screens/Learn'
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="category/:name" element={<List kind="category" />} />
         <Route path="search" element={<Search />} />
         <Route path="recipe/:slug" element={<RecipeDetail />} />
+        <Route path="recipe/:slug/cook" element={<Cook />} />
         <Route path="plan" element={<PlanHome />} />
         <Route path="plan/building" element={<PlanBuilding />} />
         <Route path="plan/:id" element={<PlanDetail />} />

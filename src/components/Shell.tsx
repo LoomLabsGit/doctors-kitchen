@@ -14,26 +14,28 @@ export default function Shell() {
   const back = useBack()
   // Recipe detail and Learn topic pages draw their own back arrow over the photo or banner.
   const headerBack = hasBack(pathname) && !pathname.startsWith('/recipe/') && !pathname.startsWith('/learn/topic/')
+  // Cook-along mode (improved version) is full screen: no header and no bottom bar.
+  const fullScreen = pathname.endsWith('/cook')
   return (
     <div className="h-full flex items-center justify-center">
-      <VersionToggle />
+      {!fullScreen && <VersionToggle />}
       <div className="relative bg-white w-full max-w-[390px] h-full max-h-[844px] flex flex-col overflow-hidden sm:rounded-[28px] sm:shadow-2xl">
-        <header className="flex items-center justify-between px-4 pt-3 pb-1 shrink-0">
+        {!fullScreen && <header className="flex items-center justify-between px-4 pt-3 pb-1 shrink-0">
           <div className="flex items-center gap-1 min-w-0">
             {headerBack && <button aria-label="Back" onClick={back} className="-ml-2 w-10 h-10 grid place-items-center shrink-0"><Icon name="arrow_back" size={26} /></button>}
             <Link to="/" className="font-bold text-[17px] tracking-tight flex items-center gap-1 truncate"><Icon name="rice_bowl" size={24} />The Doctor's Kitchen</Link>
           </div>
           {pathname === '/' && <Link to="/profile" className="text-sm text-brand border border-brand/40 rounded-full px-3 py-1">Profile</Link>}
-        </header>
+        </header>}
         <main className="flex-1 overflow-y-auto"><Outlet /></main>
-        <nav className="shrink-0 border-t border-line grid grid-cols-5 pb-2 pt-1 bg-white">
+        {!fullScreen && <nav className="shrink-0 border-t border-line grid grid-cols-5 pb-2 pt-1 bg-white">
           {tabs.map(([to, label, icon]) => (
             <NavLink key={to} to={to} end={to === '/'}
               className={({ isActive }) => `flex flex-col items-center gap-0.5 text-[11px] py-1 ${isActive ? 'text-brand font-semibold' : 'text-muted'}`}>
               {({ isActive }) => <><Icon name={icon} size={24} fill={isActive} />{label}</>}
             </NavLink>
           ))}
-        </nav>
+        </nav>}
       </div>
     </div>
   )

@@ -3,6 +3,8 @@ export type Recipe = {
   slug: string; title: string; mins: number; ingredients: number; rating?: number
   isNew?: boolean; cuisine: string; mainIngredient: string; mealType: string
   categories: string[]; allergens: string[]; diet: string[]; hue: number
+  // A real photo from public/local/ (git-ignored, on this machine only). Without the file the gradient shows instead.
+  image?: string
 }
 const r = (p: Partial<Recipe> & Pick<Recipe, 'slug' | 'title'>): Recipe => ({
   mins: 30, ingredients: 10, cuisine: 'British', mainIngredient: 'Chicken', mealType: 'Dinner',
@@ -17,7 +19,7 @@ export const recipes: Recipe[] = [
   r({ slug: 'spicy-snapper-red-curry', title: 'Spicy Snapper Red Curry', mins: 35, ingredients: 13, rating: 5.0, cuisine: 'Sri Lankan', mainIngredient: 'Fish', allergens: ['Fish'], hue: 10 }),
   r({ slug: 'blackberry-cacao-smoothie', title: 'Blackberry and Cacao Smoothie', mins: 5, ingredients: 7, isNew: true, mealType: 'Drink', mainIngredient: 'Fruit', diet: ['Vegan'], hue: 330 }),
   r({ slug: 'pina-colada-smoothie', title: 'Piña Colada Smoothie', mins: 5, ingredients: 6, rating: 5.0, isNew: true, mealType: 'Drink', mainIngredient: 'Fruit', diet: ['Vegan'], hue: 60 }),
-  r({ slug: 'one-pan-harissa-chicken-pasta', title: 'One-Pan Harissa Chicken and Chickpea Pasta', mins: 50, ingredients: 16, rating: 4.7, isNew: true, categories: ['One Pots', 'High Protein', 'Kid Friendly'], allergens: ['Gluten'], hue: 15 }),
+  r({ slug: 'one-pan-harissa-chicken-pasta', title: 'One-Pan Harissa Chicken and Chickpea Pasta', mins: 50, ingredients: 16, rating: 4.7, isNew: true, categories: ['One Pots', 'High Protein', 'Kid Friendly'], allergens: ['Gluten'], hue: 15, image: '/local/harissa/hero.webp' }),
   r({ slug: 'strawberry-chia-pudding', title: 'Strawberry Chia Pudding', mins: 25, ingredients: 5, rating: 4.8, mealType: 'Breakfast', mainIngredient: 'Fruit', diet: ['Vegan'], hue: 350 }),
   r({ slug: 'crispy-sumac-chicken', title: 'Crispy Sumac Chicken', mins: 65, ingredients: 14, rating: 4.7, hue: 30, categories: ['Batch Cook'] }),
   r({ slug: 'tuna-fennel-walnut-pasta', title: 'Tuna, Fennel and Walnut Pasta', mins: 25, ingredients: 11, rating: 5.0, mainIngredient: 'Fish', categories: ['Under 30mins'], allergens: ['Fish', 'Nuts', 'Gluten'], hue: 90 }),

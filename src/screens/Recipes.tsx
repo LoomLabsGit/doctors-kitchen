@@ -8,6 +8,10 @@ import { applyFilters } from '../lib/query'
 import { useProgress } from '../lib/progress'
 import { useImproved } from '../lib/version'
 
+// "For you" leads with the Harissa pasta, the recipe with real photos and a cook-along.
+const FIRST = 'one-pan-harissa-chicken-pasta'
+const forYou = [recipes.find((r) => r.slug === FIRST)!, ...recipes.filter((r) => r.slug !== FIRST).slice(0, 3)]
+
 export function Home() {
   const nav = useNavigate()
   const improved = useImproved()
@@ -35,7 +39,7 @@ export function Home() {
           <Link to="/meal/Breakfast" className="shrink-0 border border-line rounded-lg px-4 py-2">Breakfast</Link>
         </div>
       )}
-      <Section title="For you" items={recipes.slice(0, 4)} />
+      <Section title="For you" items={forYou} />
       <Section title="High Protein" items={recipes.filter((r) => r.categories.includes('High Protein'))} showAll="/category/High Protein" protein />
     </div>
   )
@@ -50,7 +54,7 @@ function Section({ title, items, showAll, protein }: { title: string; items: typ
       <div className="flex gap-3 overflow-x-auto px-4 mt-3">
         {items.map((r) => (
           <Link key={r.slug} to={`/recipe/${r.slug}`} className="shrink-0 w-[335px]">
-            <div className="relative"><Photo hue={r.hue} className="h-[200px] rounded-lg" /><Heart /></div>
+            <div className="relative"><Photo hue={r.hue} src={r.image} className="h-[200px] rounded-lg" /><Heart /></div>
             <div className="font-semibold mt-2">{r.title}</div>
             <div className="text-[13px] text-muted flex items-center gap-1 flex-wrap">
               <Meta r={r} inline />

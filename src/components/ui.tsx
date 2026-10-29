@@ -11,8 +11,12 @@ export const Icon = ({ name, size = '1.25em', fill, className = '' }: { name: st
     style={{ fontSize: size, lineHeight: 1, fontVariationSettings: fill ? "'FILL' 1" : undefined }}>{name}</span>
 )
 
-export const Photo = ({ hue, className = '' }: { hue: number; className?: string }) => (
-  <div className={className} style={{ background: `linear-gradient(135deg, hsl(${hue} 55% 78%), hsl(${hue + 30} 45% 55%))` }} />
+// Gradient placeholder, with the real photo on top when there is one (`src`). If the photo file is missing
+// (public/local/ is git-ignored) the image removes itself and the gradient shows.
+export const Photo = ({ hue, src, className = '' }: { hue: number; src?: string; className?: string }) => (
+  <div className={`${className.includes('absolute') ? '' : 'relative'} overflow-hidden ${className}`} style={{ background: `linear-gradient(135deg, hsl(${hue} 55% 78%), hsl(${hue + 30} 45% 55%))` }}>
+    {src && <img src={src} alt="" onError={(e) => e.currentTarget.remove()} className="absolute inset-0 w-full h-full object-cover" />}
+  </div>
 )
 
 // Round white heart on recipe photos.
@@ -58,7 +62,7 @@ export function RecipeRow({ r, corner, protein }: { r: Recipe; corner?: ReactNod
   return (
     <Link to={`/recipe/${r.slug}`} className="flex gap-3 px-4 py-2 items-start">
       <div className="relative w-[150px] h-[150px] shrink-0 rounded-lg overflow-hidden">
-        <Photo hue={r.hue} className="w-full h-full" />
+        <Photo hue={r.hue} src={r.image} className="w-full h-full" />
         {corner === undefined ? <Heart /> : corner}
         {r.isNew && <span className="absolute bottom-2 left-0 bg-brand text-white text-[11px] font-bold px-2 py-0.5">NEW!</span>}
       </div>

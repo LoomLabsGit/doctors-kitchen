@@ -48,7 +48,7 @@ function PlanTile({ p }: { p: Plan }) {
 }
 
 const Thumb = ({ e, className }: { e: Entry; className: string }) =>
-  'slug' in e ? <Photo hue={bySlug[e.slug]?.hue ?? 0} className={className} /> : <div className={`${className} bg-line grid place-items-center text-muted`}><Icon name="restaurant" size={32} /></div>
+  'slug' in e ? <Photo hue={bySlug[e.slug]?.hue ?? 0} src={bySlug[e.slug]?.image} className={className} /> : <div className={`${className} bg-line grid place-items-center text-muted`}><Icon name="restaurant" size={32} /></div>
 
 // Create and Update share this sheet. UX issue Plan !4: the Update version drops "AI plan?" and "Specific focus?",
 // and Delete / Remove all are small text links.
@@ -248,7 +248,7 @@ function AddMealSheet({ title, meal, onAdd, onClose }: { title: string; meal: st
     const r = bySlug[slug]
     return (
       <div className="flex items-center gap-3 py-2">
-        <Photo hue={r.hue} className="w-14 h-14 rounded-lg shrink-0" />
+        <Photo hue={r.hue} src={r.image} className="w-14 h-14 rounded-lg shrink-0" />
         <span className="flex-1 text-[15px]">{r.title}</span>
         <button onClick={() => onAdd({ slug })} className="bg-brand text-white text-[13px] rounded-full pl-1.5 pr-2.5 py-0.5 inline-flex items-center"><Icon name="add" size={16} />Add</button>
       </div>
@@ -266,7 +266,7 @@ function AddMealSheet({ title, meal, onAdd, onClose }: { title: string; meal: st
           {poolFor(meal).map((r) => (
             <div key={r.slug} className="w-[188px] shrink-0">
               <div className="relative">
-                <Photo hue={r.hue} className="h-[180px] rounded-lg" />
+                <Photo hue={r.hue} src={r.image} className="h-[180px] rounded-lg" />
                 <button onClick={() => onAdd({ slug: r.slug })} className="absolute top-1.5 right-1.5 bg-brand text-white text-[13px] rounded-full pl-1.5 pr-2.5 py-0.5 inline-flex items-center"><Icon name="add" size={16} />Add</button>
                 <Heart className="top-8 right-2" />
               </div>

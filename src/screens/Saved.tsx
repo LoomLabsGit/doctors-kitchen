@@ -24,7 +24,7 @@ export function SavedHome() {
             <div className="text-brand text-[22px] flex items-center">{l.name}<Icon name="chevron_right" size={26} /></div>
             {/* Shows the first five; no count of how many more (as-is) */}
             <div className="flex gap-2 mt-2">
-              {l.slugs.slice(0, 5).map((s) => <Photo key={s} hue={bySlug[s]?.hue ?? 0} className="w-[50px] h-[50px] rounded-lg shrink-0" />)}
+              {l.slugs.slice(0, 5).map((s) => <Photo key={s} hue={bySlug[s]?.hue ?? 0} src={bySlug[s]?.image} className="w-[50px] h-[50px] rounded-lg shrink-0" />)}
             </div>
           </Link>
         ))}
