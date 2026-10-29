@@ -125,5 +125,5 @@
 - Step 1 and step 3 audio replaced with new recordings (local files only, nothing in git).
 
 ## 2026-10-29: Step photos in the Method tab
-- The Harissa pasta's Method tab now shows each step's photo under its text, with the same "Prep step" placeholder as cook mode for steps 2, 4 and 8. Applies in both versions, since the photos are the recipe's own. Recipes without step photos keep the plain numbered list.
+- The Harissa pasta's Method tab now shows each step's photo above its text, with the same "Prep step" placeholder as cook mode for steps 2, 4 and 8. Applies in both versions, since the photos are the recipe's own. Recipes without step photos keep the plain numbered list.
 - The step photo is one shared component (`StepImage` in `src/screens/Cook.tsx`), so the Method tab and cook mode always match.

@@ -168,7 +168,7 @@ const NOTES_KEY = 'dk-notes'
 const readNotes = (): Record<string, string> => { try { return JSON.parse(localStorage.getItem(NOTES_KEY) ?? '{}') } catch { return {} } }
 
 function Method({ slug, hue, d }: { slug: string; hue: number; d: ReturnType<typeof detailFor> }) {
-  // Recipes with step photos (the cook-along data) show each step's photo, or a "Prep step" placeholder, under its text.
+  // Recipes with step photos (the cook-along data) show each step's photo, or a "Prep step" placeholder, above its text.
   const photos = cookalong[slug]?.steps
   const [note, setNote] = useState(() => readNotes()[slug] ?? '')
   const [editing, setEditing] = useState(false)
@@ -187,8 +187,8 @@ function Method({ slug, hue, d }: { slug: string; hue: number; d: ReturnType<typ
       <ol className={`mt-4 text-[18px] leading-relaxed ${photos ? 'space-y-7' : 'space-y-4'}`}>
         {d.steps.map((s, i) => (
           <li key={i}>
+            {photos?.[i] && <StepImage step={photos[i]} hue={hue} className="mb-3" />}
             {i + 1}. {s}
-            {photos?.[i] && <StepImage step={photos[i]} hue={hue} className="mt-3" />}
           </li>
         ))}
       </ol>
