@@ -75,10 +75,7 @@ export default function RecipeDetail() {
 function CookNow({ slug, steps }: { slug: string; steps: number }) {
   return (
     <Link to={`/recipe/${slug}/cook`} className="mx-4 mt-4 flex items-center gap-3 rounded-2xl bg-brand text-white p-3 pr-2 shadow-[0_6px_18px_rgba(18,166,118,0.35)]">
-      <span className="relative shrink-0 w-14 h-14">
-        <span className="absolute inset-0 rounded-full bg-white/40 animate-ping" />
-        <span className="relative w-14 h-14 rounded-full bg-white text-brand grid place-items-center"><Icon name="play_arrow" size={38} fill /></span>
-      </span>
+      <span className="shrink-0 w-14 h-14 rounded-full bg-white text-brand grid place-items-center"><Icon name="play_arrow" size={38} fill /></span>
       <span className="flex-1 min-w-0">
         <span className="block text-[19px] font-semibold leading-tight">Cook now with Dr Rupy</span>
         <span className="flex items-center gap-1 text-[14px] text-white/85 mt-0.5"><Icon name="headphones" size={16} />{steps} steps · audio · timers</span>

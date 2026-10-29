@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { recipes } from '../data/recipes'
 import { cookalong, type CookStep, type Timer } from '../data/cookalong'
-import { amount, detailFor } from '../data/recipeDetail'
+import { amount, detailFor, type Line } from '../data/recipeDetail'
 import { Icon, Photo, Sheet } from '../components/ui'
 
 // IMPROVED (new feature): audio-guided "Cook now" mode. One step per page with its photo, Dr Rupy reading it aloud,
@@ -70,6 +70,7 @@ export default function Cook() {
 
   if (n > total) return <Finished r={r} onClose={exit} onRestart={() => go(1)} />
   const step = plan.steps[n - 1]
+  const lines = detailFor(r).groups.flatMap((g) => g.lines)
   // Timers started on other steps follow you as compact bars at the top.
   const elsewhere = timers.filter((t) => t.step !== n)
 
@@ -96,6 +97,7 @@ export default function Cook() {
         <StepImage step={step} hue={r.hue} />
         <h1 className="mt-5 text-[30px] font-semibold leading-tight">Step {n} <span className="text-muted font-normal">of {total}</span></h1>
         <p className="mt-3 text-[21px] leading-[1.5]">{step.text}</p>
+        <StepIngredients lines={lines.filter((l) => step.uses?.includes(l.name))} />
         <AudioPlayer src={step.audio} />
         {step.timers && <>
           <h2 className="mt-6 text-[13px] font-bold uppercase tracking-wider text-muted">{step.timers.length > 1 ? 'Timers' : 'Timer'}</h2>
@@ -117,6 +119,24 @@ export default function Cook() {
       </footer>
 
       {ingredients && <IngredientsSheet slug={slug} onClose={() => setIngredients(false)} />}
+    </div>
+  )
+}
+
+// "You'll need": the ingredients this step uses, with their amounts from the recipe (for the recipe's base servings).
+function StepIngredients({ lines }: { lines: Line[] }) {
+  if (!lines.length) return null
+  return (
+    <div className="mt-5 rounded-2xl bg-[#faf6f0] px-4 py-3">
+      <h2 className="text-[13px] font-bold uppercase tracking-wider text-muted">You'll need</h2>
+      <ul className="mt-1 divide-y divide-line/70">
+        {lines.map((l) => (
+          <li key={l.name} className="flex gap-3 py-2 text-[17px]">
+            <span className="w-[72px] shrink-0 font-semibold">{amount(l, 2, false)}</span>
+            <span>{l.name}{l.note && <span className="text-muted"> {l.note}</span>}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
@@ -145,8 +165,7 @@ function AudioPlayer({ src }: { src?: string }) {
     <div className="mt-6 rounded-2xl bg-brand-soft p-4">
       <div className="flex items-center gap-3">
         <button aria-label={playing ? 'Pause' : 'Play'} onClick={toggle} disabled={missing}
-          className="relative shrink-0 w-16 h-16 rounded-full bg-brand text-white grid place-items-center disabled:opacity-40">
-          {playing && <span className="absolute inset-0 rounded-full bg-brand animate-ping opacity-30" />}
+          className="shrink-0 w-16 h-16 rounded-full bg-brand text-white grid place-items-center disabled:opacity-40">
           <Icon name={playing ? 'pause' : 'play_arrow'} size={38} fill />
         </button>
         <div className="flex-1 min-w-0">
