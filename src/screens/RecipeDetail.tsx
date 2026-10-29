@@ -11,6 +11,7 @@ import { addDays, todayIso, weekday } from '../lib/dates'
 import { useBack } from '../lib/back'
 import { useImproved } from '../lib/version'
 import { cookalong } from '../data/cookalong'
+import { StepImage } from './Cook'
 
 type Modal = null | 'share' | 'plan' | 'save' | 'chat'
 type Tab = 'Overview' | 'Ingredients' | 'Method'
@@ -61,7 +62,7 @@ export default function RecipeDetail() {
 
       {tab === 'Overview' && <Overview r={r} d={d} />}
       {tab === 'Ingredients' && <Ingredients d={d} />}
-      {tab === 'Method' && <Method slug={r.slug} d={d} />}
+      {tab === 'Method' && <Method slug={r.slug} hue={r.hue} d={d} />}
 
       {modal === 'share' && <ShareSheet onClose={() => setModal(null)} />}
       {modal === 'plan' && <AddToPlanSheet slug={r.slug} onClose={() => setModal(null)} />}
@@ -166,7 +167,9 @@ function Ingredients({ d }: { d: ReturnType<typeof detailFor> }) {
 const NOTES_KEY = 'dk-notes'
 const readNotes = (): Record<string, string> => { try { return JSON.parse(localStorage.getItem(NOTES_KEY) ?? '{}') } catch { return {} } }
 
-function Method({ slug, d }: { slug: string; d: ReturnType<typeof detailFor> }) {
+function Method({ slug, hue, d }: { slug: string; hue: number; d: ReturnType<typeof detailFor> }) {
+  // Recipes with step photos (the cook-along data) show each step's photo, or a "Prep step" placeholder, under its text.
+  const photos = cookalong[slug]?.steps
   const [note, setNote] = useState(() => readNotes()[slug] ?? '')
   const [editing, setEditing] = useState(false)
   const save = () => { try { localStorage.setItem(NOTES_KEY, JSON.stringify({ ...readNotes(), [slug]: note.trim() })) } catch { /* private mode */ } setEditing(false) }
@@ -181,8 +184,13 @@ function Method({ slug, d }: { slug: string; d: ReturnType<typeof detailFor> }) 
             </div>
           : note && <p className="mt-1 text-[16px] whitespace-pre-line">{note}</p>}
       </div>
-      <ol className="mt-4 space-y-4 text-[18px] leading-relaxed">
-        {d.steps.map((s, i) => <li key={i}>{i + 1}. {s}</li>)}
+      <ol className={`mt-4 text-[18px] leading-relaxed ${photos ? 'space-y-7' : 'space-y-4'}`}>
+        {d.steps.map((s, i) => (
+          <li key={i}>
+            {i + 1}. {s}
+            {photos?.[i] && <StepImage step={photos[i]} hue={hue} className="mt-3" />}
+          </li>
+        ))}
       </ol>
     </div>
   )

@@ -142,11 +142,12 @@ function StepIngredients({ lines }: { lines: Line[] }) {
 }
 
 // The step's photo, or a calm placeholder for prep-only steps (and if the photo file isn't on this machine).
-function StepImage({ step, hue }: { step: CookStep; hue: number }) {
+// Also used by the Method tab on Recipe detail.
+export function StepImage({ step, hue, className = 'mt-4' }: { step: CookStep; hue: number; className?: string }) {
   const [failed, setFailed] = useState(false)
-  if (step.image && !failed) return <img src={step.image} alt="" onError={() => setFailed(true)} className="mt-4 w-full aspect-[3/2] object-cover rounded-2xl" />
+  if (step.image && !failed) return <img src={step.image} alt="" onError={() => setFailed(true)} className={`${className} w-full aspect-[3/2] object-cover rounded-2xl`} />
   return (
-    <div className="mt-4 w-full aspect-[3/2] rounded-2xl bg-[#faf6f0] grid place-items-center text-center" style={{ boxShadow: `inset 0 0 0 1px hsl(${hue} 30% 88%)` }}>
+    <div className={`${className} w-full aspect-[3/2] rounded-2xl bg-[#faf6f0] grid place-items-center text-center`} style={{ boxShadow: `inset 0 0 0 1px hsl(${hue} 30% 88%)` }}>
       <div className="text-brand"><Icon name="content_cut" size={56} /><div className="text-[15px] text-muted mt-1">Prep step</div></div>
     </div>
   )

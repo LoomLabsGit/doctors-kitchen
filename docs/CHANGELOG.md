@@ -123,3 +123,7 @@
 - Cook mode now uses Recipe detail's type scale: step title 26 px (as the recipe title), instruction 18 px (as Method steps), ingredients, body text and buttons 17 px, the "Cooking with Dr Rupy" label 15 px bold capitals (as the CHICKEN category label), and section labels ("You'll need", "Timers") 14 px capitals (as ingredient group titles). Before: 30 px title, 21 px instruction and 12 to 13 px labels.
 - One-Pan Harissa Chicken and Chickpea Pasta now has its real description, prep time (10 mins), cook time (40 mins), freezer friendly (No) and shelf life (3 days), as supplied by the design team. Servings are still not supplied, so amounts are treated as serving 2.
 - Step 1 and step 3 audio replaced with new recordings (local files only, nothing in git).
+
+## 2026-10-29: Step photos in the Method tab
+- The Harissa pasta's Method tab now shows each step's photo under its text, with the same "Prep step" placeholder as cook mode for steps 2, 4 and 8. Applies in both versions, since the photos are the recipe's own. Recipes without step photos keep the plain numbered list.
+- The step photo is one shared component (`StepImage` in `src/screens/Cook.tsx`), so the Method tab and cook mode always match.
