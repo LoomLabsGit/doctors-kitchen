@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { cuisines, ingredientsIndex, mealTypes, recipes } from '../data/recipes'
 import { FilterBar, FiltersSheet } from '../components/FilterBar'
-import { Heart, Icon, Meta, Nutrition, PageTitle, Photo, RecipeRow, Stars } from '../components/ui'
+import { Heart, Icon, Meta, PageTitle, Photo, RecipeRow, Stars } from '../components/ui'
 import { useFilters } from '../lib/filters'
 import { applyFilters } from '../lib/query'
 import { useProgress } from '../lib/progress'
@@ -40,12 +40,12 @@ export function Home() {
         </div>
       )}
       <Section title="For you" items={forYou} />
-      <Section title="High Protein" items={recipes.filter((r) => r.categories.includes('High Protein'))} showAll="/category/High Protein" protein />
+      <Section title="High Protein" items={recipes.filter((r) => r.categories.includes('High Protein'))} showAll="/category/High Protein" />
     </div>
   )
 }
 
-function Section({ title, items, showAll, protein }: { title: string; items: typeof recipes; showAll?: string; protein?: boolean }) {
+function Section({ title, items, showAll }: { title: string; items: typeof recipes; showAll?: string }) {
   const improved = useImproved()
   return (
     <section className="mt-6">
@@ -60,8 +60,6 @@ function Section({ title, items, showAll, protein }: { title: string; items: typ
               <Meta r={r} inline />
               {r.rating ? <><span>·</span><Stars value={r.rating} /></> : improved && <span>· No ratings yet</span>}
             </div>
-            {/* IMPROVED (UX issue U5): protein and fibre on carousel cards too */}
-            {improved && <div className="text-[13px] text-muted"><Nutrition r={r} protein={protein} /></div>}
           </Link>
         ))}
       </div>
@@ -119,7 +117,7 @@ export function List({ kind }: { kind: 'cuisine' | 'ingredient' | 'meal' | 'cate
     <div className="pb-6">
       <PageTitle>{name} Recipes</PageTitle>
       <FilterBar />
-      {items.map((r) => <RecipeRow key={r.slug} r={r} protein={name === 'High Protein'} />)}
+      {items.map((r) => <RecipeRow key={r.slug} r={r} />)}
       <p className="text-center italic mt-6 text-muted">Not found what you're looking for?</p>
       <div className="text-center mt-2"><button className="border border-brand text-brand rounded-lg px-5 py-1">Let us know</button></div>
     </div>

@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import type { Recipe } from '../data/recipes'
-import { recipeStats } from '../data/progress'
 import { useImproved } from '../lib/version'
 
 // Google Material Symbols (Rounded), self-hosted from the material-symbols package. `name` is the symbol name,
@@ -47,17 +46,11 @@ export const Meta = ({ r, inline }: { r: Recipe; inline?: boolean }) => inline
 
 export const Stars = ({ value }: { value: number }) => <span className="inline-flex items-center gap-0.5"><Icon name="star" size={16} fill className="text-amber-500" />{value}</span>
 
-// IMPROVED (UX issue U5): protein and fibre on cards; `protein` highlights protein in High Protein lists.
-export function Nutrition({ r, protein }: { r: Recipe; protein?: boolean }) {
-  const s = recipeStats[r.slug]
-  if (!s) return null
-  return <div><span className={protein ? 'text-brand font-semibold' : ''}>Protein {s.protein}g</span> · Fibre {s.fibre}g</div>
-}
-
 // `corner` replaces the heart on the photo (Saved lists show a Delete pill there, or nothing).
-// AS-IS (UX issue U5): no nutrition, and the rating line disappears on unrated recipes.
-// IMPROVED: fixed slots (time and ingredients, rating or "No ratings yet", protein and fibre).
-export function RecipeRow({ r, corner, protein }: { r: Recipe; corner?: ReactNode; protein?: boolean }) {
+// AS-IS (UX issue U5): the rating line disappears on unrated recipes, so cards have different shapes.
+// IMPROVED: fixed slots (time and ingredients, then rating or "No ratings yet"). Protein and fibre are shown only on
+// the recipe itself (Recipe detail's Overview), not on cards.
+export function RecipeRow({ r, corner }: { r: Recipe; corner?: ReactNode }) {
   const improved = useImproved()
   return (
     <Link to={`/recipe/${r.slug}`} className="flex gap-3 px-4 py-2 items-start">
@@ -72,7 +65,6 @@ export function RecipeRow({ r, corner, protein }: { r: Recipe; corner?: ReactNod
           {improved ? <>
             <Meta r={r} />
             <div>{r.rating ? <Stars value={r.rating} /> : 'No ratings yet'}</div>
-            <Nutrition r={r} protein={protein} />
           </> : <>
             <Meta r={r} />
             {r.rating && <div><Stars value={r.rating} /></div>}

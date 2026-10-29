@@ -127,3 +127,7 @@
 ## 2026-10-29: Step photos in the Method tab
 - The Harissa pasta's Method tab now shows each step's photo above its text, with the same "Prep step" placeholder as cook mode for steps 2, 4 and 8. Applies in both versions, since the photos are the recipe's own. Recipes without step photos keep the plain numbered list.
 - The step photo is one shared component (`StepImage` in `src/screens/Cook.tsx`), so the Method tab and cook mode always match.
+
+## 2026-10-29: Protein and fibre only on the recipe itself
+- Removed protein and fibre from every recipe card and list in the Improved version (home carousels, recipe lists, search results, Saved), along with the green protein highlight on High Protein lists. They now appear only in Recipe detail's Overview.
+- The rest of the U5 improvement stays: every card has the same slots (time and ingredients, then the rating or "No ratings yet"). `docs/ISSUES.md` marks U5 as partly done.
