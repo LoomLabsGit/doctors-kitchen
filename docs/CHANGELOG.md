@@ -118,3 +118,8 @@
 ## 2026-10-29: Cook now, ingredients per step and calmer play buttons
 - Each cook-along step now has a "You'll need" card under the instruction, listing the ingredients that step uses with their amounts and notes (e.g. step 3: 150 g white onion diced, 3 garlic cloves grated, 3 tbsp harissa paste, 1 tbsp tomato puree, 1 tsp cumin). Amounts come from the recipe's ingredient list, so they always match; step 9 uses nothing new, so it has no card.
 - Removed the pulsing animation from the Cook now play button and from the audio player; both are now static.
+
+## 2026-10-29: Cook now type sizes, and the Harissa pasta's real details
+- Cook mode now uses Recipe detail's type scale: step title 26 px (as the recipe title), instruction 18 px (as Method steps), ingredients, body text and buttons 17 px, the "Cooking with Dr Rupy" label 15 px bold capitals (as the CHICKEN category label), and section labels ("You'll need", "Timers") 14 px capitals (as ingredient group titles). Before: 30 px title, 21 px instruction and 12 to 13 px labels.
+- One-Pan Harissa Chicken and Chickpea Pasta now has its real description, prep time (10 mins), cook time (40 mins), freezer friendly (No) and shelf life (3 days), as supplied by the design team. Servings are still not supplied, so amounts are treated as serving 2.
+- Step 1 and step 3 audio replaced with new recordings (local files only, nothing in git).

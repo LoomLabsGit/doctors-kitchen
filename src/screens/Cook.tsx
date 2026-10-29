@@ -79,8 +79,8 @@ export default function Cook() {
       <header className="shrink-0 flex items-center gap-2 px-2 pt-3">
         <button aria-label="Close cook along" onClick={exit} className="w-11 h-11 grid place-items-center"><Icon name="close" size={28} /></button>
         <div className="flex-1 min-w-0 text-center">
-          <div className="text-[12px] font-bold uppercase tracking-wider text-brand">Cooking with Dr Rupy</div>
-          <div className="text-[14px] text-muted truncate">{r.title}</div>
+          <div className="text-[15px] font-bold uppercase text-brand">Cooking with Dr Rupy</div>
+          <div className="text-[15px] text-muted truncate">{r.title}</div>
         </div>
         <button aria-label="Ingredients" onClick={() => setIngredients(true)} className="w-11 h-11 grid place-items-center text-brand"><Icon name="format_list_bulleted" size={26} /></button>
       </header>
@@ -95,12 +95,12 @@ export default function Cook() {
 
       <main key={n} className="flex-1 overflow-y-auto px-4 pb-6">
         <StepImage step={step} hue={r.hue} />
-        <h1 className="mt-5 text-[30px] font-semibold leading-tight">Step {n} <span className="text-muted font-normal">of {total}</span></h1>
-        <p className="mt-3 text-[21px] leading-[1.5]">{step.text}</p>
+        <h1 className="mt-5 text-[26px] font-semibold leading-tight">Step {n} <span className="text-muted font-normal">of {total}</span></h1>
+        <p className="mt-3 text-[18px] leading-relaxed">{step.text}</p>
         <StepIngredients lines={lines.filter((l) => step.uses?.includes(l.name))} />
         <AudioPlayer src={step.audio} />
         {step.timers && <>
-          <h2 className="mt-6 text-[13px] font-bold uppercase tracking-wider text-muted">{step.timers.length > 1 ? 'Timers' : 'Timer'}</h2>
+          <h2 className="mt-6 text-[14px] uppercase tracking-wide text-muted">{step.timers.length > 1 ? 'Timers' : 'Timer'}</h2>
           {step.timers.map((t, i) => (
             <TimerCard key={i} def={t} t={timers.find((x) => x.id === timerId(n, i))} now={now}
               onStart={() => start(n, i, t)} {...controls} />
@@ -113,7 +113,7 @@ export default function Cook() {
           className="w-[120px] h-14 rounded-2xl border-2 border-line text-[17px] font-semibold inline-flex items-center justify-center gap-1 disabled:opacity-40">
           <Icon name="arrow_back" size={22} />Back
         </button>
-        <button onClick={() => go(n + 1)} className="flex-1 h-14 rounded-2xl bg-brand text-white text-[18px] font-semibold inline-flex items-center justify-center gap-1">
+        <button onClick={() => go(n + 1)} className="flex-1 h-14 rounded-2xl bg-brand text-white text-[17px] font-semibold inline-flex items-center justify-center gap-1">
           {n === total ? 'Finish cooking' : 'Next step'}<Icon name={n === total ? 'check' : 'arrow_forward'} size={24} />
         </button>
       </footer>
@@ -128,7 +128,7 @@ function StepIngredients({ lines }: { lines: Line[] }) {
   if (!lines.length) return null
   return (
     <div className="mt-5 rounded-2xl bg-[#faf6f0] px-4 py-3">
-      <h2 className="text-[13px] font-bold uppercase tracking-wider text-muted">You'll need</h2>
+      <h2 className="text-brand text-[14px] uppercase tracking-wide">You'll need</h2>
       <ul className="mt-1 divide-y divide-line/70">
         {lines.map((l) => (
           <li key={l.name} className="flex gap-3 py-2 text-[17px]">
@@ -175,7 +175,7 @@ function AudioPlayer({ src }: { src?: string }) {
           <div className="mt-2 h-1.5 rounded-full bg-white overflow-hidden">
             <div className="h-full bg-brand transition-[width] duration-200" style={{ width: `${time.len ? (time.at / time.len) * 100 : 0}%` }} />
           </div>
-          <div className="mt-1 flex justify-between text-[13px] text-muted"><span>{fmt(time.at)}</span><span>{fmt(time.len)}</span></div>
+          <div className="mt-1 flex justify-between text-[14px] text-muted"><span>{fmt(time.at)}</span><span>{fmt(time.len)}</span></div>
         </div>
         <button aria-label="Replay this step" onClick={replay} disabled={missing}
           className="shrink-0 w-12 h-12 rounded-full bg-white text-brand grid place-items-center disabled:opacity-40"><Icon name="replay" size={26} /></button>
@@ -225,7 +225,7 @@ function CompactTimer({ t, now, onGo, pause, resume, remove }: { t: Running; now
   return (
     <div className={`flex items-center gap-2 rounded-full pl-3 pr-1 h-11 ${t.done ? 'bg-[#f0b44c] text-ink' : 'bg-ink text-white'}`}>
       <Icon name={t.done ? 'alarm' : 'timer'} size={20} />
-      <button onClick={onGo} className="flex-1 min-w-0 text-left truncate text-[14px]">{t.label} <span className="opacity-70">· step {t.step}</span></button>
+      <button onClick={onGo} className="flex-1 min-w-0 text-left truncate text-[15px]">{t.label} <span className="opacity-70">· step {t.step}</span></button>
       <span className="font-semibold tabular-nums text-[17px]">{t.done ? 'Done' : fmt(leftOf(t, now))}</span>
       {t.done
         ? <button aria-label="Dismiss timer" onClick={() => remove(t.id)} className="w-9 h-9 grid place-items-center"><Icon name="close" size={20} /></button>
@@ -258,10 +258,10 @@ function Finished({ r, onClose, onRestart }: { r: (typeof recipes)[number]; onCl
     <div className="h-full flex flex-col bg-white px-6 pt-10 pb-6 text-center">
       <Photo hue={r.hue} src={r.image} className="w-full aspect-[3/2] rounded-2xl" />
       <Icon name="celebration" size={44} className="text-brand mt-6 block mx-auto" />
-      <h1 className="text-[30px] font-semibold mt-2">Enjoy your meal</h1>
-      <p className="text-[18px] text-muted mt-2">You've cooked {r.title}.</p>
+      <h1 className="text-[26px] font-semibold mt-2">Enjoy your meal</h1>
+      <p className="text-[17px] text-muted mt-2">You've cooked {r.title}.</p>
       <div className="mt-auto space-y-3">
-        <button onClick={onClose} className="w-full h-14 rounded-2xl bg-brand text-white text-[18px] font-semibold">Back to the recipe</button>
+        <button onClick={onClose} className="w-full h-14 rounded-2xl bg-brand text-white text-[17px] font-semibold">Back to the recipe</button>
         <button onClick={onRestart} className="w-full h-12 rounded-2xl text-brand text-[17px] font-semibold">Start again</button>
         <Link to="/" className="block text-muted text-[15px]">Back to recipes</Link>
       </div>

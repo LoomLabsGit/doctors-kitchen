@@ -27,24 +27,30 @@ export type Detail = {
 }
 
 const l = (qty: number, unit: Line['unit'], name: string, note?: string): Line => ({ qty, unit, name, note })
-// Ingredients supplied by DK (pasted in by the design team), keyed by recipe slug. The method comes from the cook-along.
-const REAL: Record<string, Detail['groups']> = {
-  'one-pan-harissa-chicken-pasta': [
-    { title: 'Ingredients', lines: [
-      l(1, 'tbsp', 'olive oil'), l(500, 'g', 'chicken thigh', '(boneless and skinless)'), l(150, 'g', 'white onion', 'diced'),
-      l(3, 'x', 'garlic cloves', 'grated'), l(3, 'tbsp', 'harissa paste', "(adjust depending on how spicy you like it)"),
-      l(1, 'tbsp', 'tomato puree'), l(1, 'tsp', 'cumin (ground)'), l(200, 'g', 'courgette', 'diced'),
-      l(1, 'can', 'chickpeas (can)', 'drained and rinsed'), l(200, 'g', 'baby tomatoes', 'halved'), l(200, 'g', 'lentil pasta'),
-      l(580, 'ml', 'chicken stock'), l(150, 'g', 'baby spinach'), l(0.5, 'x', 'lemon', 'juiced'),
-    ] },
-    { title: 'To serve (optional)', lines: [l(150, 'g', 'greek yoghurt'), l(15, 'g', 'parsley', 'roughly chopped')] },
-  ],
+// Description, timings and ingredients supplied by DK (pasted in by the design team), keyed by recipe slug.
+// The method comes from the cook-along.
+type Real = Pick<Detail, 'description' | 'prep' | 'cook' | 'freezer' | 'shelf' | 'groups'>
+const REAL: Record<string, Real> = {
+  'one-pan-harissa-chicken-pasta': {
+    description: 'This one-pan pasta is a great way to get plenty of flavour into a weeknight dinner with minimal washing up. Chicken thighs, chickpeas and red lentil pasta are cooked in a rich harissa and tomato sauce with courgette and spinach, then finished with lemon and a dollop of Greek yoghurt, if you like.',
+    prep: 10, cook: 40, freezer: false, shelf: '3 days',
+    groups: [
+      { title: 'Ingredients', lines: [
+        l(1, 'tbsp', 'olive oil'), l(500, 'g', 'chicken thigh', '(boneless and skinless)'), l(150, 'g', 'white onion', 'diced'),
+        l(3, 'x', 'garlic cloves', 'grated'), l(3, 'tbsp', 'harissa paste', '(adjust depending on how spicy you like it)'),
+        l(1, 'tbsp', 'tomato puree'), l(1, 'tsp', 'cumin (ground)'), l(200, 'g', 'courgette', 'diced'),
+        l(1, 'can', 'chickpeas (can)', 'drained and rinsed'), l(200, 'g', 'baby tomatoes', 'halved'), l(200, 'g', 'lentil pasta'),
+        l(580, 'ml', 'chicken stock'), l(150, 'g', 'baby spinach'), l(0.5, 'x', 'lemon', 'juiced'),
+      ] },
+      { title: 'To serve (optional)', lines: [l(150, 'g', 'greek yoghurt'), l(15, 'g', 'parsley', 'roughly chopped')] },
+    ],
+  },
 }
 
 export function detailFor(r: Recipe): Detail {
   const real = REAL[r.slug]
   const generated = generate(r)
-  return real ? { ...generated, groups: real, steps: cookalong[r.slug]?.steps.map((x) => x.text) ?? generated.steps } : generated
+  return real ? { ...generated, ...real, steps: cookalong[r.slug]?.steps.map((x) => x.text) ?? generated.steps } : generated
 }
 
 function generate(r: Recipe): Detail {
