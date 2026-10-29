@@ -133,4 +133,4 @@
 - The rest of the U5 improvement stays: every card has the same slots (time and ingredients, then the rating or "No ratings yet"). `docs/ISSUES.md` marks U5 as partly done.
 
 ## 2026-10-29: Cook now, step title at the top
-- "Step N of 11" now sits at the top of cook mode, under the header and above the progress bar and the step photo, so it stays in view while the step scrolls. Before: below the photo.
+- "Step N of 11" now sits at the top of cook mode, under the header and above the progress bar and the step photo, so it stays in view while the step scrolls. Before: below the photo. It is 19 px bold (was 26 px), so it takes less room.

@@ -84,7 +84,7 @@ export default function Cook() {
         </div>
         <button aria-label="Ingredients" onClick={() => setIngredients(true)} className="w-11 h-11 grid place-items-center text-brand"><Icon name="format_list_bulleted" size={26} /></button>
       </header>
-      <h1 className="shrink-0 px-4 mt-3 text-[26px] font-semibold leading-tight">Step {n} <span className="text-muted font-normal">of {total}</span></h1>
+      <h1 className="shrink-0 px-4 mt-3 text-[19px] font-bold leading-tight">Step {n} <span className="text-muted">of {total}</span></h1>
       <div className="shrink-0 flex gap-1 px-4 mt-2" aria-hidden>
         {plan.steps.map((_, i) => <span key={i} className={`h-1.5 flex-1 rounded-full ${i < n ? 'bg-brand' : 'bg-line'}`} />)}
       </div>
