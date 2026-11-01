@@ -8,12 +8,14 @@ import { ChatSheet } from '../components/ChatSheet'
 // IMPROVED (new feature): audio-guided "Step by Step Method". One step per page: photo and a conversational
 // instruction with each ingredient's amount written in and highlighted (no separate ingredient list). A dock at the bottom holds Dr Rupy's audio, the timer button (with a
 // badge when the step has a timer not yet started) and Back / Next. A running timer shows as one white bar attached
-// above the dock: timers don't stack, the bar shows whichever ends first (a finished one first).
+// above the dock: timers don't stack, the bar shows whichever ends first (a finished one first). A step's timers also
+// sit under its instruction. A finished timer stays up until you tap its underlined "Done" to confirm it.
 // Sizes, fonts and colours of the dock and timer bar follow the design team's Figma frame (node 28:1831).
 // Full screen: Shell hides the header and bottom bar on /recipe/:slug/cook.
 
 const BAR_KEY = 'dk-timer-bar'
-type Running = { id: string; step: number; label: string; secs: number; endsAt: number | null; left: number; done: boolean }
+// `done`: time's up; `confirmed`: you tapped Done. `custom`: one you set up yourself in the timers sheet.
+type Running = { id: string; step: number; label: string; secs: number; endsAt: number | null; left: number; done: boolean; confirmed?: boolean; custom?: boolean }
 // Whole seconds, rounded up, so a timer reads 1:00 (not 0:00) the moment it starts.
 const fmt = (s: number) => { const t = Math.max(0, Math.ceil(s)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}` }
 const leftOf = (t: Running, now: number) => (t.endsAt ? Math.max(0, (t.endsAt - now) / 1000) : t.left)
@@ -74,14 +76,25 @@ export default function Cook() {
   const pause = (id: string) => setTimers((ts) => ts.map((t) => (t.id === id && t.endsAt ? { ...t, left: leftOf(t, Date.now()), endsAt: null } : t)))
   const resume = (id: string) => setTimers((ts) => ts.map((t) => (t.id === id ? { ...t, endsAt: Date.now() + t.left * 1000 } : t)))
   const remove = (id: string) => setTimers((ts) => ts.filter((t) => t.id !== id))
-  const controls = { start, pause, resume, remove }
+  const complete = (id: string) => setTimers((ts) => ts.map((t) => (t.id === id ? { ...t, confirmed: true } : t)))
+  const startCustom = (label: string, secs: number) => setTimers((ts) => [...ts,
+    { id: `custom-${Date.now()}`, step: n, label, secs, endsAt: Date.now() + secs * 1000, left: secs, done: false, custom: true }])
+  const controls = { start, pause, resume, remove, complete }
 
   if (n > total) return <Finished r={r} onClose={exit} onRestart={() => go(1)} />
   const step = plan.steps[n - 1]
   // The one timer shown in the bar: a finished one first, otherwise the one with the least time left.
-  const featured = timers.find((t) => t.done) ?? (showBar ? [...timers].sort((a, b) => leftOf(a, now) - leftOf(b, now))[0] : undefined)
+  const byLeft = (a: Running, b: Running) => leftOf(a, now) - leftOf(b, now)
+  const featured = timers.find((t) => t.done && !t.confirmed) ?? (showBar ? timers.filter((t) => !t.done).sort(byLeft)[0] : undefined)
+  const notStarted = (s: number, i: number) => !timers.find((x) => x.id === timerId(s, i))
   // Badge on the timer button: this step has a timer that hasn't been started yet.
-  const badge = !!step.timers?.some((_, i) => !timers.find((x) => x.id === timerId(n, i)))
+  const badge = !!step.timers?.some((_, i) => notStarted(n, i))
+  // Timers sheet: everything running, paused or waiting to be confirmed; this step's unstarted timers; and any
+  // earlier step's timers that were never started (in a dropdown).
+  const active = timers.filter((t) => !t.confirmed).sort((a, b) => Number(b.done) - Number(a.done) || byLeft(a, b))
+  const fresh = (step.timers ?? []).map((def, i) => ({ def, i })).filter(({ i }) => notStarted(n, i))
+  const earlier = plan.steps.slice(0, n - 1).flatMap((s, si) => (s.timers ?? []).map((def, i) => ({ def, i, step: si + 1 })))
+    .filter((x) => notStarted(x.step, x.i))
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -101,6 +114,10 @@ export default function Cook() {
       <main key={n} className="flex-1 overflow-y-auto px-4 pb-6">
         <StepImage step={step} hue={r.hue} />
         <StepText step={step} />
+        {/* The step's timers, right under the instruction that mentions them */}
+        {step.timers?.length ? <div className="mt-5">
+          {step.timers.map((t, i) => <TimerCard key={i} def={t} t={timers.find((x) => x.id === timerId(n, i))} now={now} onStart={() => start(n, i, t)} {...controls} />)}
+        </div> : null}
       </main>
 
       <div className="shrink-0">
@@ -128,10 +145,31 @@ export default function Cook() {
       </div>
 
       {sheet === 'timers' && (
-        <Sheet title={step.timers && step.timers.length > 1 ? 'Timers' : 'Timer'} onClose={() => setSheet(null)}>
-          {step.timers?.length
-            ? step.timers.map((t, i) => <TimerCard key={i} def={t} t={timers.find((x) => x.id === timerId(n, i))} now={now} onStart={() => start(n, i, t)} {...controls} />)
-            : <p className="text-[17px] text-muted pb-2">This step has no timer.</p>}
+        <Sheet title="Timers" onClose={() => setSheet(null)}>
+          {active.length > 0 && <>
+            <SheetLabel>Active</SheetLabel>
+            {active.map((t) => <TimerRow key={t.id} t={t} now={now} {...controls} />)}
+          </>}
+          {fresh.length > 0 && <>
+            <SheetLabel>This step</SheetLabel>
+            {fresh.map(({ def, i }) => <TimerCard key={i} def={def} now={now} onStart={() => start(n, i, def)} {...controls} />)}
+          </>}
+          {!active.length && !fresh.length && <p className="text-[17px] text-muted pb-2">No timers running, and this step has none.</p>}
+          {earlier.length > 0 && (
+            <details className="group mt-1 mb-2 rounded-xl border border-line">
+              <summary className="flex items-center gap-2 h-11 px-3 text-[15px] cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                <span className="flex-1">Not started from earlier steps ({earlier.length})</span>
+                <Icon name="expand_more" size={22} className="text-muted transition-transform group-open:rotate-180" />
+              </summary>
+              {earlier.map(({ def, i, step: s }) => (
+                <div key={`${s}-${i}`} className="flex items-center gap-2 h-12 px-3 border-t border-line">
+                  <div className="flex-1 min-w-0 truncate text-[15px]">{def.label} <span className="text-muted">· step {s} · {def.secs / 60} min</span></div>
+                  <button onClick={() => start(s, i, def)} className="shrink-0 h-8 px-3 rounded-full bg-brand text-white text-[14px] font-semibold">Start</button>
+                </div>
+              ))}
+            </details>
+          )}
+          <CustomTimer onStart={startCustom} />
           <div className="flex items-start gap-3 mt-3 pt-4 pb-1 border-t border-line">
             <div className="flex-1 min-w-0">
               <div id="bar-toggle" className="text-[17px] font-semibold">Show timer bar while cooking</div>
@@ -165,7 +203,7 @@ function StepText({ step }: { step: CookStep }) {
   return (
     <p className="mt-4 text-[18px] leading-relaxed">
       {(re ? step.text.split(re) : [step.text]).map((part, i) => i % 2
-        ? <span key={i} className="text-brand font-semibold underline decoration-2 underline-offset-4">{keepAmountTogether(part)}</span>
+        ? <span key={i} className="text-brand font-semibold">{keepAmountTogether(part)}</span>
         : part)}
     </p>
   )
@@ -245,53 +283,106 @@ function AudioPlayer({ src }: { src?: string }) {
   )
 }
 
-type Controls = { pause: (id: string) => void; resume: (id: string) => void; remove: (id: string) => void }
+type Controls = { pause: (id: string) => void; resume: (id: string) => void; remove: (id: string) => void; complete: (id: string) => void }
 
-// Full timer for the step you're on: ring, time left, start / pause / resume / reset.
-function TimerCard({ def, t, now, onStart, pause, resume, remove }: { def: Timer; t?: Running; now: number; onStart: () => void } & Controls) {
+// "Done" on a finished timer: underlined, and tapping it confirms the timer is complete (it leaves the bar and the
+// Active list).
+const DoneButton = ({ id, complete }: { id: string; complete: (id: string) => void }) => (
+  <button aria-label="Confirm timer complete" onClick={() => complete(id)} className="font-semibold text-[17px] underline decoration-2 underline-offset-4 px-1">Done</button>
+)
+
+// Full timer: ring, time left, start / pause / resume / reset. Under the step's instruction, and in the timers
+// sheet for this step's timers not yet started.
+function TimerCard({ def, t, now, onStart, pause, resume, remove, complete }: { def: Timer; t?: Running; now: number; onStart: () => void } & Controls) {
   const left = t ? leftOf(t, now) : def.secs
   const part = t ? 1 - left / def.secs : 0
   const C = 2 * Math.PI * 26
+  const ringing = t?.done && !t.confirmed
   return (
-    <div className={`mb-2 rounded-2xl border-2 px-3 py-2.5 flex items-center gap-3 ${t?.done ? 'border-[#f0b44c] bg-[#fff8ec]' : 'border-line'}`}>
+    <div className={`mb-2 rounded-2xl border-2 px-3 py-2.5 flex items-center gap-3 ${ringing ? 'border-[#f0b44c] bg-[#fff8ec]' : 'border-line'}`}>
       <div className="relative shrink-0 w-12 h-12">
         <svg viewBox="0 0 60 60" className="w-12 h-12 -rotate-90">
           <circle cx="30" cy="30" r="26" fill="none" stroke="#e8ebee" strokeWidth="5" />
-          <circle cx="30" cy="30" r="26" fill="none" stroke={t?.done ? '#f0b44c' : '#12a676'} strokeWidth="5" strokeLinecap="round" strokeDasharray={`${part * C} ${C}`} />
+          <circle cx="30" cy="30" r="26" fill="none" stroke={ringing ? '#f0b44c' : '#12a676'} strokeWidth="5" strokeLinecap="round" strokeDasharray={`${part * C} ${C}`} />
         </svg>
-        <Icon name={t?.done ? 'alarm' : 'timer'} size={22} className={`absolute inset-0 m-auto h-fit w-fit ${t?.done ? 'text-[#c98a1a]' : 'text-brand'}`} />
+        <Icon name={t?.confirmed ? 'check' : ringing ? 'alarm' : 'timer'} size={22} className={`absolute inset-0 m-auto h-fit w-fit ${ringing ? 'text-[#c98a1a]' : 'text-brand'}`} />
       </div>
       <div className="flex-1 min-w-0">
         <div className="text-[14px] text-muted truncate">{def.label}</div>
-        <div className="text-[26px] font-semibold tabular-nums leading-tight">{t?.done ? 'Done!' : fmt(left)}</div>
+        <div className={`font-semibold tabular-nums leading-tight ${t?.done ? 'text-[22px] py-0.5' : 'text-[26px]'}`}>{t?.confirmed ? 'Completed' : t?.done ? "Time's up" : fmt(left)}</div>
       </div>
       <div className="shrink-0 flex items-center gap-1">
         {!t && <button onClick={onStart} className="h-11 px-5 rounded-full bg-brand text-white font-semibold inline-flex items-center gap-1"><Icon name="play_arrow" size={22} fill />Start</button>}
         {t && !t.done && (t.endsAt
           ? <button onClick={() => pause(t.id)} className="h-11 px-5 rounded-full bg-ink text-white font-semibold inline-flex items-center gap-1"><Icon name="pause" size={22} fill />Pause</button>
           : <button onClick={() => resume(t.id)} className="h-11 px-5 rounded-full bg-brand text-white font-semibold inline-flex items-center gap-1"><Icon name="play_arrow" size={22} fill />Resume</button>)}
-        {t && <button aria-label="Reset timer" onClick={() => remove(t.id)} className="w-10 h-10 rounded-full text-muted grid place-items-center"><Icon name="restart_alt" size={22} /></button>}
+        {ringing && <DoneButton id={t.id} complete={complete} />}
+        {t && !ringing && <button aria-label="Reset timer" onClick={() => remove(t.id)} className="w-10 h-10 rounded-full text-muted grid place-items-center"><Icon name="restart_alt" size={22} /></button>}
       </div>
     </div>
+  )
+}
+
+const SheetLabel = ({ children }: { children: string }) => <h3 className="text-[13px] font-bold uppercase tracking-wide text-muted mt-1 mb-1.5">{children}</h3>
+
+// Slimline timer for the sheet's Active list (any step, or a custom one): same parts as the timer bar.
+function TimerRow({ t, now, pause, resume, remove, complete }: { t: Running; now: number } & Controls) {
+  const ringing = t.done && !t.confirmed
+  return (
+    <div className={`mb-1.5 flex items-center gap-2 h-12 pl-3 pr-2 rounded-xl border ${ringing ? 'bg-alert border-alert text-ink' : 'border-line'}`}>
+      <Icon name={ringing ? 'alarm' : 'timer'} size={20} className={ringing ? '' : 'text-muted'} />
+      <div className={`flex-1 min-w-0 truncate text-[15px] ${ringing ? 'font-semibold' : ''}`}>
+        {ringing ? `Time's up: ${t.label}` : t.label}{!ringing && !t.custom && <span className="text-muted"> · step {t.step}</span>}
+      </div>
+      {ringing
+        ? <DoneButton id={t.id} complete={complete} />
+        : <>
+          <span className="font-semibold tabular-nums text-[17px]">{fmt(leftOf(t, now))}</span>
+          {t.endsAt
+            ? <button aria-label="Pause timer" onClick={() => pause(t.id)} className="w-9 h-9 grid place-items-center"><Icon name="pause" size={22} /></button>
+            : <button aria-label="Resume timer" onClick={() => resume(t.id)} className="w-9 h-9 grid place-items-center text-brand"><Icon name="play_arrow" size={22} /></button>}
+          <button aria-label="Cancel timer" onClick={() => remove(t.id)} className="w-9 h-9 grid place-items-center text-muted"><Icon name="restart_alt" size={20} /></button>
+        </>}
+    </div>
+  )
+}
+
+// Custom timer: a single link until you need it, then one row (what it's for, minutes, Start).
+function CustomTimer({ onStart }: { onStart: (label: string, secs: number) => void }) {
+  const [open, setOpen] = useState(false)
+  const [label, setLabel] = useState('')
+  const [mins, setMins] = useState('')
+  const m = Number(mins)
+  if (!open) return (
+    <button onClick={() => setOpen(true)} className="h-10 inline-flex items-center gap-1 text-brand text-[15px] font-semibold"><Icon name="add" size={20} />Custom timer</button>
+  )
+  return (
+    <form className="flex items-center gap-2 py-1" onSubmit={(e) => { e.preventDefault(); if (!(m > 0)) return; onStart(label.trim() || 'Custom timer', Math.round(m * 60)); setLabel(''); setMins(''); setOpen(false) }}>
+      <input autoFocus value={label} onChange={(e) => setLabel(e.target.value)} placeholder="What's it for?" aria-label="What the timer is for"
+        className="flex-1 min-w-0 h-11 px-3 rounded-xl border border-line text-[15px] outline-none focus:border-brand" />
+      <input value={mins} onChange={(e) => setMins(e.target.value)} inputMode="decimal" placeholder="Min" aria-label="Minutes"
+        className="w-16 h-11 px-2 rounded-xl border border-line text-[15px] outline-none focus:border-brand text-center" />
+      <button disabled={!(m > 0)} className="shrink-0 h-11 px-4 rounded-full bg-brand text-white text-[15px] font-semibold disabled:opacity-40">Start</button>
+    </form>
   )
 }
 
 // The one timer bar, attached above the dock (Figma 28:1864): white, 44px tall, 16px top corners, soft upward
 // shadow, grey 20px icon, 15px label, 17px semibold time, 22px pause. Tap the label to go to the timer's step.
 // A finished timer (shown whether or not the bar is switched on) uses alert colours and dark text and says what it was
-// for; the alarm sounds at the same moment.
-function TimerBar({ t, now, onGo, pause, resume, remove }: { t: Running; now: number; onGo: () => void } & Controls) {
+// for; the alarm sounds at the same moment. Its underlined "Done" confirms the timer is complete.
+function TimerBar({ t, now, onGo, pause, resume, complete }: { t: Running; now: number; onGo: () => void } & Controls) {
   return (
     <div role={t.done ? 'alert' : undefined}
       className={`relative z-10 flex items-center gap-2 h-11 px-4 rounded-t-2xl shadow-[0_-2px_12px_rgba(0,0,0,0.15)] ${t.done ? 'bg-alert text-ink' : 'bg-white text-muted'}`}>
       <Icon name={t.done ? 'alarm' : 'timer'} size={20} />
-      <button onClick={onGo} className={`flex-1 min-w-0 text-left truncate text-[15px] leading-[1.4] ${t.done ? 'font-semibold' : ''}`}>{t.done ? `Time's up: ${t.label}` : `${t.label} · step ${t.step}`}</button>
-      <span className="font-semibold tabular-nums text-[17px] leading-[1.3]">{t.done ? 'Done' : fmt(leftOf(t, now))}</span>
+      <button onClick={onGo} className={`flex-1 min-w-0 text-left truncate text-[15px] leading-[1.4] ${t.done ? 'font-semibold' : ''}`}>{t.done ? `Time's up: ${t.label}` : t.custom ? t.label : `${t.label} · step ${t.step}`}</button>
       {t.done
-        ? <button aria-label="Dismiss timer" onClick={() => remove(t.id)} className="w-6 h-6 grid place-items-center"><Icon name="close" size={22} /></button>
-        : t.endsAt
+        ? <DoneButton id={t.id} complete={complete} />
+        : <span className="font-semibold tabular-nums text-[17px] leading-[1.3]">{fmt(leftOf(t, now))}</span>}
+      {!t.done && (t.endsAt
           ? <button aria-label="Pause timer" onClick={() => pause(t.id)} className="w-6 h-6 grid place-items-center"><Icon name="pause" size={22} /></button>
-          : <button aria-label="Resume timer" onClick={() => resume(t.id)} className="w-6 h-6 grid place-items-center"><Icon name="play_arrow" size={22} /></button>}
+          : <button aria-label="Resume timer" onClick={() => resume(t.id)} className="w-6 h-6 grid place-items-center"><Icon name="play_arrow" size={22} /></button>)}
     </div>
   )
 }

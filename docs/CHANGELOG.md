@@ -171,3 +171,9 @@
 - Steps 1, 2, 3, 4, 7, 8, 10 and 11 are reworded and need new recordings from Dr Rupy (the current audio still uses the old wording); steps 5, 6 and 9 keep DK's original wording and audio.
 - The Method tab on Recipe detail keeps DK's original method wording (now stored as `steps` in `src/data/recipeDetail.ts`), in both versions.
 - The trailing "Meanwhile…" is gone from steps 1 and 3 (the next step already follows on screen); step 1 ends "And use the timers below to keep track." to point at its two browning timers.
+
+## 2026-11-01: Step by Step Method, timers on the step and a fuller timers sheet
+- Ingredient highlights are green and semibold, with no underline.
+- A step's timers now also sit under its instruction (the same cards as the sheet: Start, Pause / Resume, reset), so you don't have to open the sheet to start one. The timer button stays in the dock.
+- The timers sheet lists: **Active** (every running, paused or finished timer from any step, as slim rows like the timer bar); **This step** (this step's timers not yet started, as the full cards); a compact **Not started from earlier steps** dropdown with a Start button on each; and a **Custom timer** link that opens a single row (what it's for, minutes, Start). Custom timers show in Active and in the bar without a step number.
+- A finished timer no longer has an X. Its underlined **Done** (on the bar, in Active and on the step's card) confirms it's complete: it leaves the bar and Active, and the step's card shows "Completed" with a reset button.
