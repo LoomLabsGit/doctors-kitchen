@@ -164,3 +164,9 @@
 ## 2026-11-01: Step by Step Method, "From earlier" instead of tappable words
 - Replaces the tappable-word approach above. "You'll need" now has two groups: the step's new ingredients with amounts, then "From earlier": ingredients prepared on an earlier step, named in their prepared form ("white onion, diced", "chickpeas (can), drained and rinsed") with an arrow icon, no amount, and the step they came from. Everything the step needs is visible at a glance, and nothing can be read as "get another 150 g".
 - Highlighted words in the instruction are plain again (no dotted underline or tap note). The "Set them aside for step N." sentence on prep steps stays.
+
+## 2026-11-01: Step by Step Method, amounts written into the steps
+- Replaces both "You'll need" approaches above. Each instruction now carries its amounts conversationally, in the sentence where they're used ("Heat 1 tbsp olive oil in a deep pan. Season 500 g boneless, skinless chicken thighs…"), and later steps refer to the prepared ingredient ("Add the diced onion…"), so no amount is ever shown twice and nothing needs scrolling or tapping to find.
+- The "You'll need" card, the "From earlier" group and the generated "Set them aside" sentence are gone; steps 2 and 8 now say "set them aside" in their own words, and step 4 says to keep the courgette separate. Ingredient phrases (amount + ingredient) are highlighted, and an amount never breaks across lines. Every step now fits on a phone screen without scrolling.
+- Steps 1, 2, 3, 4, 7, 8, 10 and 11 are reworded and need new recordings from Dr Rupy (the current audio still uses the old wording); steps 5, 6 and 9 keep DK's original wording and audio.
+- The Method tab on Recipe detail keeps DK's original method wording (now stored as `steps` in `src/data/recipeDetail.ts`), in both versions.

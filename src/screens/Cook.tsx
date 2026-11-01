@@ -2,12 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { recipes } from '../data/recipes'
 import { cookalong, type CookStep, type Timer } from '../data/cookalong'
-import { amount, detailFor, type Line } from '../data/recipeDetail'
 import { Icon, Photo, Sheet } from '../components/ui'
 import { ChatSheet } from '../components/ChatSheet'
 
-// IMPROVED (new feature): audio-guided "Step by Step Method". One step per page: photo, instruction with its
-// ingredients highlighted, and "You'll need". A dock at the bottom holds Dr Rupy's audio, the timer button (with a
+// IMPROVED (new feature): audio-guided "Step by Step Method". One step per page: photo and a conversational
+// instruction with each ingredient's amount written in and highlighted (no separate ingredient list). A dock at the bottom holds Dr Rupy's audio, the timer button (with a
 // badge when the step has a timer not yet started) and Back / Next. A running timer shows as one white bar attached
 // above the dock: timers don't stack, the bar shows whichever ends first (a finished one first).
 // Sizes, fonts and colours of the dock and timer bar follow the design team's Figma frame (node 28:1831).
@@ -79,7 +78,6 @@ export default function Cook() {
 
   if (n > total) return <Finished r={r} onClose={exit} onRestart={() => go(1)} />
   const step = plan.steps[n - 1]
-  const lines = detailFor(r).groups.flatMap((g) => g.lines)
   // The one timer shown in the bar: a finished one first, otherwise the one with the least time left.
   const featured = timers.find((t) => t.done) ?? (showBar ? [...timers].sort((a, b) => leftOf(a, now) - leftOf(b, now))[0] : undefined)
   // Badge on the timer button: this step has a timer that hasn't been started yet.
@@ -102,11 +100,7 @@ export default function Cook() {
 
       <main key={n} className="flex-1 overflow-y-auto px-4 pb-6">
         <StepImage step={step} hue={r.hue} />
-        <StepText step={step} n={n} steps={plan.steps} />
-        {/* An amount is only ever shown once: new ingredients with amounts, things prepared earlier without */}
-        <StepIngredients
-          fresh={lines.filter((l) => step.uses?.includes(l.name) && firstUse(plan.steps, l.name) === n)}
-          earlier={lines.flatMap((l) => { const from = firstUse(plan.steps, l.name); return step.uses?.includes(l.name) && from < n ? [{ line: l, from }] : [] })} />
+        <StepText step={step} />
       </main>
 
       <div className="shrink-0">
@@ -163,61 +157,22 @@ const Sparkles = () => (
   </svg>
 )
 
-// Step (1-based) where an ingredient first appears in the cook-along.
-const firstUse = (steps: CookStep[], name: string) => steps.findIndex((st) => st.uses?.includes(name)) + 1
-const stepList = (ns: number[]) => (ns.length === 1 ? `step ${ns[0]}` : `steps ${ns.slice(0, -1).join(', ')} and ${ns[ns.length - 1]}`)
-
-// The instruction with the step's ingredients highlighted. A step whose ingredients are used again later ends with
-// "Set them aside for step N." so it's clear they're needed again.
-function StepText({ step, n, steps }: { step: CookStep; n: number; steps: CookStep[] }) {
+// The instruction, with each ingredient and its amount highlighted (and the prepared ingredient when it comes back).
+// Amounts live in the sentence itself, so there's no separate "You'll need" list to scroll to.
+function StepText({ step }: { step: CookStep }) {
   const terms = step.terms ?? []
-  const mine = (step.uses ?? []).filter((name) => firstUse(steps, name) === n)
-  const reused = mine.filter((name) => steps.some((st, i) => i + 1 > n && st.uses?.includes(name)))
-  const later = [...new Set(steps.flatMap((st, i) => (i + 1 > n && st.uses?.some((u) => reused.includes(u)) ? [i + 1] : [])))]
   const re = terms.length ? new RegExp(`(${terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi') : null
   return (
     <p className="mt-4 text-[18px] leading-relaxed">
       {(re ? step.text.split(re) : [step.text]).map((part, i) => i % 2
-        ? <span key={i} className="text-brand font-semibold underline decoration-2 underline-offset-4">{part}</span>
+        ? <span key={i} className="text-brand font-semibold underline decoration-2 underline-offset-4">{keepAmountTogether(part)}</span>
         : part)}
-      {reused.length > 0 && <> Set {reused.length > 1 ? 'them' : 'it'} aside for {stepList(later)}.</>}
     </p>
   )
 }
+// "1 tbsp tomato purée" never breaks as "1 / tbsp…": join the number, unit and next word with non-breaking spaces.
+const keepAmountTogether = (s: string) => s.replace(/^(\d+(?:\.\d+)?) (\S+) (\S+)/, '$1\u00a0$2\u00a0$3')
 
-// "You'll need", in two groups so an amount is never shown twice: new ingredients with their amounts (for the recipe's
-// base servings), then "From earlier": things prepared on an earlier step, named in their prepared form
-// ("white onion, diced") with no amount, and the step they came from.
-function StepIngredients({ fresh, earlier }: { fresh: Line[]; earlier: { line: Line; from: number }[] }) {
-  if (!fresh.length && !earlier.length) return null
-  return (
-    <div className="mt-5 rounded-2xl bg-[#faf6f0] px-4 py-3">
-      <h2 className="text-brand text-[14px] uppercase tracking-wide">You'll need</h2>
-      {fresh.length > 0 && (
-        <ul className="mt-1 divide-y divide-line/70">
-          {fresh.map((l) => (
-            <li key={l.name} className="flex gap-3 py-2 text-[17px]">
-              <span className="w-[72px] shrink-0 font-semibold">{amount(l, 2, false)}</span>
-              <span>{l.name}{l.note && <span className="text-muted"> {l.note}</span>}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-      {earlier.length > 0 && <>
-        <h3 className={`text-muted text-[14px] uppercase tracking-wide ${fresh.length ? 'mt-3 pt-3 border-t border-line' : 'mt-1'}`}>From earlier</h3>
-        <ul className="mt-1 divide-y divide-line/70">
-          {earlier.map(({ line: l, from }) => (
-            <li key={l.name} className="flex items-center gap-3 py-2 text-[17px]">
-              <span className="w-[72px] shrink-0 text-muted"><Icon name="subdirectory_arrow_right" size={22} /></span>
-              <span className="flex-1 min-w-0">{l.name}{l.note && !l.note.startsWith('(') ? `, ${l.note}` : ''}</span>
-              <span className="shrink-0 text-[14px] text-muted">step {from}</span>
-            </li>
-          ))}
-        </ul>
-      </>}
-    </div>
-  )
-}
 
 // The step's photo, or a calm placeholder for prep-only steps (and if the photo file isn't on this machine).
 // Also used by the Method tab on Recipe detail.

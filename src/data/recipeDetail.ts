@@ -1,7 +1,6 @@
 // Detail for every recipe (description, timings, ingredient lines, method). Most are made up from recipes.ts, picked
 // from a generic pool so each recipe looks plausible. Recipes in REAL use the ingredients and method supplied by DK.
 import type { Recipe } from './recipes'
-import { cookalong } from './cookalong'
 
 export type Line = { qty: number; unit: 'g' | 'ml' | 'tbsp' | 'tsp' | 'x' | 'can'; name: string; note?: string }
 const POOL: Line[] = [
@@ -27,9 +26,10 @@ export type Detail = {
 }
 
 const l = (qty: number, unit: Line['unit'], name: string, note?: string): Line => ({ qty, unit, name, note })
-// Description, timings and ingredients supplied by DK (pasted in by the design team), keyed by recipe slug.
-// The method comes from the cook-along.
-type Real = Pick<Detail, 'description' | 'prep' | 'cook' | 'freezer' | 'shelf' | 'groups'>
+// Description, timings, ingredients and method supplied by DK (pasted in by the design team), keyed by recipe slug.
+// The method here is DK's original wording, shown on the Method tab; the Step by Step Method uses a conversational
+// rewrite with the amounts in it (src/data/cookalong.ts).
+type Real = Pick<Detail, 'description' | 'prep' | 'cook' | 'freezer' | 'shelf' | 'groups' | 'steps'>
 const REAL: Record<string, Real> = {
   'one-pan-harissa-chicken-pasta': {
     description: 'This one-pan pasta is a great way to get plenty of flavour into a weeknight dinner with minimal washing up. Chicken thighs, chickpeas and red lentil pasta are cooked in a rich harissa and tomato sauce with courgette and spinach, then finished with lemon and a dollop of Greek yoghurt, if you like.',
@@ -44,13 +44,26 @@ const REAL: Record<string, Real> = {
       ] },
       { title: 'To serve (optional)', lines: [l(150, 'g', 'greek yoghurt'), l(15, 'g', 'parsley', 'roughly chopped')] },
     ],
+    steps: [
+      'Heat olive oil in a deep pan. Season the chicken and brown for 4 minutes per side, meanwhile…',
+      'Dice the onion and grate the garlic.',
+      'Add the onion to the pan with salt and cook for 6 minutes. Stir in the garlic, harissa, tomato purée, and cumin, then cook for 1 minute. Meanwhile…',
+      'Dice the courgette, halve the tomatoes, and rinse the chickpeas.',
+      'Add the courgette and cook for 3 minutes until starting to soften.',
+      'Stir in the chickpeas and tomatoes to coat in the spices.',
+      'Pour in the stock and bring to a simmer. Stir in the pasta, nestle the chicken on top, cover, and simmer for 5 minutes.',
+      'Juice the lemon and roughly chop the parsley.',
+      'Remove the lid and simmer uncovered for 6 minutes, stirring often, until the pasta is tender.',
+      'Shred the chicken with two forks, then stir through the spinach for 2 minutes until wilted.',
+      'Stir in the lemon juice, season to taste, and serve topped with yoghurt and parsley.',
+    ],
   },
 }
 
 export function detailFor(r: Recipe): Detail {
   const real = REAL[r.slug]
   const generated = generate(r)
-  return real ? { ...generated, ...real, steps: cookalong[r.slug]?.steps.map((x) => x.text) ?? generated.steps } : generated
+  return real ? { ...generated, ...real } : generated
 }
 
 function generate(r: Recipe): Detail {
