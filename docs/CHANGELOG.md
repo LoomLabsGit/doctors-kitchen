@@ -179,3 +179,4 @@
 - A finished timer no longer has an X. Its underlined **Done** (on the bar, in Active and on the step's card) confirms it's complete: it leaves the bar and Active, and the step's card shows "Completed" with a reset button.
 - Removed the "Not started from earlier steps" dropdown from the timers sheet: it now shows Active, This step and Custom timer.
 - Removed the red badge from the timer button: the step's timers are already on the page under the instruction.
+- Custom timer redesigned around the duration, which is the only thing a timer needs. It opens as a small card with: a time field that fills from the right like a kitchen timer (type 1, 3, 0 for 1:30, or 4, 5 for 0:45; backspace takes off the last digit); minus and plus buttons that nudge it by 30 seconds; quick chips for 30 sec, 1, 2, 5, 10 and 15 min; then an optional "What's it for?" field beside Start ("Custom timer" if left blank). Cancel closes it.

@@ -327,22 +327,54 @@ function TimerRow({ t, now, pause, resume, remove, complete }: { t: Running; now
   )
 }
 
-// Custom timer: a single link until you need it, then one row (what it's for, minutes, Start).
+// Custom timer: a single link until you need it. Duration comes first (it's the only thing a timer needs):
+// - quick chips for the common lengths, one tap and done;
+// - a time field you type into like a kitchen timer: digits fill from the right, so 1, 3, 0 reads 1:30 and 4, 5
+//   reads 0:45 (seconds over 59 roll into minutes when it starts);
+// - minus / plus to nudge by 30 seconds.
+// The name is optional and comes last ("Custom timer" if left blank), so you can start one without typing a word.
+const QUICK = [30, 60, 120, 300, 600, 900]
+const quickLabel = (s: number) => (s < 60 ? `${s} sec` : `${s / 60} min`)
+const toDigits = (secs: number) => (secs > 0 ? `${Math.floor(secs / 60)}${String(secs % 60).padStart(2, '0')}`.replace(/^0+/, '') : '')
+const fromDigits = (d: string) => { const p = d.padStart(4, '0'); return Number(p.slice(0, 2)) * 60 + Number(p.slice(2)) }
+const showDigits = (d: string) => { const p = d.padStart(3, '0'); return `${Number(p.slice(0, -2))}:${p.slice(-2)}` }
+
 function CustomTimer({ onStart }: { onStart: (label: string, secs: number) => void }) {
   const [open, setOpen] = useState(false)
   const [label, setLabel] = useState('')
-  const [mins, setMins] = useState('')
-  const m = Number(mins)
+  const [digits, setDigits] = useState('')
+  const secs = fromDigits(digits)
+  const set = (s: number) => setDigits(toDigits(Math.min(5999, Math.max(0, s))))
+  const close = () => { setOpen(false); setLabel(''); setDigits('') }
   if (!open) return (
     <button onClick={() => setOpen(true)} className="h-10 inline-flex items-center gap-1 text-brand text-[15px] font-semibold"><Icon name="add" size={20} />Custom timer</button>
   )
   return (
-    <form className="flex items-center gap-2 py-1" onSubmit={(e) => { e.preventDefault(); if (!(m > 0)) return; onStart(label.trim() || 'Custom timer', Math.round(m * 60)); setLabel(''); setMins(''); setOpen(false) }}>
-      <input autoFocus value={label} onChange={(e) => setLabel(e.target.value)} placeholder="What's it for?" aria-label="What the timer is for"
-        className="flex-1 min-w-0 h-11 px-3 rounded-xl border border-line text-[15px] outline-none focus:border-brand" />
-      <input value={mins} onChange={(e) => setMins(e.target.value)} inputMode="decimal" placeholder="Min" aria-label="Minutes"
-        className="w-16 h-11 px-2 rounded-xl border border-line text-[15px] outline-none focus:border-brand text-center" />
-      <button disabled={!(m > 0)} className="shrink-0 h-11 px-4 rounded-full bg-brand text-white text-[15px] font-semibold disabled:opacity-40">Start</button>
+    <form className="mt-1 mb-1 rounded-2xl border-2 border-line p-3" onSubmit={(e) => { e.preventDefault(); if (!secs) return; onStart(label.trim() || 'Custom timer', secs); close() }}>
+      <div className="flex items-center justify-between">
+        <SheetLabel>Custom timer</SheetLabel>
+        <button type="button" onClick={close} className="text-[15px] text-muted -mt-1">Cancel</button>
+      </div>
+      <div className="flex items-center gap-2">
+        <button type="button" aria-label="30 seconds less" onClick={() => set(secs - 30)} disabled={!secs}
+          className="shrink-0 w-11 h-11 rounded-full border border-line grid place-items-center disabled:opacity-40"><Icon name="remove" size={22} /></button>
+        <input value={showDigits(digits)} inputMode="numeric" aria-label="Time, minutes and seconds" onFocus={(e) => e.currentTarget.select()}
+          onChange={(e) => setDigits(e.target.value.replace(/\D/g, '').replace(/^0+/, '').slice(0, 4))}
+          className={`flex-1 min-w-0 h-11 rounded-xl text-center text-[26px] font-semibold tabular-nums outline-none focus:bg-chip ${secs ? '' : 'text-muted'}`} />
+        <button type="button" aria-label="30 seconds more" onClick={() => set(secs + 30)}
+          className="shrink-0 w-11 h-11 rounded-full border border-line grid place-items-center"><Icon name="add" size={22} /></button>
+      </div>
+      <div className="flex gap-1.5 mt-2 overflow-x-auto -mx-3 px-3">
+        {QUICK.map((q) => (
+          <button type="button" key={q} onClick={() => set(q)}
+            className={`shrink-0 h-8 px-3 rounded-full border text-[14px] ${secs === q ? 'bg-chip text-chip-text border-chip-text/30 font-semibold' : 'border-line'}`}>{quickLabel(q)}</button>
+        ))}
+      </div>
+      <div className="flex items-center gap-2 mt-3">
+        <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="What's it for? (optional)" aria-label="What the timer is for" enterKeyHint="go"
+          className="flex-1 min-w-0 h-11 px-3 rounded-xl border border-line text-[15px] outline-none focus:border-brand" />
+        <button disabled={!secs} className="shrink-0 h-11 px-5 rounded-full bg-brand text-white text-[15px] font-semibold inline-flex items-center gap-1 disabled:opacity-40"><Icon name="play_arrow" size={20} fill />Start</button>
+      </div>
     </form>
   )
 }
