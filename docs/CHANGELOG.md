@@ -150,3 +150,7 @@
 - The timer sheet has a "Show timer bar while cooking" switch (on by default, remembered in this browser as `dk-timer-bar`).
 - When it's off, running timers stay hidden while you cook. When a timer finishes, the bar appears anyway in alert colours (new `alert` colour token, amber) with dark text saying what it was for ("Time's up: Cook the spices"), and the alarm sounds and the phone vibrates.
 - Finished timers now use the same alert style when the bar is switched on too (was a white bar with an amber icon).
+
+## 2026-11-01: Scrub and smooth audio progress in Step by Step Method
+- Dr Rupy's audio bar in the dock can now be dragged (or tapped) to scrub back or forward through the step; a small knob shows while dragging and the elapsed time follows your finger. The hit area is 24 px tall although the bar stays 6 px. Left and right arrow keys move it by a second.
+- The fill now moves smoothly: it reads the playhead every animation frame while playing instead of waiting for the browser's coarse time updates (about four a second), which made it move in steps.

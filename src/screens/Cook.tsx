@@ -201,13 +201,29 @@ export function StepImage({ step, hue, className = 'mt-4' }: { step: CookStep; h
 
 function AudioPlayer({ src }: { src?: string }) {
   const ref = useRef<HTMLAudioElement>(null)
+  const track = useRef<HTMLDivElement>(null)
   const [playing, setPlaying] = useState(false)
   const [time, setTime] = useState({ at: 0, len: 0 })
   const [missing, setMissing] = useState(!src)
+  // While dragging the bar: where the finger is, as a share of the clip (0 to 1). The audio jumps there on release.
+  const [drag, setDrag] = useState<number | null>(null)
   // Each step starts reading itself out as soon as you arrive (you got here by tapping, so the browser allows it).
   useEffect(() => { ref.current?.play().catch(() => setPlaying(false)) }, [src])
+  // Smooth progress: read the playhead every frame while playing, rather than waiting for the audio's coarse
+  // timeupdate events (about four a second), which made the bar move in steps.
+  useEffect(() => {
+    if (!playing) return
+    let id = 0
+    const tick = () => { const a = ref.current; if (a) setTime({ at: a.currentTime, len: a.duration || 0 }); id = requestAnimationFrame(tick) }
+    id = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(id)
+  }, [playing])
   // Play after the clip has ended starts it again, so the step can always be replayed.
   const toggle = () => { const a = ref.current; if (!a) return; if (a.paused) { if (a.ended) a.currentTime = 0; a.play().catch(() => {}) } else a.pause() }
+  const shareAt = (x: number) => { const r = track.current!.getBoundingClientRect(); return Math.min(1, Math.max(0, (x - r.left) / r.width)) }
+  const seek = (share: number) => { const a = ref.current; if (!a || !time.len) return; a.currentTime = share * time.len; setTime({ at: a.currentTime, len: time.len }) }
+  const share = drag ?? (time.len ? time.at / time.len : 0)
+  const canSeek = !missing && time.len > 0
   return (
     <div className="flex-1 min-w-0 flex items-center gap-3">
       <button aria-label={playing ? 'Pause Dr Rupy' : 'Play Dr Rupy'} onClick={toggle} disabled={missing}
@@ -215,17 +231,28 @@ function AudioPlayer({ src }: { src?: string }) {
         <Icon name={playing ? 'pause' : 'play_arrow'} size={32} weight={300} />
       </button>
       <div className="flex-1 min-w-0">
-        <div className="h-1.5 rounded-full bg-chip overflow-hidden">
-          <div className="h-full bg-brand transition-[width] duration-200" style={{ width: `${time.len ? (time.at / time.len) * 100 : 0}%` }} />
+        {/* Drag or tap the bar to scrub back (or forward) through the step. The 24px-tall hit area keeps it easy to grab. */}
+        <div ref={track} role="slider" aria-label="Dr Rupy's audio position" tabIndex={canSeek ? 0 : -1}
+          aria-valuemin={0} aria-valuemax={Math.round(time.len)} aria-valuenow={Math.round(share * time.len)} aria-valuetext={fmt(share * time.len)}
+          className={`relative h-6 -my-[9px] flex items-center touch-none select-none ${canSeek ? 'cursor-pointer' : ''}`}
+          onPointerDown={(e) => { if (!canSeek) return; try { e.currentTarget.setPointerCapture(e.pointerId) } catch { /* keep dragging without capture */ } setDrag(shareAt(e.clientX)) }}
+          onPointerMove={(e) => { if (drag !== null) setDrag(shareAt(e.clientX)) }}
+          onPointerUp={() => { if (drag !== null) { seek(drag); setDrag(null) } }}
+          onPointerCancel={() => setDrag(null)}
+          onKeyDown={(e) => { if (!canSeek) return; if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); seek(Math.min(1, Math.max(0, (time.at + (e.key === 'ArrowLeft' ? -1 : 1)) / time.len))) } }}>
+          <div className="w-full h-1.5 rounded-full bg-chip overflow-hidden">
+            <div className="h-full bg-brand" style={{ width: `${share * 100}%` }} />
+          </div>
+          {drag !== null && <span className="absolute w-4 h-4 -ml-2 rounded-full bg-brand ring-4 ring-brand/20" style={{ left: `${share * 100}%` }} />}
         </div>
         {missing
           ? <div className="mt-1 text-[14px] text-muted truncate">Audio isn't available on this device</div>
-          : <div className="mt-0.5 flex justify-between text-[14px] leading-tight tracking-[0.02em] text-muted"><span>{fmt(time.at)}</span><span>{fmt(time.len)}</span></div>}
+          : <div className="mt-0.5 flex justify-between text-[14px] leading-tight tracking-[0.02em] text-muted"><span>{fmt(share * time.len)}</span><span>{fmt(time.len)}</span></div>}
       </div>
       {src && <audio ref={ref} src={src} preload="auto"
         onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)}
         onLoadedMetadata={(e) => setTime({ at: 0, len: e.currentTarget.duration })}
-        onTimeUpdate={(e) => setTime({ at: e.currentTarget.currentTime, len: e.currentTarget.duration || 0 })}
+        onTimeUpdate={(e) => { if (!playing) setTime({ at: e.currentTarget.currentTime, len: e.currentTarget.duration || 0 }) }}
         onError={() => setMissing(true)} />}
     </div>
   )
