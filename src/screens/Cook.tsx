@@ -13,6 +13,7 @@ import { ChatSheet } from '../components/ChatSheet'
 // Sizes, fonts and colours of the dock and timer bar follow the design team's Figma frame (node 28:1831).
 // Full screen: Shell hides the header and bottom bar on /recipe/:slug/cook.
 
+const BAR_KEY = 'dk-timer-bar'
 type Running = { id: string; step: number; label: string; secs: number; endsAt: number | null; left: number; done: boolean }
 // Whole seconds, rounded up, so a timer reads 1:00 (not 0:00) the moment it starts.
 const fmt = (s: number) => { const t = Math.max(0, Math.ceil(s)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}` }
@@ -40,6 +41,10 @@ export default function Cook() {
   const [timers, setTimers] = useState<Running[]>([])
   const [now, setNow] = useState(() => Date.now())
   const [sheet, setSheet] = useState<null | 'timers' | 'chat'>(null)
+  // "Show timer bar while cooking" (timer sheet toggle), remembered in this browser. When off, running timers stay
+  // hidden and the bar only appears, in alert colours with the alarm, once a timer finishes.
+  const [showBar, setShowBar] = useState(() => { try { return localStorage.getItem(BAR_KEY) !== 'hidden' } catch { return true } })
+  const toggleBar = () => { const v = !showBar; setShowBar(v); try { localStorage.setItem(BAR_KEY, v ? 'shown' : 'hidden') } catch { /* private mode */ } }
 
   // Tick while any timer is running, and ring the ones that have just run out.
   const ticking = timers.some((t) => t.endsAt && !t.done)
@@ -76,7 +81,7 @@ export default function Cook() {
   const step = plan.steps[n - 1]
   const lines = detailFor(r).groups.flatMap((g) => g.lines)
   // The one timer shown in the bar: a finished one first, otherwise the one with the least time left.
-  const featured = timers.find((t) => t.done) ?? [...timers].sort((a, b) => leftOf(a, now) - leftOf(b, now))[0]
+  const featured = timers.find((t) => t.done) ?? (showBar ? [...timers].sort((a, b) => leftOf(a, now) - leftOf(b, now))[0] : undefined)
   // Badge on the timer button: this step has a timer that hasn't been started yet.
   const badge = !!step.timers?.some((_, i) => !timers.find((x) => x.id === timerId(n, i)))
 
@@ -130,6 +135,16 @@ export default function Cook() {
           {step.timers?.length
             ? step.timers.map((t, i) => <TimerCard key={i} def={t} t={timers.find((x) => x.id === timerId(n, i))} now={now} onStart={() => start(n, i, t)} {...controls} />)
             : <p className="text-[17px] text-muted pb-2">This step has no timer.</p>}
+          <div className="flex items-start gap-3 mt-3 pt-4 pb-1 border-t border-line">
+            <div className="flex-1 min-w-0">
+              <div id="bar-toggle" className="text-[17px] font-semibold">Show timer bar while cooking</div>
+              <p className="text-[15px] text-muted mt-0.5">When it's off, you'll only see the bar when a timer finishes, with an alarm.</p>
+            </div>
+            <button role="switch" aria-checked={showBar} aria-labelledby="bar-toggle" onClick={toggleBar}
+              className={`shrink-0 mt-0.5 w-12 h-7 rounded-full p-0.5 transition-colors ${showBar ? 'bg-brand' : 'bg-line'}`}>
+              <span className={`block w-6 h-6 rounded-full bg-white shadow transition-transform ${showBar ? 'translate-x-5' : ''}`} />
+            </button>
+          </div>
         </Sheet>
       )}
       {sheet === 'chat' && <ChatSheet title={r.title} initial="" onClose={() => setSheet(null)} />}
@@ -249,13 +264,15 @@ function TimerCard({ def, t, now, onStart, pause, resume, remove }: { def: Timer
 
 // The one timer bar, attached above the dock (Figma 28:1864): white, 44px tall, 16px top corners, soft upward
 // shadow, grey 20px icon, 15px label, 17px semibold time, 22px pause. Tap the label to go to the timer's step.
-// A finished timer turns the icon and "Done" amber.
+// A finished timer (shown whether or not the bar is switched on) uses alert colours and dark text and says what it was
+// for; the alarm sounds at the same moment.
 function TimerBar({ t, now, onGo, pause, resume, remove }: { t: Running; now: number; onGo: () => void } & Controls) {
   return (
-    <div className="relative z-10 flex items-center gap-2 h-11 px-4 rounded-t-2xl bg-white text-muted shadow-[0_-2px_12px_rgba(0,0,0,0.15)]">
-      <Icon name={t.done ? 'alarm' : 'timer'} size={20} className={t.done ? 'text-[#c98a1a]' : ''} />
-      <button onClick={onGo} className="flex-1 min-w-0 text-left truncate text-[15px] leading-[1.4]">{t.label} · step {t.step}</button>
-      <span className={`font-semibold tabular-nums text-[17px] leading-[1.3] ${t.done ? 'text-[#c98a1a]' : ''}`}>{t.done ? 'Done' : fmt(leftOf(t, now))}</span>
+    <div role={t.done ? 'alert' : undefined}
+      className={`relative z-10 flex items-center gap-2 h-11 px-4 rounded-t-2xl shadow-[0_-2px_12px_rgba(0,0,0,0.15)] ${t.done ? 'bg-alert text-ink' : 'bg-white text-muted'}`}>
+      <Icon name={t.done ? 'alarm' : 'timer'} size={20} />
+      <button onClick={onGo} className={`flex-1 min-w-0 text-left truncate text-[15px] leading-[1.4] ${t.done ? 'font-semibold' : ''}`}>{t.done ? `Time's up: ${t.label}` : `${t.label} · step ${t.step}`}</button>
+      <span className="font-semibold tabular-nums text-[17px] leading-[1.3]">{t.done ? 'Done' : fmt(leftOf(t, now))}</span>
       {t.done
         ? <button aria-label="Dismiss timer" onClick={() => remove(t.id)} className="w-6 h-6 grid place-items-center"><Icon name="close" size={22} /></button>
         : t.endsAt

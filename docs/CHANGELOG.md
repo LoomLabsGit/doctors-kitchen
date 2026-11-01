@@ -145,3 +145,8 @@
 ## 2026-11-01: Timer bar and dock match the design team's Figma frame
 - Timer bar now follows Figma (node 28:1831): white instead of black, 44 px tall (was 56), 16 px top corners, a soft upward shadow, and everything in grey: 20 px timer icon, 15 px regular label, 17 px semibold time, 22 px pause. A finished timer turns the icon and "Done" amber.
 - Dock: 1 px top border, 12 px top / 16 px sides and bottom, 8 px between Back and Next (was 12), progress track in the pale blue chip colour, 22 px icon in the timer button, and a light-weight (300) 32 px play icon. `Icon` gained a `weight` prop for the variable font's weight axis.
+
+## 2026-11-01: Show or hide the timer bar
+- The timer sheet has a "Show timer bar while cooking" switch (on by default, remembered in this browser as `dk-timer-bar`).
+- When it's off, running timers stay hidden while you cook. When a timer finishes, the bar appears anyway in alert colours (new `alert` colour token, amber) with dark text saying what it was for ("Time's up: Cook the spices"), and the alarm sounds and the phone vibrates.
+- Finished timers now use the same alert style when the bar is switched on too (was a white bar with an amber icon).

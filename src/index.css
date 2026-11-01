@@ -9,6 +9,7 @@
   --color-ink: #1a1a1a;
   --color-muted: #6b6b6b;
   --color-line: #e0e0e0;
+  --color-alert: #f0b44c; /* finished timers */
   --font-sans: "Noto Sans", system-ui, sans-serif;
 }
 
