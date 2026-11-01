@@ -20,11 +20,11 @@ export const cookalong: Record<string, Cookalong> = {
     // Steps 1, 2, 3, 4, 7, 8, 10 and 11 were reworded to carry their amounts and need new recordings; steps 5, 6 and 9
     // keep DK's original wording and audio.
     steps: [
-      step(1, 'Heat 1 tbsp olive oil in a deep pan. Season 500 g boneless, skinless chicken thighs and brown them for 4 minutes per side. Meanwhile…',
+      step(1, 'Heat 1 tbsp olive oil in a deep pan. Season 500 g boneless, skinless chicken thighs and brown them for 4 minutes per side. And use the timers below to keep track.',
         { photo: true, timers: [{ label: 'Brown the first side', secs: min(4) }, { label: 'Brown the second side', secs: min(4) }], terms: ['1 tbsp olive oil', '500 g boneless, skinless chicken thighs'] }),
       step(2, 'Dice 150 g white onion and grate 3 garlic cloves, then set them aside for the next step.',
         { terms: ['150 g white onion', '3 garlic cloves'] }),
-      step(3, 'Add the diced onion to the pan with salt and cook for 6 minutes. Stir in the grated garlic, 3 tbsp harissa paste (more or less, depending on how spicy you like it), 1 tbsp tomato purée and 1 tsp ground cumin, then cook for 1 minute. Meanwhile…',
+      step(3, 'Add the diced onion to the pan with salt and cook for 6 minutes. Stir in the grated garlic, 3 tbsp harissa paste (more or less, depending on how spicy you like it), 1 tbsp tomato purée and 1 tsp ground cumin, then cook for 1 minute.',
         { photo: true, timers: [{ label: 'Cook the onion', secs: min(6) }, { label: 'Cook the spices', secs: min(1) }], terms: ['diced onion', 'grated garlic', '3 tbsp harissa paste', '1 tbsp tomato purée', '1 tsp ground cumin'] }),
       step(4, 'Dice 200 g courgette, halve 200 g baby tomatoes, and drain and rinse 1 can of chickpeas. Keep the courgette separate: it goes in first.',
         { terms: ['200 g courgette', '200 g baby tomatoes', '1 can of chickpeas'] }),

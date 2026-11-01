@@ -170,3 +170,4 @@
 - The "You'll need" card, the "From earlier" group and the generated "Set them aside" sentence are gone; steps 2 and 8 now say "set them aside" in their own words, and step 4 says to keep the courgette separate. Ingredient phrases (amount + ingredient) are highlighted, and an amount never breaks across lines. Every step now fits on a phone screen without scrolling.
 - Steps 1, 2, 3, 4, 7, 8, 10 and 11 are reworded and need new recordings from Dr Rupy (the current audio still uses the old wording); steps 5, 6 and 9 keep DK's original wording and audio.
 - The Method tab on Recipe detail keeps DK's original method wording (now stored as `steps` in `src/data/recipeDetail.ts`), in both versions.
+- The trailing "Meanwhile…" is gone from steps 1 and 3 (the next step already follows on screen); step 1 ends "And use the timers below to keep track." to point at its two browning timers.
