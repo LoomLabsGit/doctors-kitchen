@@ -38,7 +38,7 @@ export const cookalong: Record<string, Cookalong> = {
         { photo: true, timers: [{ label: 'Simmer, uncovered', secs: min(6) }] }),
       step(10, 'Shred the chicken with two forks, then stir through 150 g baby spinach for 2 minutes until wilted.',
         { photo: true, timers: [{ label: 'Wilt the spinach', secs: min(2) }], terms: ['150 g baby spinach'] }),
-      step(11, 'Stir in the lemon juice, season to taste, and serve topped with 150 g Greek yoghurt and the chopped parsley.',
+      step(11, 'Stir in the lemon juice, season to taste, and serve topped with 150 g Greek yoghurt and the chopped parsley. Serve and enjoy! Once you have tried the recipe, leave us a review so we know how you got on!',
         { photo: true, terms: ['lemon juice', '150 g Greek yoghurt', 'chopped parsley'] }),
     ],
   },

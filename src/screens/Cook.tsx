@@ -113,6 +113,7 @@ export default function Cook() {
         {step.timers?.length ? <div className="mt-5">
           {step.timers.map((t, i) => <TimerCard key={i} def={t} t={timers.find((x) => x.id === timerId(n, i))} now={now} onStart={() => start(n, i, t)} {...controls} />)}
         </div> : null}
+        {n === total && <ReviewBox slug={slug} />}
       </main>
 
       <div className="shrink-0">
@@ -395,6 +396,54 @@ function TimerBar({ t, now, onGo, pause, resume, complete }: { t: Running; now: 
       {!t.done && (t.endsAt
           ? <button aria-label="Pause timer" onClick={() => pause(t.id)} className="w-6 h-6 grid place-items-center"><Icon name="pause" size={22} /></button>
           : <button aria-label="Resume timer" onClick={() => resume(t.id)} className="w-6 h-6 grid place-items-center"><Icon name="play_arrow" size={22} /></button>)}
+    </div>
+  )
+}
+
+// Simple CSAT on the last step: five stars (required) and an optional written review. Kept in this browser's
+// localStorage ("dk-reviews", by recipe) so it survives a reload; after sending it shows a thank-you with Edit.
+const REVIEWS_KEY = 'dk-reviews'
+type Review = { stars: number; text: string }
+const loadReviews = (): Record<string, Review> => { try { return JSON.parse(localStorage.getItem(REVIEWS_KEY) ?? '{}') } catch { return {} } }
+const STAR_WORDS = ['Poor', 'Fair', 'Good', 'Very good', 'Loved it']
+
+function ReviewBox({ slug }: { slug: string }) {
+  const saved = loadReviews()[slug]
+  const [sent, setSent] = useState(!!saved)
+  const [stars, setStars] = useState(saved?.stars ?? 0)
+  const [text, setText] = useState(saved?.text ?? '')
+  const send = () => {
+    try { localStorage.setItem(REVIEWS_KEY, JSON.stringify({ ...loadReviews(), [slug]: { stars, text: text.trim() } })) } catch { /* private mode: not kept */ }
+    setSent(true)
+  }
+  const Row = ({ size, onPick }: { size: number; onPick?: (s: number) => void }) => (
+    <div className="flex gap-1" role={onPick ? 'radiogroup' : undefined} aria-label={onPick ? 'Your rating' : `${stars} out of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((s) => onPick
+        ? <button key={s} role="radio" aria-checked={stars === s} aria-label={`${s} star${s > 1 ? 's' : ''}, ${STAR_WORDS[s - 1]}`} onClick={() => onPick(s)}
+            className="w-11 h-11 grid place-items-center"><Icon name="star" size={size} fill={s <= stars} className={s <= stars ? 'text-amber-500' : 'text-line'} /></button>
+        : <Icon key={s} name="star" size={size} fill={s <= stars} className={s <= stars ? 'text-amber-500' : 'text-line'} />)}
+    </div>
+  )
+  if (sent) return (
+    <div className="mt-5 rounded-2xl border-2 border-line p-4">
+      <div className="flex items-center justify-between">
+        <div className="text-[17px] font-semibold">Thanks for your review!</div>
+        <button onClick={() => setSent(false)} className="text-brand text-[15px] font-semibold">Edit</button>
+      </div>
+      <div className="mt-1"><Row size={22} /></div>
+      {text.trim() && <p className="mt-2 text-[15px] text-muted">{text.trim()}</p>}
+    </div>
+  )
+  return (
+    <div className="mt-5 rounded-2xl border-2 border-line p-4">
+      <div className="text-[17px] font-semibold">How did you get on?</div>
+      <div className="flex items-center gap-2 mt-1 -ml-2">
+        <Row size={32} onPick={setStars} />
+        <span className="text-[15px] text-muted">{stars ? STAR_WORDS[stars - 1] : ''}</span>
+      </div>
+      <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} placeholder="Tell us more (optional)" aria-label="Your review"
+        className="mt-2 w-full px-3 py-2 rounded-xl border border-line text-[15px] resize-none outline-none focus:border-brand" />
+      <button onClick={send} disabled={!stars} className="mt-2 w-full h-12 rounded-full bg-brand text-white text-[16px] font-semibold disabled:opacity-40">Send review</button>
     </div>
   )
 }
