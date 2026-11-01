@@ -4,6 +4,8 @@ import { recipes } from '../data/recipes'
 import { cookalong, type CookStep, type Timer } from '../data/cookalong'
 import { Icon, Photo, Sheet } from '../components/ui'
 import { ChatSheet } from '../components/ChatSheet'
+import { useProgress } from '../lib/progress'
+import { todayIso } from '../lib/dates'
 
 // IMPROVED (new feature): audio-guided "Step by Step Method". One step per page: photo and a conversational
 // instruction with each ingredient's amount written in and highlighted (no separate ingredient list). A dock at the bottom holds Dr Rupy's audio, the timer button and Back / Next.
@@ -81,7 +83,7 @@ export default function Cook() {
     { id: `custom-${Date.now()}`, step: n, label, secs, endsAt: Date.now() + secs * 1000, left: secs, done: false, custom: true }])
   const controls = { start, pause, resume, remove, complete }
 
-  if (n > total) return <Finished r={r} onClose={exit} onRestart={() => go(1)} />
+  if (n > total) return <Finished r={r} onBack={() => go(total)} />
   const step = plan.steps[n - 1]
   // The one timer shown in the bar: a finished one first, otherwise the one with the least time left.
   const byLeft = (a: Running, b: Running) => leftOf(a, now) - leftOf(b, now)
@@ -448,17 +450,27 @@ function ReviewBox({ slug }: { slug: string }) {
   )
 }
 
-function Finished({ r, onClose, onRestart }: { r: (typeof recipes)[number]; onClose: () => void; onRestart: () => void }) {
+// End screen. Primary: log the meal to today's Progress (as the Add meal flow does, with the same toast). Back returns
+// to the last step, side by side with the primary like the cook-along dock; "Back to recipes" goes to the Recipes tab.
+function Finished({ r, onBack }: { r: (typeof recipes)[number]; onBack: () => void }) {
+  const { add } = useProgress()
+  const nav = useNavigate()
+  const logMeal = () => { const d = todayIso(); add({ date: d, slug: r.slug }); nav(`/progress?d=${d}`, { replace: true, state: { toast: 'The recipe has been added' } }) }
   return (
     <div className="h-full flex flex-col bg-white px-6 pt-10 pb-6 text-center">
       <Photo hue={r.hue} src={r.image} className="w-full aspect-[3/2] rounded-2xl" />
       <Icon name="celebration" size={44} className="text-brand mt-6 block mx-auto" />
       <h1 className="text-[26px] font-semibold mt-2">Enjoy your meal</h1>
       <p className="text-[17px] text-muted mt-2">You've cooked {r.title}.</p>
-      <div className="mt-auto space-y-3">
-        <button onClick={onClose} className="w-full h-14 rounded-2xl bg-brand text-white text-[17px] font-semibold">Back to the recipe</button>
-        <button onClick={onRestart} className="w-full h-12 rounded-2xl text-brand text-[17px] font-semibold">Start again</button>
-        <Link to="/" className="block text-muted text-[15px]">Back to recipes</Link>
+      <div className="mt-auto">
+        <div className="flex gap-2">
+          <button onClick={onBack}
+            className="w-[120px] h-14 rounded-2xl border-2 border-line text-[17px] font-semibold inline-flex items-center justify-center gap-1">
+            <Icon name="arrow_back" size={22} />Back
+          </button>
+          <button onClick={logMeal} className="flex-1 h-14 rounded-2xl bg-brand text-white text-[17px] font-semibold">Log meal to progress</button>
+        </div>
+        <Link to="/" replace className="mt-3 h-12 rounded-2xl text-brand text-[17px] font-semibold grid place-items-center">Back to recipes</Link>
       </div>
     </div>
   )
