@@ -89,12 +89,9 @@ export default function Cook() {
   const notStarted = (s: number, i: number) => !timers.find((x) => x.id === timerId(s, i))
   // Badge on the timer button: this step has a timer that hasn't been started yet.
   const badge = !!step.timers?.some((_, i) => notStarted(n, i))
-  // Timers sheet: everything running, paused or waiting to be confirmed; this step's unstarted timers; and any
-  // earlier step's timers that were never started (in a dropdown).
+  // Timers sheet: everything running, paused or waiting to be confirmed, then this step's unstarted timers.
   const active = timers.filter((t) => !t.confirmed).sort((a, b) => Number(b.done) - Number(a.done) || byLeft(a, b))
   const fresh = (step.timers ?? []).map((def, i) => ({ def, i })).filter(({ i }) => notStarted(n, i))
-  const earlier = plan.steps.slice(0, n - 1).flatMap((s, si) => (s.timers ?? []).map((def, i) => ({ def, i, step: si + 1 })))
-    .filter((x) => notStarted(x.step, x.i))
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -155,20 +152,6 @@ export default function Cook() {
             {fresh.map(({ def, i }) => <TimerCard key={i} def={def} now={now} onStart={() => start(n, i, def)} {...controls} />)}
           </>}
           {!active.length && !fresh.length && <p className="text-[17px] text-muted pb-2">No timers running, and this step has none.</p>}
-          {earlier.length > 0 && (
-            <details className="group mt-1 mb-2 rounded-xl border border-line">
-              <summary className="flex items-center gap-2 h-11 px-3 text-[15px] cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                <span className="flex-1">Not started from earlier steps ({earlier.length})</span>
-                <Icon name="expand_more" size={22} className="text-muted transition-transform group-open:rotate-180" />
-              </summary>
-              {earlier.map(({ def, i, step: s }) => (
-                <div key={`${s}-${i}`} className="flex items-center gap-2 h-12 px-3 border-t border-line">
-                  <div className="flex-1 min-w-0 truncate text-[15px]">{def.label} <span className="text-muted">· step {s} · {def.secs / 60} min</span></div>
-                  <button onClick={() => start(s, i, def)} className="shrink-0 h-8 px-3 rounded-full bg-brand text-white text-[14px] font-semibold">Start</button>
-                </div>
-              ))}
-            </details>
-          )}
           <CustomTimer onStart={startCustom} />
           <div className="flex items-start gap-3 mt-3 pt-4 pb-1 border-t border-line">
             <div className="flex-1 min-w-0">
