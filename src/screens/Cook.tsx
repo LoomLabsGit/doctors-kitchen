@@ -102,8 +102,9 @@ export default function Cook() {
 
       <main key={n} className="flex-1 overflow-y-auto px-4 pb-6">
         <StepImage step={step} hue={r.hue} />
-        <p className="mt-4 text-[18px] leading-relaxed"><Highlighted text={step.text} terms={step.terms ?? []} /></p>
-        <StepIngredients lines={lines.filter((l) => step.uses?.includes(l.name))} />
+        <StepText step={step} n={n} steps={plan.steps} lines={lines} />
+        {/* "You'll need" lists only ingredients appearing for the first time, so an amount is never shown twice */}
+        <StepIngredients lines={lines.filter((l) => step.uses?.includes(l.name) && firstUse(plan.steps, l.name) === n)} />
       </main>
 
       <div className="shrink-0">
@@ -160,13 +161,44 @@ const Sparkles = () => (
   </svg>
 )
 
-// The step's instruction with the ingredients it uses in bold, underlined brand green.
-function Highlighted({ text, terms }: { text: string; terms: string[] }) {
-  if (!terms.length) return <>{text}</>
-  const re = new RegExp(`(${terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi')
-  return <>{text.split(re).map((part, i) => i % 2
-    ? <span key={i} className="text-brand font-semibold underline decoration-2 underline-offset-4">{part}</span>
-    : part)}</>
+// Step (1-based) where an ingredient first appears in the cook-along.
+const firstUse = (steps: CookStep[], name: string) => steps.findIndex((st) => st.uses?.includes(name)) + 1
+// How an ingredient was prepared, from its note ("diced" -> "Diced"); generic when there's no note.
+const prepared = (l: Line) => (l.note && !l.note.startsWith('(') ? l.note[0].toUpperCase() + l.note.slice(1) : 'Prepared')
+const stepList = (ns: number[]) => (ns.length === 1 ? `step ${ns[0]}` : `steps ${ns.slice(0, -1).join(', ')} and ${ns[ns.length - 1]}`)
+
+// The instruction, with the step's ingredients highlighted. Ingredients prepared on an earlier step are tappable and
+// show their amount and where they were prepared ("150 g white onion · diced in step 2"), instead of repeating the
+// amount in "You'll need". A step whose ingredients are used again later ends with "Set them aside for step N."
+function StepText({ step, n, steps, lines }: { step: CookStep; n: number; steps: CookStep[]; lines: Line[] }) {
+  const [open, setOpen] = useState<string | null>(null)
+  const uses = step.uses ?? [], terms = step.terms ?? []   // terms[i] is the word in the text for uses[i]
+  const lineOf = (name: string) => lines.find((l) => l.name === name)
+  const earlier = new Map(uses.flatMap((name, i) => { const from = firstUse(steps, name); return from < n && terms[i] ? [[terms[i].toLowerCase(), { name, from }] as const] : [] }))
+  const mine = uses.filter((name) => firstUse(steps, name) === n)
+  const later = [...new Set(steps.flatMap((st, i) => (i + 1 > n && st.uses?.some((u) => mine.includes(u)) ? [i + 1] : [])))]
+  const reused = mine.filter((name) => steps.some((st, i) => i + 1 > n && st.uses?.includes(name)))
+  const re = terms.length ? new RegExp(`(${terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi') : null
+  const info = open ? earlier.get(open) : undefined, infoLine = info && lineOf(info.name)
+  return <>
+    <p className="mt-4 text-[18px] leading-relaxed">
+      {(re ? step.text.split(re) : [step.text]).map((part, i) => {
+        if (i % 2 === 0) return part
+        const key = part.toLowerCase(), cls = 'text-brand font-semibold underline decoration-2 underline-offset-4'
+        return earlier.has(key)
+          ? <button key={i} onClick={() => setOpen(open === key ? null : key)} aria-expanded={open === key} className={`${cls} decoration-dotted`}>{part}</button>
+          : <span key={i} className={cls}>{part}</span>
+      })}
+      {later.length > 0 && reused.length > 0 && <> Set {reused.length > 1 ? 'them' : 'it'} aside for {stepList(later)}.</>}
+    </p>
+    {info && infoLine && (
+      <div role="status" className="mt-3 flex items-center gap-2 rounded-xl bg-brand-soft px-3 py-2 text-[15px]">
+        <Icon name="info" size={20} className="text-brand" />
+        <span className="flex-1"><span className="font-semibold">{amount(infoLine, 2, false)} {infoLine.name}</span> · {prepared(infoLine).toLowerCase()} in step {info.from}</span>
+        <button aria-label="Close" onClick={() => setOpen(null)} className="text-muted grid place-items-center"><Icon name="close" size={20} /></button>
+      </div>
+    )}
+  </>
 }
 
 // "You'll need": the ingredients this step uses, with their amounts from the recipe (for the recipe's base servings).

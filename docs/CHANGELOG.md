@@ -154,3 +154,9 @@
 ## 2026-11-01: Scrub and smooth audio progress in Step by Step Method
 - Dr Rupy's audio bar in the dock can now be dragged (or tapped) to scrub back or forward through the step; a small knob shows while dragging and the elapsed time follows your finger. The hit area is 24 px tall although the bar stays 6 px. Left and right arrow keys move it by a second.
 - The fill now moves smoothly: it reads the playhead every animation frame while playing instead of waiting for the browser's coarse time updates (about four a second), which made it move in steps.
+
+## 2026-11-01: Step by Step Method, amounts shown once
+- Fixes the "is this a new 150 g?" ambiguity when an ingredient prepared on one step is used on a later one (onion and garlic in steps 2→3, courgette, chickpeas and tomatoes in 4→5/6, lemon and parsley in 8→11).
+- "You'll need" now lists only ingredients appearing for the first time, with amounts. Ingredients prepared earlier are left out of the card; their highlighted word in the instruction has a dotted underline and can be tapped to show a note such as "150 g white onion · diced in step 2". Steps 5, 6 and 9 now have no card.
+- Prep steps whose ingredients are used again end with "Set them aside for step 3." (step 2), "…for steps 5 and 6." (step 4) and "…for step 11." (step 8). Dr Rupy's recorded audio doesn't say this sentence.
+- Everything is worked out from each step's `uses`, so no extra data was needed. The Method tab on Recipe detail is unchanged.
