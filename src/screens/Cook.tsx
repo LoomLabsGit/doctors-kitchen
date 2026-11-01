@@ -6,8 +6,8 @@ import { Icon, Photo, Sheet } from '../components/ui'
 import { ChatSheet } from '../components/ChatSheet'
 
 // IMPROVED (new feature): audio-guided "Step by Step Method". One step per page: photo and a conversational
-// instruction with each ingredient's amount written in and highlighted (no separate ingredient list). A dock at the bottom holds Dr Rupy's audio, the timer button (with a
-// badge when the step has a timer not yet started) and Back / Next. A running timer shows as one white bar attached
+// instruction with each ingredient's amount written in and highlighted (no separate ingredient list). A dock at the bottom holds Dr Rupy's audio, the timer button and Back / Next.
+// A running timer shows as one white bar attached
 // above the dock: timers don't stack, the bar shows whichever ends first (a finished one first). A step's timers also
 // sit under its instruction. A finished timer stays up until you tap its underlined "Done" to confirm it.
 // Sizes, fonts and colours of the dock and timer bar follow the design team's Figma frame (node 28:1831).
@@ -87,8 +87,6 @@ export default function Cook() {
   const byLeft = (a: Running, b: Running) => leftOf(a, now) - leftOf(b, now)
   const featured = timers.find((t) => t.done && !t.confirmed) ?? (showBar ? timers.filter((t) => !t.done).sort(byLeft)[0] : undefined)
   const notStarted = (s: number, i: number) => !timers.find((x) => x.id === timerId(s, i))
-  // Badge on the timer button: this step has a timer that hasn't been started yet.
-  const badge = !!step.timers?.some((_, i) => notStarted(n, i))
   // Timers sheet: everything running, paused or waiting to be confirmed, then this step's unstarted timers.
   const active = timers.filter((t) => !t.confirmed).sort((a, b) => Number(b.done) - Number(a.done) || byLeft(a, b))
   const fresh = (step.timers ?? []).map((def, i) => ({ def, i })).filter(({ i }) => notStarted(n, i))
@@ -123,10 +121,9 @@ export default function Cook() {
         <div className={`bg-white px-4 pt-3 pb-4 border-t border-line ${featured ? '' : 'rounded-t-2xl shadow-[0_-4px_16px_rgba(0,0,0,0.05)]'}`}>
           <div className="flex items-center gap-3">
             <AudioPlayer key={n} src={step.audio} />
-            <button aria-label={badge ? 'Timers, one not started' : 'Timers'} onClick={() => setSheet('timers')}
-              className="relative shrink-0 w-12 h-12 rounded-full bg-ink text-white grid place-items-center">
+            <button aria-label="Timers" onClick={() => setSheet('timers')}
+              className="shrink-0 w-12 h-12 rounded-full bg-ink text-white grid place-items-center">
               <Icon name="timer" size={22} />
-              {badge && <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#e57373] border-2 border-white" />}
             </button>
           </div>
           <div className="flex gap-2 mt-3">

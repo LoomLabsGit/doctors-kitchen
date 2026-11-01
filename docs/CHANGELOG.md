@@ -178,3 +178,4 @@
 - The timers sheet lists: **Active** (every running, paused or finished timer from any step, as slim rows like the timer bar); **This step** (this step's timers not yet started, as the full cards); a compact **Not started from earlier steps** dropdown with a Start button on each; and a **Custom timer** link that opens a single row (what it's for, minutes, Start). Custom timers show in Active and in the bar without a step number.
 - A finished timer no longer has an X. Its underlined **Done** (on the bar, in Active and on the step's card) confirms it's complete: it leaves the bar and Active, and the step's card shows "Completed" with a reset button.
 - Removed the "Not started from earlier steps" dropdown from the timers sheet: it now shows Active, This step and Custom timer.
+- Removed the red badge from the timer button: the step's timers are already on the page under the instruction.
