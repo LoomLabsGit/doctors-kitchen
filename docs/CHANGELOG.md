@@ -134,3 +134,10 @@
 
 ## 2026-10-29: Cook now, step title at the top
 - "Step N of 11" now sits at the top of cook mode, under the header and above the progress bar and the step photo, so it stays in view while the step scrolls. Before: below the photo. It is 19 px bold (was 26 px), so it takes less room.
+
+## 2026-11-01: Step by Step Method, new layout (improved version)
+- The recipe page button is now "Step by Step Method · Narrated by Dr Rupy • 11 Steps", with a smaller (44 px) outlined play button and no shadow.
+- New step layout, from the design team's mocks: header with close, "Cooking with Dr Rupy" and the recipe name, and a sparkle button that opens Ask Dr Rupy (replacing the ingredients button); "Step N of 11" in bold with "of 11" in grey; progress bar; photo; the instruction with its ingredients in bold, underlined green (e.g. "olive oil", "chicken"); then "You'll need".
+- Audio and timers moved out of the page into a bottom dock: a 48 px play button with the progress bar and times (play again after the end replays the step), and a black timer button with a red badge when the step has a timer that hasn't been started. The timer button opens the step's timers in a sheet.
+- When a timer is running, one black bar attaches above the dock (amber with "Done" when one finishes). Timers no longer stack: the bar shows the timer that will end first. Tap its label to go to that timer's step.
+- The separate "Listen to Dr Rupy" card, in-page timer cards and the stack of compact timer bars are gone; the chat sheet moved to `src/components/ChatSheet.tsx` so cook mode can use it.

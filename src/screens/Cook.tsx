@@ -4,9 +4,12 @@ import { recipes } from '../data/recipes'
 import { cookalong, type CookStep, type Timer } from '../data/cookalong'
 import { amount, detailFor, type Line } from '../data/recipeDetail'
 import { Icon, Photo, Sheet } from '../components/ui'
+import { ChatSheet } from '../components/ChatSheet'
 
-// IMPROVED (new feature): audio-guided "Cook now" mode. One step per page with its photo, Dr Rupy reading it aloud,
-// and any timers. A started timer keeps running as a compact bar at the top of every later step.
+// IMPROVED (new feature): audio-guided "Step by Step Method". One step per page: photo, instruction with its
+// ingredients highlighted, and "You'll need". A dock at the bottom holds Dr Rupy's audio, the timer button (with a
+// badge when the step has a timer not yet started) and Back / Next. A running timer shows as one black bar attached
+// above the dock: timers don't stack, the bar shows whichever ends first (a finished one first).
 // Full screen: Shell hides the header and bottom bar on /recipe/:slug/cook.
 
 type Running = { id: string; step: number; label: string; secs: number; endsAt: number | null; left: number; done: boolean }
@@ -35,7 +38,7 @@ export default function Cook() {
   const plan = cookalong[slug]
   const [timers, setTimers] = useState<Running[]>([])
   const [now, setNow] = useState(() => Date.now())
-  const [ingredients, setIngredients] = useState(false)
+  const [sheet, setSheet] = useState<null | 'timers' | 'chat'>(null)
 
   // Tick while any timer is running, and ring the ones that have just run out.
   const ticking = timers.some((t) => t.endsAt && !t.done)
@@ -71,8 +74,10 @@ export default function Cook() {
   if (n > total) return <Finished r={r} onClose={exit} onRestart={() => go(1)} />
   const step = plan.steps[n - 1]
   const lines = detailFor(r).groups.flatMap((g) => g.lines)
-  // Timers started on other steps follow you as compact bars at the top.
-  const elsewhere = timers.filter((t) => t.step !== n)
+  // The one timer shown in the bar: a finished one first, otherwise the one with the least time left.
+  const featured = timers.find((t) => t.done) ?? [...timers].sort((a, b) => leftOf(a, now) - leftOf(b, now))[0]
+  // Badge on the timer button: this step has a timer that hasn't been started yet.
+  const badge = !!step.timers?.some((_, i) => !timers.find((x) => x.id === timerId(n, i)))
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -82,45 +87,69 @@ export default function Cook() {
           <div className="text-[15px] font-bold uppercase text-brand">Cooking with Dr Rupy</div>
           <div className="text-[15px] text-muted truncate">{r.title}</div>
         </div>
-        <button aria-label="Ingredients" onClick={() => setIngredients(true)} className="w-11 h-11 grid place-items-center text-brand"><Icon name="format_list_bulleted" size={26} /></button>
+        <button aria-label="Ask Dr Rupy" onClick={() => setSheet('chat')} className="w-11 h-11 grid place-items-center text-brand"><Sparkles /></button>
       </header>
-      <h1 className="shrink-0 px-4 mt-3 text-[19px] font-bold leading-tight">Step {n} <span className="text-muted">of {total}</span></h1>
+      <h1 className="shrink-0 px-4 mt-3 text-[19px] leading-tight"><span className="font-bold">Step {n}</span> <span className="text-muted">of {total}</span></h1>
       <div className="shrink-0 flex gap-1 px-4 mt-2" aria-hidden>
         {plan.steps.map((_, i) => <span key={i} className={`h-1.5 flex-1 rounded-full ${i < n ? 'bg-brand' : 'bg-line'}`} />)}
       </div>
-      {elsewhere.length > 0 && (
-        <div className="shrink-0 px-4 mt-3 space-y-2">
-          {elsewhere.map((t) => <CompactTimer key={t.id} t={t} now={now} onGo={() => go(t.step)} {...controls} />)}
-        </div>
-      )}
 
       <main key={n} className="flex-1 overflow-y-auto px-4 pb-6">
         <StepImage step={step} hue={r.hue} />
-        <p className="mt-4 text-[18px] leading-relaxed">{step.text}</p>
+        <p className="mt-4 text-[18px] leading-relaxed"><Highlighted text={step.text} terms={step.terms ?? []} /></p>
         <StepIngredients lines={lines.filter((l) => step.uses?.includes(l.name))} />
-        <AudioPlayer src={step.audio} />
-        {step.timers && <>
-          <h2 className="mt-6 text-[14px] uppercase tracking-wide text-muted">{step.timers.length > 1 ? 'Timers' : 'Timer'}</h2>
-          {step.timers.map((t, i) => (
-            <TimerCard key={i} def={t} t={timers.find((x) => x.id === timerId(n, i))} now={now}
-              onStart={() => start(n, i, t)} {...controls} />
-          ))}
-        </>}
       </main>
 
-      <footer className="shrink-0 flex gap-3 px-4 pt-3 pb-4 border-t border-line bg-white">
-        <button onClick={() => go(n - 1)} disabled={n === 1}
-          className="w-[120px] h-14 rounded-2xl border-2 border-line text-[17px] font-semibold inline-flex items-center justify-center gap-1 disabled:opacity-40">
-          <Icon name="arrow_back" size={22} />Back
-        </button>
-        <button onClick={() => go(n + 1)} className="flex-1 h-14 rounded-2xl bg-brand text-white text-[17px] font-semibold inline-flex items-center justify-center gap-1">
-          {n === total ? 'Finish cooking' : 'Next step'}<Icon name={n === total ? 'check' : 'arrow_forward'} size={24} />
-        </button>
-      </footer>
+      <div className="shrink-0">
+        {featured && <TimerBar t={featured} now={now} onGo={() => go(featured.step)} {...controls} />}
+        <div className={`bg-white px-4 pt-3 pb-4 ${featured ? '' : 'rounded-t-2xl border-t border-line shadow-[0_-4px_16px_rgba(0,0,0,0.05)]'}`}>
+          <div className="flex items-center gap-3">
+            <AudioPlayer key={n} src={step.audio} />
+            <button aria-label={badge ? 'Timers, one not started' : 'Timers'} onClick={() => setSheet('timers')}
+              className="relative shrink-0 w-12 h-12 rounded-full bg-ink text-white grid place-items-center">
+              <Icon name="timer" size={24} />
+              {badge && <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#e57373] border-2 border-white" />}
+            </button>
+          </div>
+          <div className="flex gap-3 mt-3">
+            <button onClick={() => go(n - 1)} disabled={n === 1}
+              className="w-[120px] h-14 rounded-2xl border-2 border-line text-[17px] font-semibold inline-flex items-center justify-center gap-1 disabled:opacity-40">
+              <Icon name="arrow_back" size={22} />Back
+            </button>
+            <button onClick={() => go(n + 1)} className="flex-1 h-14 rounded-2xl bg-brand text-white text-[17px] font-semibold inline-flex items-center justify-center gap-1">
+              {n === total ? 'Finish cooking' : 'Next step'}<Icon name={n === total ? 'check' : 'arrow_forward'} size={24} />
+            </button>
+          </div>
+        </div>
+      </div>
 
-      {ingredients && <IngredientsSheet slug={slug} onClose={() => setIngredients(false)} />}
+      {sheet === 'timers' && (
+        <Sheet title={step.timers && step.timers.length > 1 ? 'Timers' : 'Timer'} onClose={() => setSheet(null)}>
+          {step.timers?.length
+            ? step.timers.map((t, i) => <TimerCard key={i} def={t} t={timers.find((x) => x.id === timerId(n, i))} now={now} onStart={() => start(n, i, t)} {...controls} />)
+            : <p className="text-[17px] text-muted pb-2">This step has no timer.</p>}
+        </Sheet>
+      )}
+      {sheet === 'chat' && <ChatSheet title={r.title} initial="" onClose={() => setSheet(null)} />}
     </div>
   )
+}
+
+// Lucide "sparkles" (ISC licence): Material Symbols in this package has no matching icon.
+const Sparkles = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
+    <path d="M20 3v4" /><path d="M22 5h-4" /><path d="M4 17v2" /><path d="M5 18H3" />
+  </svg>
+)
+
+// The step's instruction with the ingredients it uses in bold, underlined brand green.
+function Highlighted({ text, terms }: { text: string; terms: string[] }) {
+  if (!terms.length) return <>{text}</>
+  const re = new RegExp(`(${terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi')
+  return <>{text.split(re).map((part, i) => i % 2
+    ? <span key={i} className="text-brand font-semibold underline decoration-2 underline-offset-4">{part}</span>
+    : part)}</>
 }
 
 // "You'll need": the ingredients this step uses, with their amounts from the recipe (for the recipe's base servings).
@@ -160,26 +189,21 @@ function AudioPlayer({ src }: { src?: string }) {
   const [missing, setMissing] = useState(!src)
   // Each step starts reading itself out as soon as you arrive (you got here by tapping, so the browser allows it).
   useEffect(() => { ref.current?.play().catch(() => setPlaying(false)) }, [src])
-  const toggle = () => { const a = ref.current; if (!a) return; if (a.paused) a.play().catch(() => {}); else a.pause() }
-  const replay = () => { const a = ref.current; if (!a) return; a.currentTime = 0; a.play().catch(() => {}) }
+  // Play after the clip has ended starts it again, so the step can always be replayed.
+  const toggle = () => { const a = ref.current; if (!a) return; if (a.paused) { if (a.ended) a.currentTime = 0; a.play().catch(() => {}) } else a.pause() }
   return (
-    <div className="mt-6 rounded-2xl bg-brand-soft p-4">
-      <div className="flex items-center gap-3">
-        <button aria-label={playing ? 'Pause' : 'Play'} onClick={toggle} disabled={missing}
-          className="shrink-0 w-16 h-16 rounded-full bg-brand text-white grid place-items-center disabled:opacity-40">
-          <Icon name={playing ? 'pause' : 'play_arrow'} size={38} fill />
-        </button>
-        <div className="flex-1 min-w-0">
-          <div className="text-[16px] font-semibold flex items-center gap-1">
-            <Icon name={playing ? 'graphic_eq' : 'headphones'} size={20} className="text-brand" />{missing ? "Audio isn't available on this device" : 'Listen to Dr Rupy'}
-          </div>
-          <div className="mt-2 h-1.5 rounded-full bg-white overflow-hidden">
-            <div className="h-full bg-brand transition-[width] duration-200" style={{ width: `${time.len ? (time.at / time.len) * 100 : 0}%` }} />
-          </div>
-          <div className="mt-1 flex justify-between text-[14px] text-muted"><span>{fmt(time.at)}</span><span>{fmt(time.len)}</span></div>
+    <div className="flex-1 min-w-0 flex items-center gap-3">
+      <button aria-label={playing ? 'Pause Dr Rupy' : 'Play Dr Rupy'} onClick={toggle} disabled={missing}
+        className="shrink-0 w-12 h-12 rounded-full bg-brand text-white grid place-items-center disabled:opacity-40">
+        <Icon name={playing ? 'pause' : 'play_arrow'} size={30} />
+      </button>
+      <div className="flex-1 min-w-0">
+        <div className="h-1.5 rounded-full bg-[#dde9ef] overflow-hidden">
+          <div className="h-full bg-brand transition-[width] duration-200" style={{ width: `${time.len ? (time.at / time.len) * 100 : 0}%` }} />
         </div>
-        <button aria-label="Replay this step" onClick={replay} disabled={missing}
-          className="shrink-0 w-12 h-12 rounded-full bg-white text-brand grid place-items-center disabled:opacity-40"><Icon name="replay" size={26} /></button>
+        {missing
+          ? <div className="mt-1 text-[14px] text-muted truncate">Audio isn't available on this device</div>
+          : <div className="mt-1 flex justify-between text-[14px] text-muted"><span>{fmt(time.at)}</span><span>{fmt(time.len)}</span></div>}
       </div>
       {src && <audio ref={ref} src={src} preload="auto"
         onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)}
@@ -198,7 +222,7 @@ function TimerCard({ def, t, now, onStart, pause, resume, remove }: { def: Timer
   const part = t ? 1 - left / def.secs : 0
   const C = 2 * Math.PI * 26
   return (
-    <div className={`mt-2 rounded-2xl border-2 px-3 py-2.5 flex items-center gap-3 ${t?.done ? 'border-[#f0b44c] bg-[#fff8ec]' : 'border-line'}`}>
+    <div className={`mb-2 rounded-2xl border-2 px-3 py-2.5 flex items-center gap-3 ${t?.done ? 'border-[#f0b44c] bg-[#fff8ec]' : 'border-line'}`}>
       <div className="relative shrink-0 w-12 h-12">
         <svg viewBox="0 0 60 60" className="w-12 h-12 -rotate-90">
           <circle cx="30" cy="30" r="26" fill="none" stroke="#e8ebee" strokeWidth="5" />
@@ -221,36 +245,19 @@ function TimerCard({ def, t, now, onStart, pause, resume, remove }: { def: Timer
   )
 }
 
-// Compact bar for a timer started on another step. Tap the label to jump back to its step.
-function CompactTimer({ t, now, onGo, pause, resume, remove }: { t: Running; now: number; onGo: () => void } & Controls) {
+// The one timer bar, attached above the dock. Tap the label to go to the timer's step.
+function TimerBar({ t, now, onGo, pause, resume, remove }: { t: Running; now: number; onGo: () => void } & Controls) {
   return (
-    <div className={`flex items-center gap-2 rounded-full pl-3 pr-1 h-11 ${t.done ? 'bg-[#f0b44c] text-ink' : 'bg-ink text-white'}`}>
-      <Icon name={t.done ? 'alarm' : 'timer'} size={20} />
-      <button onClick={onGo} className="flex-1 min-w-0 text-left truncate text-[15px]">{t.label} <span className="opacity-70">· step {t.step}</span></button>
-      <span className="font-semibold tabular-nums text-[17px]">{t.done ? 'Done' : fmt(leftOf(t, now))}</span>
+    <div className={`flex items-center gap-3 rounded-t-2xl pl-4 pr-2 h-14 ${t.done ? 'bg-[#f0b44c] text-ink' : 'bg-ink text-white'}`}>
+      <Icon name={t.done ? 'alarm' : 'timer'} size={24} />
+      <button onClick={onGo} className="flex-1 min-w-0 text-left truncate text-[16px]">{t.label} · step {t.step}</button>
+      <span className="font-semibold tabular-nums text-[19px]">{t.done ? 'Done' : fmt(leftOf(t, now))}</span>
       {t.done
-        ? <button aria-label="Dismiss timer" onClick={() => remove(t.id)} className="w-9 h-9 grid place-items-center"><Icon name="close" size={20} /></button>
+        ? <button aria-label="Dismiss timer" onClick={() => remove(t.id)} className="w-10 h-10 grid place-items-center"><Icon name="close" size={24} /></button>
         : t.endsAt
-          ? <button aria-label="Pause timer" onClick={() => pause(t.id)} className="w-9 h-9 grid place-items-center"><Icon name="pause" size={22} fill /></button>
-          : <button aria-label="Resume timer" onClick={() => resume(t.id)} className="w-9 h-9 grid place-items-center"><Icon name="play_arrow" size={22} fill /></button>}
+          ? <button aria-label="Pause timer" onClick={() => pause(t.id)} className="w-10 h-10 grid place-items-center"><Icon name="pause" size={26} /></button>
+          : <button aria-label="Resume timer" onClick={() => resume(t.id)} className="w-10 h-10 grid place-items-center"><Icon name="play_arrow" size={26} /></button>}
     </div>
-  )
-}
-
-function IngredientsSheet({ slug, onClose }: { slug: string; onClose: () => void }) {
-  const r = recipes.find((x) => x.slug === slug)!
-  const d = detailFor(r)
-  return (
-    <Sheet title="Ingredients" onClose={onClose}>
-      {d.groups.filter((g) => g.lines.length).map((g) => (
-        <section key={g.title} className="mb-4">
-          <h3 className="text-brand text-[14px] uppercase tracking-wide">{g.title}</h3>
-          <ul className="mt-1 divide-y divide-line/60">
-            {g.lines.map((l) => <li key={l.name} className="py-2 text-[17px]"><span className="text-muted">{amount(l, 2, false)}</span> {l.name}{l.note && <span className="text-muted"> {l.note}</span>}</li>)}
-          </ul>
-        </section>
-      ))}
-    </Sheet>
   )
 }
 

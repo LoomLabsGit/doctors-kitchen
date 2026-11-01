@@ -12,6 +12,7 @@ import { useBack } from '../lib/back'
 import { useImproved } from '../lib/version'
 import { cookalong } from '../data/cookalong'
 import { StepImage } from './Cook'
+import { ChatSheet } from '../components/ChatSheet'
 
 type Modal = null | 'share' | 'plan' | 'save' | 'chat'
 type Tab = 'Overview' | 'Ingredients' | 'Method'
@@ -72,14 +73,15 @@ export default function RecipeDetail() {
   )
 }
 
-// IMPROVED (new feature): "Cook now" opens the audio-guided cook-along. Only on recipes that have one (src/data/cookalong.ts).
+// IMPROVED (new feature): "Step by Step Method" opens the audio-guided cook-along. Only on recipes that have one
+// (src/data/cookalong.ts).
 function CookNow({ slug, steps }: { slug: string; steps: number }) {
   return (
-    <Link to={`/recipe/${slug}/cook`} className="mx-4 mt-4 flex items-center gap-3 rounded-2xl bg-brand text-white p-3 pr-2 shadow-[0_6px_18px_rgba(18,166,118,0.35)]">
-      <span className="shrink-0 w-14 h-14 rounded-full bg-white text-brand grid place-items-center"><Icon name="play_arrow" size={38} fill /></span>
+    <Link to={`/recipe/${slug}/cook`} className="mx-4 mt-4 flex items-center gap-3 rounded-2xl bg-brand text-white px-3 py-3 pr-2">
+      <span className="shrink-0 w-11 h-11 rounded-full bg-white text-brand grid place-items-center"><Icon name="play_arrow" size={28} /></span>
       <span className="flex-1 min-w-0">
-        <span className="block text-[19px] font-semibold leading-tight">Cook now with Dr Rupy</span>
-        <span className="flex items-center gap-1 text-[14px] text-white/85 mt-0.5"><Icon name="headphones" size={16} />{steps} steps · audio · timers</span>
+        <span className="block text-[19px] font-semibold leading-tight">Step by Step Method</span>
+        <span className="block text-[14px] text-white/90 mt-0.5">Narrated by Dr Rupy • {steps} Steps</span>
       </span>
       <Icon name="chevron_right" size={28} />
     </Link>
@@ -246,27 +248,6 @@ function AddToPlanSheet({ slug, onClose }: { slug: string; onClose: () => void }
   )
 }
 
-// Replies were not captured in the audit, so a sent question gets a placeholder answer.
-function ChatSheet({ title, initial, onClose }: { title: string; initial: string; onClose: () => void }) {
-  const [q, setQ] = useState(initial)
-  const [thread, setThread] = useState<string[]>([])
-  const send = () => { if (q.trim()) { setThread([...thread, q.trim()]); setQ('') } }
-  return (
-    <Sheet title={`Ask Dr Rupy: ${title}`} onClose={onClose}>
-      {thread.map((t, i) => (
-        <div key={i} className="mb-3">
-          <p className="ml-auto w-fit max-w-[85%] bg-brand-soft rounded-lg px-3 py-2">{t}</p>
-          <p className="mt-2 w-fit max-w-[85%] bg-[#f1f1f1] rounded-lg px-3 py-2 text-muted italic">Dr Rupy's answer would appear here (not part of the prototype).</p>
-        </div>
-      ))}
-      <form className="flex" onSubmit={(e) => { e.preventDefault(); send() }}>
-        <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} className="flex-1 min-w-0 border border-line rounded-l-md px-3 py-2.5 text-[17px]" />
-        <button aria-label="Send" className="shrink-0 bg-brand text-white px-4 rounded-r-md grid place-items-center"><Icon name="send" size={22} fill /></button>
-      </form>
-      <p className="text-center text-[12px] text-muted mt-2">By using this service, you understand that it's an experimental feature and should not be construed as medical advice or diagnosis.</p>
-    </Sheet>
-  )
-}
 
 const bySlug = Object.fromEntries(recipes.map((x) => [x.slug, x]))
 
