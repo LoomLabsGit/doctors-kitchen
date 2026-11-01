@@ -17,8 +17,8 @@ const min = (m: number) => m * 60
 
 export const cookalong: Record<string, Cookalong> = {
   'one-pan-harissa-chicken-pasta': {
-    // Steps 1, 2, 3, 4, 7, 8, 10 and 11 were reworded to carry their amounts and need new recordings; steps 5, 6 and 9
-    // keep DK's original wording and audio.
+    // Steps 1, 2, 3, 4, 7, 8, 10 and 11 are reworded to carry their amounts; steps 5, 6 and 9 keep DK's original
+    // wording. All 11 were re-recorded to match (each opens with "Step N").
     steps: [
       step(1, 'Heat 1 tbsp olive oil in a deep pan. Season 500 g boneless, skinless chicken thighs and brown them for 4 minutes per side. And use the timers below to keep track.',
         { photo: true, timers: [{ label: 'Brown the first side', secs: min(4) }, { label: 'Brown the second side', secs: min(4) }], terms: ['1 tbsp olive oil', '500 g boneless, skinless chicken thighs'] }),
