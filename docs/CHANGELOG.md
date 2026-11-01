@@ -160,3 +160,7 @@
 - "You'll need" now lists only ingredients appearing for the first time, with amounts. Ingredients prepared earlier are left out of the card; their highlighted word in the instruction has a dotted underline and can be tapped to show a note such as "150 g white onion · diced in step 2". Steps 5, 6 and 9 now have no card.
 - Prep steps whose ingredients are used again end with "Set them aside for step 3." (step 2), "…for steps 5 and 6." (step 4) and "…for step 11." (step 8). Dr Rupy's recorded audio doesn't say this sentence.
 - Everything is worked out from each step's `uses`, so no extra data was needed. The Method tab on Recipe detail is unchanged.
+
+## 2026-11-01: Step by Step Method, "From earlier" instead of tappable words
+- Replaces the tappable-word approach above. "You'll need" now has two groups: the step's new ingredients with amounts, then "From earlier": ingredients prepared on an earlier step, named in their prepared form ("white onion, diced", "chickpeas (can), drained and rinsed") with an arrow icon, no amount, and the step they came from. Everything the step needs is visible at a glance, and nothing can be read as "get another 150 g".
+- Highlighted words in the instruction are plain again (no dotted underline or tap note). The "Set them aside for step N." sentence on prep steps stays.
