@@ -141,3 +141,7 @@
 - Audio and timers moved out of the page into a bottom dock: a 48 px play button with the progress bar and times (play again after the end replays the step), and a black timer button with a red badge when the step has a timer that hasn't been started. The timer button opens the step's timers in a sheet.
 - When a timer is running, one black bar attaches above the dock (amber with "Done" when one finishes). Timers no longer stack: the bar shows the timer that will end first. Tap its label to go to that timer's step.
 - The separate "Listen to Dr Rupy" card, in-page timer cards and the stack of compact timer bars are gone; the chat sheet moved to `src/components/ChatSheet.tsx` so cook mode can use it.
+
+## 2026-11-01: Timer bar and dock match the design team's Figma frame
+- Timer bar now follows Figma (node 28:1831): white instead of black, 44 px tall (was 56), 16 px top corners, a soft upward shadow, and everything in grey: 20 px timer icon, 15 px regular label, 17 px semibold time, 22 px pause. A finished timer turns the icon and "Done" amber.
+- Dock: 1 px top border, 12 px top / 16 px sides and bottom, 8 px between Back and Next (was 12), progress track in the pale blue chip colour, 22 px icon in the timer button, and a light-weight (300) 32 px play icon. `Icon` gained a `weight` prop for the variable font's weight axis.

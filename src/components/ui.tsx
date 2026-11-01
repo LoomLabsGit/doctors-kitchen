@@ -5,10 +5,14 @@ import { useImproved } from '../lib/version'
 
 // Google Material Symbols (Rounded), self-hosted from the material-symbols package. `name` is the symbol name,
 // e.g. "schedule". Size is set inline because the package's own font-size rule outranks Tailwind utilities.
-export const Icon = ({ name, size = '1.25em', fill, className = '' }: { name: string; size?: number | string; fill?: boolean; className?: string }) => (
-  <span aria-hidden className={`material-symbols-rounded shrink-0 align-middle select-none ${className}`}
-    style={{ fontSize: size, lineHeight: 1, fontVariationSettings: fill ? "'FILL' 1" : undefined }}>{name}</span>
-)
+// `weight` sets the variable font's weight axis (e.g. 300 for Light).
+export const Icon = ({ name, size = '1.25em', fill, weight, className = '' }: { name: string; size?: number | string; fill?: boolean; weight?: number; className?: string }) => {
+  const axes = [fill && "'FILL' 1", weight && `'wght' ${weight}`].filter(Boolean).join(', ')
+  return (
+    <span aria-hidden className={`material-symbols-rounded shrink-0 align-middle select-none ${className}`}
+      style={{ fontSize: size, lineHeight: 1, fontVariationSettings: axes || undefined }}>{name}</span>
+  )
+}
 
 // Gradient placeholder, with the real photo on top when there is one (`src`). If the photo file is missing
 // (public/local/ is git-ignored) the image removes itself and the gradient shows.

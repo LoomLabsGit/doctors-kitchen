@@ -8,8 +8,9 @@ import { ChatSheet } from '../components/ChatSheet'
 
 // IMPROVED (new feature): audio-guided "Step by Step Method". One step per page: photo, instruction with its
 // ingredients highlighted, and "You'll need". A dock at the bottom holds Dr Rupy's audio, the timer button (with a
-// badge when the step has a timer not yet started) and Back / Next. A running timer shows as one black bar attached
+// badge when the step has a timer not yet started) and Back / Next. A running timer shows as one white bar attached
 // above the dock: timers don't stack, the bar shows whichever ends first (a finished one first).
+// Sizes, fonts and colours of the dock and timer bar follow the design team's Figma frame (node 28:1831).
 // Full screen: Shell hides the header and bottom bar on /recipe/:slug/cook.
 
 type Running = { id: string; step: number; label: string; secs: number; endsAt: number | null; left: number; done: boolean }
@@ -102,16 +103,17 @@ export default function Cook() {
 
       <div className="shrink-0">
         {featured && <TimerBar t={featured} now={now} onGo={() => go(featured.step)} {...controls} />}
-        <div className={`bg-white px-4 pt-3 pb-4 ${featured ? '' : 'rounded-t-2xl border-t border-line shadow-[0_-4px_16px_rgba(0,0,0,0.05)]'}`}>
+        {/* Dock (Figma 28:1869): 12px top / 16px sides and bottom, 1px top border, 12px between the audio row and the buttons */}
+        <div className={`bg-white px-4 pt-3 pb-4 border-t border-line ${featured ? '' : 'rounded-t-2xl shadow-[0_-4px_16px_rgba(0,0,0,0.05)]'}`}>
           <div className="flex items-center gap-3">
             <AudioPlayer key={n} src={step.audio} />
             <button aria-label={badge ? 'Timers, one not started' : 'Timers'} onClick={() => setSheet('timers')}
               className="relative shrink-0 w-12 h-12 rounded-full bg-ink text-white grid place-items-center">
-              <Icon name="timer" size={24} />
+              <Icon name="timer" size={22} />
               {badge && <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#e57373] border-2 border-white" />}
             </button>
           </div>
-          <div className="flex gap-3 mt-3">
+          <div className="flex gap-2 mt-3">
             <button onClick={() => go(n - 1)} disabled={n === 1}
               className="w-[120px] h-14 rounded-2xl border-2 border-line text-[17px] font-semibold inline-flex items-center justify-center gap-1 disabled:opacity-40">
               <Icon name="arrow_back" size={22} />Back
@@ -195,15 +197,15 @@ function AudioPlayer({ src }: { src?: string }) {
     <div className="flex-1 min-w-0 flex items-center gap-3">
       <button aria-label={playing ? 'Pause Dr Rupy' : 'Play Dr Rupy'} onClick={toggle} disabled={missing}
         className="shrink-0 w-12 h-12 rounded-full bg-brand text-white grid place-items-center disabled:opacity-40">
-        <Icon name={playing ? 'pause' : 'play_arrow'} size={30} />
+        <Icon name={playing ? 'pause' : 'play_arrow'} size={32} weight={300} />
       </button>
       <div className="flex-1 min-w-0">
-        <div className="h-1.5 rounded-full bg-[#dde9ef] overflow-hidden">
+        <div className="h-1.5 rounded-full bg-chip overflow-hidden">
           <div className="h-full bg-brand transition-[width] duration-200" style={{ width: `${time.len ? (time.at / time.len) * 100 : 0}%` }} />
         </div>
         {missing
           ? <div className="mt-1 text-[14px] text-muted truncate">Audio isn't available on this device</div>
-          : <div className="mt-1 flex justify-between text-[14px] text-muted"><span>{fmt(time.at)}</span><span>{fmt(time.len)}</span></div>}
+          : <div className="mt-0.5 flex justify-between text-[14px] leading-tight tracking-[0.02em] text-muted"><span>{fmt(time.at)}</span><span>{fmt(time.len)}</span></div>}
       </div>
       {src && <audio ref={ref} src={src} preload="auto"
         onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)}
@@ -245,18 +247,20 @@ function TimerCard({ def, t, now, onStart, pause, resume, remove }: { def: Timer
   )
 }
 
-// The one timer bar, attached above the dock. Tap the label to go to the timer's step.
+// The one timer bar, attached above the dock (Figma 28:1864): white, 44px tall, 16px top corners, soft upward
+// shadow, grey 20px icon, 15px label, 17px semibold time, 22px pause. Tap the label to go to the timer's step.
+// A finished timer turns the icon and "Done" amber.
 function TimerBar({ t, now, onGo, pause, resume, remove }: { t: Running; now: number; onGo: () => void } & Controls) {
   return (
-    <div className={`flex items-center gap-3 rounded-t-2xl pl-4 pr-2 h-14 ${t.done ? 'bg-[#f0b44c] text-ink' : 'bg-ink text-white'}`}>
-      <Icon name={t.done ? 'alarm' : 'timer'} size={24} />
-      <button onClick={onGo} className="flex-1 min-w-0 text-left truncate text-[16px]">{t.label} · step {t.step}</button>
-      <span className="font-semibold tabular-nums text-[19px]">{t.done ? 'Done' : fmt(leftOf(t, now))}</span>
+    <div className="relative z-10 flex items-center gap-2 h-11 px-4 rounded-t-2xl bg-white text-muted shadow-[0_-2px_12px_rgba(0,0,0,0.15)]">
+      <Icon name={t.done ? 'alarm' : 'timer'} size={20} className={t.done ? 'text-[#c98a1a]' : ''} />
+      <button onClick={onGo} className="flex-1 min-w-0 text-left truncate text-[15px] leading-[1.4]">{t.label} · step {t.step}</button>
+      <span className={`font-semibold tabular-nums text-[17px] leading-[1.3] ${t.done ? 'text-[#c98a1a]' : ''}`}>{t.done ? 'Done' : fmt(leftOf(t, now))}</span>
       {t.done
-        ? <button aria-label="Dismiss timer" onClick={() => remove(t.id)} className="w-10 h-10 grid place-items-center"><Icon name="close" size={24} /></button>
+        ? <button aria-label="Dismiss timer" onClick={() => remove(t.id)} className="w-6 h-6 grid place-items-center"><Icon name="close" size={22} /></button>
         : t.endsAt
-          ? <button aria-label="Pause timer" onClick={() => pause(t.id)} className="w-10 h-10 grid place-items-center"><Icon name="pause" size={26} /></button>
-          : <button aria-label="Resume timer" onClick={() => resume(t.id)} className="w-10 h-10 grid place-items-center"><Icon name="play_arrow" size={26} /></button>}
+          ? <button aria-label="Pause timer" onClick={() => pause(t.id)} className="w-6 h-6 grid place-items-center"><Icon name="pause" size={22} /></button>
+          : <button aria-label="Resume timer" onClick={() => resume(t.id)} className="w-6 h-6 grid place-items-center"><Icon name="play_arrow" size={22} /></button>}
     </div>
   )
 }
