@@ -82,5 +82,21 @@ Severity: High / Medium / Low. IDs match the Miro board tables.
 | U17 | Low | Visual | Index tile labels | Dark grey bar hides image; low contrast. | Label below image or gradient scrim. |
 | U18 | Low | Visual | "Not found what you're looking for?" | Italic style used nowhere else; outcome of "Let us know" unclear. | Standard text/card; state the outcome. |
 
+### Recipe detail (U19 to U30)
+| ID | Sev | Type | Where | Finding | Direction |
+|---|---|---|---|---|---|
+| U19 | High | Layout | Overview, first screen | Photo fills ~40% of the screen, then title, intro, tabs and the chat banner; the first useful facts (times, serves) start below the fold under the bottom bar. | Shorter hero; key facts (time, serves, protein) directly under the title. |
+| U20 | High | IA | Tabs and chat banner | The Dr Rupy chat banner sits between the tabs and their content on all three tabs, pushing ingredients and method down ~130 px each time. | Move chat to a floating button or the foot of the page; content first. |
+| U21 | Med | Interaction | Action row | Share, print, add to plan and save are four unlabelled icons of equal weight; print is rarely useful on mobile; "add to plan" is a calendar icon. | Save and Add to plan as the primary pair with labels; share and print into a "more" menu. |
+| U22 | Med | A11y | Action row | Icons ~24 px with tight spacing; the pink heart is the only state cue for saved. | 44 px targets; filled heart and toast when saved. |
+| U23 | Med | Content | Intro text | Truncated mid-sentence with "Read more" before any useful information. | Show two lines then expand, or move the story below the method. |
+| U24 | Med | Interaction | Tabs | Overview, Ingredients and Method switch panes but the page keeps its scroll position; the tab bar scrolls away so you cannot switch while cooking. | Sticky tab bar; reset scroll on switch. |
+| U25 | Med | Visual | Chat banner | Green/lime shape, black Chat button, avatar and chips in one block; suggestion chips are clipped ("Why is this hea…"). | Single clear field plus two short chips; no clipping. |
+| U26 | Med | Layout | Ingredients pane | Serves stepper and Metric/Imperial toggle use two different control styles; amounts and names are small grey text. | Match control styles; larger ingredient text; tick-off ingredients. |
+| U27 | Low | Content | Method pane | "Your notes" sits above step 1 with a tiny pencil icon and no explanation. | Move notes below the method or label it "Add a note". |
+| U28 | Med | Layout | Save sheet | Collection thumbnails dominate (one row = two collections); checkboxes and labels are small; one thumbnail has a blank quarter. | Compact list with a thumbnail, name and toggle; Create new at the top. |
+| U29 | Low | Visual | Save and share sheets | No drag handle; close is a small grey cross; titles differ in tone ("Add to a favourites collection"). | Common sheet pattern: handle, 44 px close, consistent titles. |
+| U30 | Low | Content | Ask Dr Rupy sheet | Empty input with no examples or history; the disclaimer is small, centred grey text. | Show suggested questions in the sheet; readable disclaimer. |
+
 ### Remaining frames (to do, one at a time)
-Recipe detail, Plan, Saved, Progress, Learn, About, Profile.
+Plan, Saved, Progress, Learn, About, Profile.
